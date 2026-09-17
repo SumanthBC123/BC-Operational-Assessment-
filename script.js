@@ -123,6 +123,21 @@ function track(eventName, params) {
   console.log('[track]', eventName, params || {});
 }
 
+/* ---------- Pending-link placeholder ----------
+   Shown when a button's real destination (booking link, hosted PDF)
+   hasn't been confirmed yet, so clicking it doesn't look broken. */
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('visible'));
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    setTimeout(() => toast.remove(), 250);
+  }, 3200);
+}
+
 /* ---------- UTM capture ---------- */
 function captureUTMs() {
   const params = new URLSearchParams(window.location.search);
@@ -339,9 +354,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('final-cta').addEventListener('click', () => {
     track('final_cta_click', { workflow: state.workflow });
     /* TODO: point at the confirmed booking/Calendly URL */
+    showToast('Booking link pending — this will go straight to scheduling a workflow review.');
   });
   document.getElementById('pdf-download').addEventListener('click', () => {
     track('pdf_download_click', { workflow: state.workflow });
     /* TODO: point at the hosted Operational Friction Diagnostic PDF URL */
+    showToast('PDF not hosted yet — this will download the diagnostic once it’s ready.');
   });
 });
