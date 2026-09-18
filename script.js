@@ -1,101 +1,266 @@
-/* Workflow Automation Assessment — front-end prototype
-   Scoring + flow logic run entirely client-side.
+/* Workflow Review — front-end prototype (v2)
+   Rule-based recommendation engine runs entirely client-side, no score shown.
    CRM/email/analytics calls are stubbed — see TODO markers. */
 
+const QUESTIONNAIRE_VERSION = 'v2.0';
+
 const WORKFLOWS = [
-  { id: 'reporting', label: 'Reporting' },
-  { id: 'onboarding', label: 'Onboarding' },
-  { id: 'approvals', label: 'Approvals' },
-  { id: 'fulfillment', label: 'Fulfillment / Inventory' },
-  { id: 'service', label: 'Service Delivery' },
-  { id: 'finance', label: 'Finance / Billing' },
-  { id: 'other', label: 'Other' },
+  { id: 'reporting', label: 'Reporting', description: 'Preparing recurring reports and performance updates' },
+  { id: 'onboarding', label: 'Onboarding', description: 'Getting customers, employees, or vendors ready to start' },
+  { id: 'approvals', label: 'Approvals', description: 'Reviewing requests and authorizing the next step' },
+  { id: 'fulfillment', label: 'Fulfillment / Inventory', description: 'Managing orders, stock, and fulfillment activities' },
+  { id: 'service', label: 'Service Delivery', description: 'Coordinating the work required to deliver a service' },
+  { id: 'finance', label: 'Finance / Billing', description: 'Preparing invoices, reconciling information, or managing payments' },
+  { id: 'other', label: 'Other', description: 'Another recurring process in your business' },
 ];
+
+const SECTION_LABELS = {
+  1: 'Workload & Impact',
+  2: 'How Work Moves',
+  3: 'Consistency & Continuity',
+};
 
 const QUESTIONS = [
   {
-    id: 'handoffs',
-    name: 'Manual handoffs',
-    text: 'How often does this workflow require someone to manually hand it off to the next person, rather than it moving forward on its own?',
-    action: 'Map the handoff points in this workflow and assign clear ownership at each one before introducing any new tooling.',
+    id: 'frequency',
+    section: 1,
+    shortLabel: 'Workflow frequency',
+    text: 'How often does this workflow run?',
+    helper: 'Think about the specific process you selected, rather than the department as a whole.',
+    confirmLabel: 'How often this workflow actually runs',
+    options: [
+      { value: 'several_daily', label: 'Several times a day' },
+      { value: 'daily', label: 'Daily' },
+      { value: 'weekly', label: 'Weekly' },
+      { value: 'monthly', label: 'Monthly or less often' },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
   },
   {
-    id: 'duplicate_entry',
-    name: 'Duplicate data entry',
-    text: 'How often does the same piece of information get typed or re-entered into more than one system or spreadsheet?',
-    action: 'Identify exactly where the same data is entered more than once and connect those systems before anything else.',
+    id: 'effort',
+    section: 1,
+    shortLabel: 'Manual effort',
+    text: 'In a typical week, how much team time goes into manual work within this workflow?',
+    helper: 'Include copying information, preparing updates, coordinating handoffs, and following up. Estimate the combined time across the team, averaged over the past four weeks.',
+    confirmLabel: 'How much manual effort this workflow takes each week',
+    options: [
+      { value: 'lt1', label: 'Less than 1 hour per week' },
+      { value: '1to3', label: '1–3 hours per week' },
+      { value: '4to8', label: '4–8 hours per week' },
+      { value: 'gt8', label: 'More than 8 hours per week' },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
   },
   {
-    id: 'status_chasing',
-    name: 'Status chasing',
-    text: 'How often does someone have to chase colleagues or vendors just to find out where a task currently stands?',
-    action: 'Introduce a single shared status view so people stop chasing each other for updates.',
+    id: 'impact',
+    section: 1,
+    shortLabel: 'Business impact',
+    text: 'When this workflow does not go as planned, what is the main consequence?',
+    helper: 'Choose the most significant consequence your business actually experiences, not a hypothetical worst case.',
+    confirmLabel: 'What happens when this workflow does not go as planned',
+    options: [
+      { value: 'minor', label: 'Minor inconvenience, with little effect on delivery' },
+      { value: 'extra_work', label: 'Extra work or internal delays' },
+      { value: 'customer_facing', label: 'Customer-facing delays or service problems' },
+      { value: 'serious', label: 'Financial, compliance, or other serious business consequences' },
+      { value: 'none', label: 'We have not experienced a meaningful problem' },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
   },
   {
-    id: 'unclear_ownership',
-    name: 'Unclear ownership',
-    text: 'How often is it unclear exactly who owns the next step when something in this workflow stalls or breaks?',
-    action: 'Clarify who owns each step of this workflow before changing any part of the underlying process.',
+    id: 'ownership',
+    section: 2,
+    shortLabel: 'Ownership',
+    text: 'How clear is ownership when the next step needs attention?',
+    helper: 'Think about who is responsible for moving the work forward or resolving a problem.',
+    confirmLabel: 'Who owns the next step in this workflow',
+    options: [
+      { value: 'clear', label: 'The responsible person is clear' },
+      { value: 'b', label: 'Ownership is usually clear, but some situations need discussion', finding: 'moderate' },
+      { value: 'c', label: 'The team often needs to decide who should act', finding: 'strong' },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
   },
   {
-    id: 'scattered_info',
-    name: 'Scattered information',
-    text: 'How often do people need to check multiple tools, inboxes, or spreadsheets to get the full picture of this workflow?',
-    action: 'Consolidate this workflow’s sources of truth into one place before adding new systems.',
+    id: 'info_transfer',
+    section: 2,
+    shortLabel: 'Information transfer',
+    text: 'How does information move between the tools used in this workflow?',
+    helper: 'Consider spreadsheets, email, business software, and any other places where the same information is recorded.',
+    confirmLabel: 'How information moves between the tools used',
+    options: [
+      { value: 'clean', label: 'Information transfers without manual re-entry' },
+      { value: 'b', label: 'Some information is copied or entered again', finding: 'moderate' },
+      { value: 'c', label: 'The same information is repeatedly entered in several places', finding: 'strong' },
+      { value: 'single_tool', label: 'This workflow uses only one tool or information source', na: true },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
   },
   {
-    id: 'manual_reporting',
-    name: 'Manual reporting',
-    text: 'How often does someone have to manually pull together numbers or status updates to report on this workflow?',
-    action: 'Automate the reporting rollup itself before touching the process that feeds it.',
+    id: 'status_visibility',
+    section: 2,
+    shortLabel: 'Status visibility',
+    text: 'How do people find the current status and next step?',
+    helper: 'Think about how someone involved in the workflow checks progress without interrupting another person.',
+    confirmLabel: 'Where to find the current status and next step',
+    options: [
+      { value: 'reliable', label: 'They can check a reliable shared source' },
+      { value: 'b', label: 'They check several places to put the picture together', finding: 'moderate' },
+      { value: 'c', label: 'They usually need to ask someone or chase an update', finding: 'strong' },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
   },
   {
     id: 'approvals',
-    name: 'Approval delays',
-    text: 'How often do approvals sit and wait on one specific person, slowing the whole process down?',
-    action: 'Redesign the approval path to remove unnecessary waiting points and single points of delay.',
-  },
-  {
-    id: 'visibility',
-    name: 'Limited visibility',
-    text: 'How often do stakeholders lack real-time visibility into where things actually stand in this workflow?',
-    action: 'Build a simple, shared visibility layer so stakeholders can see status without asking.',
+    section: 2,
+    shortLabel: 'Approvals',
+    text: 'What usually happens when this workflow needs approval?',
+    helper: 'Consider whether people know who should approve, what information is needed, and when a response is expected.',
+    confirmLabel: 'What happens when this workflow needs approval',
+    options: [
+      { value: 'clear', label: 'The approval is clear and arrives within the expected time' },
+      { value: 'b', label: 'Some approvals require reminders or cause delays', finding: 'moderate' },
+      { value: 'c', label: 'Work regularly waits because the approval path or timing is unclear', finding: 'strong' },
+      { value: 'not_required', label: 'This workflow does not require approval', na: true },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
   },
   {
     id: 'exceptions',
-    name: 'Frequent exceptions',
-    text: 'How often does an exception or edge case break the normal process and require special handling?',
-    action: 'Document the recurring exceptions so they’re handled consistently instead of case by case.',
+    section: 3,
+    shortLabel: 'Exception handling',
+    text: 'What happens when a case falls outside the normal process?',
+    helper: 'An exception might involve missing information, an unusual request, a mismatch, or a case that needs escalation.',
+    confirmLabel: 'How exceptions are handled in this workflow',
+    options: [
+      { value: 'clear', label: 'There is a clear way to handle or escalate it' },
+      { value: 'b', label: 'The team can resolve it, but the approach varies', finding: 'moderate' },
+      { value: 'c', label: 'People improvise or wait because there is no clear approach', finding: 'strong' },
+      { value: 'not_relevant', label: 'Exceptions are not relevant to this workflow', na: true },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
   },
   {
-    id: 'key_person',
-    name: 'Key-person dependency',
-    text: 'How often does this workflow depend on one specific person, such that their absence would create a real problem?',
-    action: 'Document this workflow end to end and cross-train a backup before layering on more tooling.',
+    id: 'consistency',
+    section: 3,
+    shortLabel: 'Process consistency',
+    text: 'How consistent are the steps and decision rules?',
+    helper: 'Think about whether different people can follow the same approach and understand how decisions should be made.',
+    confirmLabel: 'How consistent the steps and decision rules are',
+    options: [
+      { value: 'clear', label: 'The steps and rules are clear and repeatable' },
+      { value: 'b', label: 'There is a usual approach, but some decisions are informal', finding: 'moderate' },
+      { value: 'c', label: 'The approach depends heavily on who is doing the work', finding: 'strong' },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
+  },
+  {
+    id: 'continuity',
+    section: 3,
+    shortLabel: 'Workflow continuity',
+    text: 'What happens if the person who knows this workflow best is unavailable?',
+    helper: 'Consider whether another person can continue the important work using the instructions and information already available.',
+    confirmLabel: 'What happens if the person who knows this workflow best is unavailable',
+    options: [
+      { value: 'clear', label: 'Someone else can continue using the available instructions' },
+      { value: 'b', label: 'Work continues, but needs extra help or takes longer', finding: 'moderate' },
+      { value: 'c', label: 'Important work stops or decisions wait for that person', finding: 'strong' },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
   },
 ];
 
-const OPTIONS = [
-  { value: 0, label: 'Rarely', hint: 'This rarely happens' },
-  { value: 1, label: 'Sometimes', hint: 'This happens sometimes' },
-  { value: 2, label: 'Frequently', hint: 'This happens frequently' },
-];
+const QUESTIONS_BY_ID = Object.fromEntries(QUESTIONS.map((q) => [q.id, q]));
+const ALL_QUESTION_IDS = QUESTIONS.map((q) => q.id);
+const TIER1_IDS = ['ownership', 'exceptions', 'consistency', 'continuity']; // Q4, Q8, Q9, Q10
+const TIER2_IDS = ['info_transfer', 'status_visibility', 'approvals']; // Q5, Q6, Q7
 
-const RESULT_TIERS = [
-  { key: 'limited', min: 0, max: 5, label: 'Limited Friction', tagClass: 'tag-limited',
-    summary: 'This workflow runs fairly smoothly today. Automation here would likely deliver marginal returns — it’s worth focusing attention elsewhere first.' },
-  { key: 'emerging', min: 6, max: 10, label: 'Emerging Friction', tagClass: 'tag-emerging',
-    summary: 'Early friction is showing up in this workflow. Small clarifications now can prevent it from becoming a bigger bottleneck later.' },
-  { key: 'significant', min: 11, max: 15, label: 'Significant Friction', tagClass: 'tag-significant',
-    summary: 'This workflow has real, recurring friction. It’s a strong candidate for a closer look — likely a mix of clarification and targeted automation.' },
-  { key: 'structural', min: 16, max: 20, label: 'Structural Friction', tagClass: 'tag-structural',
-    summary: 'Friction is deeply embedded in how this workflow operates today. It’s worth reviewing ownership, process design, and tooling before automating anything.' },
-];
+const FINDING_TEXT = {
+  ownership: {
+    moderate: 'Some responsibilities need clarification.',
+    strong: 'Work regularly waits while the team decides who should act.',
+  },
+  info_transfer: {
+    moderate: 'Information is manually copied or entered again.',
+    strong: 'The same information is repeatedly entered in several places, creating rework and mismatch risk.',
+  },
+  status_visibility: {
+    moderate: 'The current status is difficult to find in one reliable place.',
+    strong: 'People usually have to chase someone just to find the current status.',
+  },
+  approvals: {
+    moderate: 'Approvals sometimes delay the workflow.',
+    strong: 'Work regularly waits because the approval path or timing is unclear.',
+  },
+  exceptions: {
+    moderate: 'Exception handling is not fully consistent.',
+    strong: 'People improvise or wait because there is no clear way to handle exceptions.',
+  },
+  consistency: {
+    moderate: 'Some steps or decision rules are informal.',
+    strong: 'The approach depends heavily on who is doing the work.',
+  },
+  continuity: {
+    moderate: 'The workflow needs stronger backup coverage.',
+    strong: 'Important work stops or decisions wait on one specific person.',
+  },
+};
+
+const FREQ_LABELS = {
+  several_daily: 'several times a day',
+  daily: 'daily',
+  weekly: 'weekly',
+  monthly: 'monthly or less often',
+};
+const EFFORT_LABELS = {
+  lt1: 'less than 1 hour a week',
+  '1to3': '1–3 hours a week',
+  '4to8': '4–8 hours a week',
+  gt8: 'more than 8 hours a week',
+};
+const IMPACT_LABELS = {
+  minor: 'a minor inconvenience',
+  extra_work: 'extra work or internal delays',
+  customer_facing: 'customer-facing delays or service problems',
+  serious: 'financial, compliance, or other serious business consequences',
+  none: 'no meaningful problem so far',
+};
+
+const RECOMMENDATIONS = {
+  clarify: {
+    title: 'Clarify the Workflow First',
+    firstStep: 'Write down the main steps, responsible people, and decision rules. Address the unclear responsibilities, exceptions, or backup arrangements highlighted in your answers.',
+  },
+  coordination: {
+    title: 'Improve Workflow Coordination',
+    firstStep: 'Review where information is copied, how status is tracked, and where approvals wait. Start with the issues highlighted in your answers.',
+  },
+  confirm_details: {
+    title: 'Confirm the Missing Details',
+    firstStep: 'Review the unanswered details with someone who operates this workflow before deciding what to change.',
+  },
+  automation: {
+    title: 'Explore a Targeted Automation Opportunity',
+    firstStep: 'Identify one repeatable manual step. Confirm its inputs, rules, exceptions, and expected benefit before selecting a tool.',
+  },
+  baseline: {
+    title: 'Establish a Baseline Before Making Changes',
+    firstStep: 'Track the workflow’s manual effort, delays, and errors before deciding whether a change is needed.',
+  },
+  review_risks: {
+    title: 'Review the Risks Before Making Changes',
+    firstStep: 'Review the workflow’s controls, failure points, and business requirements with the responsible team before introducing changes.',
+  },
+};
+
+const STORAGE_KEY = 'wfAssessmentV2';
 
 const state = {
   workflow: null,
-  answers: new Array(QUESTIONS.length).fill(null),
-  currentQuestion: 0,
+  workflowName: '',
+  answers: {},
+  currentIndex: 0,
+  editingFromReview: false,
   lead: {},
   utm: {},
 };
@@ -104,19 +269,24 @@ const screens = {
   hero: document.getElementById('screen-hero'),
   workflow: document.getElementById('screen-workflow'),
   question: document.getElementById('screen-question'),
-  lead: document.getElementById('screen-lead'),
+  review: document.getElementById('screen-review'),
   result: document.getElementById('screen-result'),
 };
+
+let currentScreenName = 'hero';
 
 function showScreen(name) {
   Object.values(screens).forEach((el) => el.classList.remove('active'));
   screens[name].classList.add('active');
+  currentScreenName = name;
+  persistState();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* ---------- Analytics stub ----------
    TODO: confirm GTM container / GA4 property, then replace these
-   dataLayer.push calls with the agreed event schema. */
+   dataLayer.push calls with the agreed event schema.
+   Personal details (name/email/company) must never be passed here. */
 function track(eventName, params) {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event: eventName, ...params });
@@ -138,6 +308,24 @@ function showToast(message) {
   }, 3200);
 }
 
+/* ---------- Confirm modal ---------- */
+function showConfirm(message, onConfirm) {
+  const overlay = document.getElementById('confirm-overlay');
+  document.getElementById('confirm-message').textContent = message;
+  overlay.hidden = false;
+  const okBtn = document.getElementById('confirm-ok');
+  const cancelBtn = document.getElementById('confirm-cancel');
+  function cleanup() {
+    overlay.hidden = true;
+    okBtn.removeEventListener('click', onOk);
+    cancelBtn.removeEventListener('click', onCancel);
+  }
+  function onOk() { cleanup(); onConfirm(); }
+  function onCancel() { cleanup(); }
+  okBtn.addEventListener('click', onOk);
+  cancelBtn.addEventListener('click', onCancel);
+}
+
 /* ---------- UTM capture ---------- */
 function captureUTMs() {
   const params = new URLSearchParams(window.location.search);
@@ -146,7 +334,52 @@ function captureUTMs() {
   });
 }
 
+/* ---------- Session persistence (non-personal fields only) ---------- */
+function persistState() {
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+      workflow: state.workflow,
+      workflowName: state.workflowName,
+      answers: state.answers,
+      currentIndex: state.currentIndex,
+      screen: currentScreenName,
+    }));
+  } catch (err) { /* storage unavailable — assessment still works, just won't survive a refresh */ }
+}
+
+function restoreState() {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const saved = JSON.parse(raw);
+    if (!saved || !saved.workflow) return false;
+    state.workflow = saved.workflow;
+    state.workflowName = saved.workflowName || '';
+    state.answers = saved.answers || {};
+    state.currentIndex = saved.currentIndex || 0;
+    return saved.screen || 'workflow';
+  } catch (err) {
+    return false;
+  }
+}
+
+function workflowLabelFor(id) {
+  const wf = WORKFLOWS.find((w) => w.id === id);
+  return wf ? wf.label : '';
+}
+
+function workflowDisplayName() {
+  return (state.workflowName && state.workflowName.trim()) || workflowLabelFor(state.workflow);
+}
+
 /* ---------- Workflow select screen ---------- */
+function updateWorkflowContinueState() {
+  const btn = document.getElementById('workflow-continue');
+  const input = document.getElementById('workflowName');
+  if (!state.workflow) { btn.disabled = true; return; }
+  btn.disabled = state.workflow === 'other' && input.value.trim().length === 0;
+}
+
 function renderWorkflowGrid() {
   const grid = document.getElementById('workflow-grid');
   grid.innerHTML = '';
@@ -154,42 +387,90 @@ function renderWorkflowGrid() {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'workflow-card';
-    btn.innerHTML = `<span class="label">${wf.label}</span>`;
-    btn.addEventListener('click', () => {
-      state.workflow = wf.id;
-      document.querySelectorAll('.workflow-card').forEach((c) => c.classList.remove('selected'));
-      btn.classList.add('selected');
-      document.getElementById('workflow-continue').disabled = false;
-    });
+    if (state.workflow === wf.id) btn.classList.add('selected');
+    btn.innerHTML = `<span class="label">${wf.label}</span><span class="wf-desc">${wf.description}</span>`;
+    btn.addEventListener('click', () => selectWorkflow(wf, btn));
     grid.appendChild(btn);
   });
+
+  const wrap = document.getElementById('workflow-name-wrap');
+  const nameInput = document.getElementById('workflowName');
+  if (state.workflow) {
+    wrap.hidden = false;
+    nameInput.value = state.workflowName || '';
+    updateWorkflowNameLabel();
+  } else {
+    wrap.hidden = true;
+  }
+  updateWorkflowContinueState();
+}
+
+function updateWorkflowNameLabel() {
+  const label = document.getElementById('workflow-name-label');
+  const input = document.getElementById('workflowName');
+  if (state.workflow === 'other') {
+    label.textContent = 'Briefly describe this workflow';
+    input.placeholder = 'For example: Vendor compliance checks';
+  } else {
+    label.textContent = 'What do you call this workflow?';
+    input.placeholder = 'For example: Weekly sales reporting';
+  }
+}
+
+function selectWorkflow(wf, btn) {
+  state.workflow = wf.id;
+  document.querySelectorAll('.workflow-card').forEach((c) => c.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('workflow-name-wrap').hidden = false;
+  updateWorkflowNameLabel();
+  updateWorkflowContinueState();
+  persistState();
+}
+
+function requestChangeWorkflow() {
+  const hasAnswers = Object.keys(state.answers).length > 0;
+  const doChange = () => {
+    state.workflow = null;
+    state.workflowName = '';
+    state.answers = {};
+    state.currentIndex = 0;
+    state.editingFromReview = false;
+    document.getElementById('workflowName').value = '';
+    showScreen('workflow');
+    renderWorkflowGrid();
+  };
+  if (hasAnswers) {
+    showConfirm('Changing your workflow will clear your current answers. Continue?', doChange);
+  } else {
+    doChange();
+  }
 }
 
 /* ---------- Question screen ---------- */
 function renderQuestion() {
-  const q = QUESTIONS[state.currentQuestion];
+  const q = QUESTIONS[state.currentIndex];
   const total = QUESTIONS.length;
-  const step = state.currentQuestion + 1;
+  const step = state.currentIndex + 1;
+  const answeredCount = Object.keys(state.answers).length;
 
-  document.getElementById('progress-fill').style.width = `${(step / total) * 100}%`;
+  document.getElementById('progress-fill').style.width = `${(answeredCount / total) * 100}%`;
+  document.getElementById('assessing-label').textContent = `Assessing: ${workflowDisplayName()}`;
   document.getElementById('step-label').textContent = `Question ${step} of ${total}`;
+  document.getElementById('section-label').textContent = SECTION_LABELS[q.section];
   document.getElementById('q-title').textContent = q.text;
+  document.getElementById('q-helper').textContent = q.helper;
 
   const list = document.getElementById('option-list');
   list.innerHTML = '';
-  OPTIONS.forEach((opt) => {
+  q.options.forEach((opt) => {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'option';
-    if (state.answers[state.currentQuestion] === opt.value) btn.classList.add('selected');
-    btn.innerHTML = `
-      <span class="dot"></span>
-      <span>
-        <span class="label">${opt.label}</span>
-        <span class="hint">${opt.hint}</span>
-      </span>`;
+    if (state.answers[q.id] === opt.value) btn.classList.add('selected');
+    btn.innerHTML = `<span class="dot"></span><span class="label">${opt.label}</span>`;
     btn.addEventListener('click', () => {
-      state.answers[state.currentQuestion] = opt.value;
+      state.answers[q.id] = opt.value;
+      persistState();
       renderQuestion();
     });
     list.appendChild(btn);
@@ -197,14 +478,153 @@ function renderQuestion() {
 
   document.getElementById('q-back').style.visibility = step === 1 ? 'hidden' : 'visible';
   const continueBtn = document.getElementById('q-continue');
-  continueBtn.disabled = state.answers[state.currentQuestion] === null;
-  continueBtn.textContent = step === total ? 'See My Result' : 'Continue';
+  continueBtn.disabled = state.answers[q.id] === undefined;
+  if (state.editingFromReview) {
+    continueBtn.textContent = 'Save & Return to Review';
+  } else if (step === total) {
+    continueBtn.textContent = 'Review Your Answers';
+  } else {
+    continueBtn.textContent = 'Continue';
+  }
 }
 
 function goToQuestion(index) {
-  state.currentQuestion = index;
+  state.currentIndex = index;
   showScreen('question');
   renderQuestion();
+}
+
+/* ---------- Review screen ---------- */
+function renderReview() {
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+  QUESTIONS.forEach((q, i) => {
+    const val = state.answers[q.id];
+    const opt = q.options.find((o) => o.value === val);
+    const row = document.createElement('div');
+    row.className = 'review-row';
+    row.innerHTML = `
+      <div class="review-text">
+        <span class="review-q">${q.shortLabel}</span>
+        <span class="review-a">${opt ? opt.label : 'Not answered'}</span>
+      </div>
+      <button type="button" class="btn btn-ghost btn-small review-edit">Edit</button>`;
+    row.querySelector('.review-edit').addEventListener('click', () => {
+      state.editingFromReview = true;
+      goToQuestion(i);
+    });
+    list.appendChild(row);
+  });
+}
+
+/* ---------- Recommendation engine ---------- */
+function findingFor(qid) {
+  const q = QUESTIONS_BY_ID[qid];
+  const opt = q.options.find((o) => o.value === state.answers[qid]);
+  if (opt && opt.finding) {
+    return { qid, shortLabel: q.shortLabel, tier: opt.finding, text: FINDING_TEXT[qid][opt.finding] };
+  }
+  return null;
+}
+
+function computeResult() {
+  const freq = state.answers.frequency;
+  const effort = state.answers.effort;
+  const impact = state.answers.impact;
+
+  const tier1Findings = TIER1_IDS.map(findingFor).filter(Boolean);
+  const tier2Findings = TIER2_IDS.map(findingFor).filter(Boolean);
+  const unsureIds = ALL_QUESTION_IDS.filter((qid) => state.answers[qid] === 'unsure');
+
+  let outcome;
+  if (tier1Findings.length) outcome = 'clarify';
+  else if (tier2Findings.length) outcome = 'coordination';
+  else if (unsureIds.length) outcome = 'confirm_details';
+  else {
+    const effortHigh = effort === '4to8' || effort === 'gt8';
+    if (effortHigh) outcome = impact === 'serious' ? 'review_risks' : 'automation';
+    else outcome = 'baseline';
+  }
+
+  const primaryFindings = outcome === 'clarify' ? tier1Findings : outcome === 'coordination' ? tier2Findings : [];
+  const otherFindings = outcome === 'clarify' ? tier2Findings : [];
+
+  let contextSentence = '';
+  const parts = [];
+  if (freq && freq !== 'unsure') parts.push(`runs ${FREQ_LABELS[freq]}`);
+  if (effort && effort !== 'unsure') parts.push(`involves about ${EFFORT_LABELS[effort]} of manual work`);
+  if (parts.length) contextSentence = `This workflow ${parts.join(' and ')}.`;
+  if (impact && impact !== 'unsure' && impact !== 'none') {
+    contextSentence += `${contextSentence ? ' ' : ''}When it doesn’t go as planned, the main reported consequence is ${IMPACT_LABELS[impact]}.`;
+  }
+
+  let explanation;
+  if (outcome === 'clarify' || outcome === 'coordination') {
+    explanation = `${primaryFindings.map((f) => f.text).join(' ')} ${contextSentence}`.trim();
+  } else if (outcome === 'confirm_details') {
+    const labels = unsureIds.map((qid) => QUESTIONS_BY_ID[qid].confirmLabel);
+    const labelList = labels.length > 1
+      ? `${labels.slice(0, -1).join(', ')}, and ${labels[labels.length - 1]}`
+      : labels[0];
+    explanation = `You marked ${labelList} as “I’m not sure.” Before recommending a direction, these details should be confirmed with someone who operates this workflow day to day.`;
+  } else if (outcome === 'automation') {
+    explanation = `Your answers did not highlight a clear coordination or process-definition problem. ${contextSentence} This does not establish whether automation would be worthwhile.`.trim();
+  } else if (outcome === 'baseline') {
+    explanation = `Your answers did not highlight a clear coordination or process-definition problem, and reported manual effort is relatively low. ${contextSentence} Track this workflow’s effort, delays, and errors before deciding whether a change is needed.`.trim();
+  } else {
+    explanation = `Your answers did not highlight a coordination or process-definition problem, but this workflow’s consequences when things go wrong are serious. ${contextSentence} Review the controls and requirements before considering any change.`.trim();
+  }
+
+  const beforeAutomate = `Confirm the process rules, exceptions, and trusted data sources for ${workflowDisplayName()} before automating any part of it.`;
+
+  return {
+    outcome,
+    recommendation: RECOMMENDATIONS[outcome],
+    explanation,
+    otherFindings,
+    unsureIds,
+    beforeAutomate,
+  };
+}
+
+function renderResult() {
+  const result = computeResult();
+  state.lastOutcome = result.outcome;
+
+  document.getElementById('result-workflow').textContent = state.workflowName
+    ? `${workflowLabelFor(state.workflow)} — ${state.workflowName}`
+    : workflowLabelFor(state.workflow);
+
+  document.getElementById('result-recommendation').textContent = result.recommendation.title;
+  document.getElementById('result-explanation').textContent = result.explanation;
+  document.getElementById('result-first-step').textContent = result.recommendation.firstStep;
+  document.getElementById('result-before-automate').textContent = result.beforeAutomate;
+
+  const otherBlock = document.getElementById('other-areas-block');
+  const otherList = document.getElementById('other-areas-list');
+  if (result.otherFindings.length) {
+    otherList.innerHTML = result.otherFindings.map((f) => `<div class="finding-row">${f.text}</div>`).join('');
+    otherBlock.hidden = false;
+  } else {
+    otherBlock.hidden = true;
+  }
+
+  const confirmBlock = document.getElementById('confirm-details-block');
+  const confirmList = document.getElementById('confirm-details-list');
+  if (result.unsureIds.length) {
+    confirmList.innerHTML = result.unsureIds
+      .map((qid) => `<div class="finding-row">${QUESTIONS_BY_ID[qid].confirmLabel}</div>`)
+      .join('');
+    confirmBlock.hidden = false;
+  } else {
+    confirmBlock.hidden = true;
+  }
+
+  track('assessment_result_shown', {
+    workflow: state.workflow,
+    recommendation: result.outcome,
+    questionnaire_version: QUESTIONNAIRE_VERSION,
+  });
 }
 
 /* ---------- Lead capture ---------- */
@@ -212,72 +632,30 @@ function validateLeadForm() {
   const form = document.getElementById('lead-form');
   const email = form.email.value.trim();
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const workEmailOk = emailOk; // TODO: optionally block common free-mail domains if BChanel wants "work email" enforced
   const ok = form.firstName.value.trim().length > 0
-    && workEmailOk
+    && emailOk
     && form.company.value.trim().length > 0
-    && form.role.value.trim().length > 0
     && form.consent.checked;
   document.getElementById('lead-error').style.display = ok ? 'none' : 'block';
   return ok;
-}
-
-/* ---------- Scoring + result ---------- */
-function computeResult() {
-  const total = state.answers.reduce((sum, v) => sum + v, 0);
-  const tier = RESULT_TIERS.find((t) => total >= t.min && total <= t.max);
-
-  const ranked = QUESTIONS
-    .map((q, i) => ({ ...q, score: state.answers[i] }))
-    .sort((a, b) => b.score - a.score);
-
-  const topSignals = ranked.slice(0, 3);
-  const topAction = ranked[0];
-
-  return { total, tier, topSignals, topAction };
-}
-
-function renderResult() {
-  const { total, tier, topSignals, topAction } = computeResult();
-
-  document.getElementById('result-tag').textContent = tier.label;
-  document.getElementById('result-tag').className = `result-tag ${tier.tagClass}`;
-  document.getElementById('score-num').textContent = total;
-  document.getElementById('result-summary').textContent = tier.summary;
-
-  const list = document.getElementById('signals-list');
-  list.innerHTML = '';
-  topSignals.forEach((sig, i) => {
-    const row = document.createElement('div');
-    row.className = 'signal-row';
-    row.innerHTML = `<span class="signal-badge">${i + 1}</span><span class="signal-name">${sig.name}</span>`;
-    list.appendChild(row);
-  });
-
-  document.getElementById('action-text').textContent = topAction.action;
-
-  track('assessment_result_shown', {
-    workflow: state.workflow,
-    score: total,
-    tier: tier.key,
-    top_signal: topAction.id,
-  });
 }
 
 /* ---------- Submission stub ---------- */
 async function submitLead() {
   const payload = {
     workflow: state.workflow,
+    workflowName: state.workflowName,
     answers: state.answers,
-    score: state.answers.reduce((s, v) => s + v, 0),
+    recommendation: state.lastOutcome,
+    questionnaireVersion: QUESTIONNAIRE_VERSION,
     lead: state.lead,
+    marketingOptIn: state.lead.marketingOptIn,
     utm: state.utm,
     submitted_at: new Date().toISOString(),
   };
 
-  console.log('[lead submission payload]', payload);
-
-  /* TODO: replace with the real CRM/database + email-trigger endpoint once confirmed.
+  /* Personal details are intentionally kept out of the console and analytics.
+     TODO: replace with the real CRM/database + email-trigger endpoint once confirmed.
      Expected shape: POST JSON `payload` to a webhook (e.g. Make.com scenario) that
      (a) writes the row to the agreed CRM/sheet, and
      (b) triggers the result + PDF-link email to lead.email.
@@ -288,37 +666,75 @@ async function submitLead() {
   });
   if (!res.ok) throw new Error('Lead submission failed');
   */
+  console.log('[lead submission] prepared (redacted)', {
+    workflow: payload.workflow,
+    recommendation: payload.recommendation,
+    questionnaireVersion: payload.questionnaireVersion,
+  });
 
-  track('lead_submitted', { workflow: state.workflow, company: state.lead.company });
+  track('lead_submitted', { workflow: state.workflow, recommendation: state.lastOutcome });
   return true;
+}
+
+/* ---------- Full reset ---------- */
+function resetAssessment() {
+  state.workflow = null;
+  state.workflowName = '';
+  state.answers = {};
+  state.currentIndex = 0;
+  state.editingFromReview = false;
+  state.lead = {};
+  try { sessionStorage.removeItem(STORAGE_KEY); } catch (err) { /* ignore */ }
+  showScreen('hero');
 }
 
 /* ---------- Wire up events ---------- */
 document.addEventListener('DOMContentLoaded', () => {
   captureUTMs();
+  renderWorkflowGrid();
+
+  const restoredScreen = restoreState();
 
   document.getElementById('start-assessment').addEventListener('click', () => {
     track('assessment_start', { utm: state.utm });
     showScreen('workflow');
   });
 
-  renderWorkflowGrid();
+  document.getElementById('workflowName').addEventListener('input', (e) => {
+    state.workflowName = e.target.value;
+    updateWorkflowContinueState();
+    persistState();
+  });
+
   document.getElementById('workflow-continue').addEventListener('click', () => {
     track('workflow_selected', { workflow: state.workflow });
     goToQuestion(0);
   });
 
+  document.getElementById('change-workflow-link').addEventListener('click', requestChangeWorkflow);
+  document.getElementById('review-change-workflow').addEventListener('click', requestChangeWorkflow);
+
   document.getElementById('q-back').addEventListener('click', () => {
-    if (state.currentQuestion === 0) return;
-    goToQuestion(state.currentQuestion - 1);
+    if (state.currentIndex === 0) return;
+    goToQuestion(state.currentIndex - 1);
   });
   document.getElementById('q-continue').addEventListener('click', () => {
-    if (state.currentQuestion < QUESTIONS.length - 1) {
-      goToQuestion(state.currentQuestion + 1);
+    if (state.editingFromReview) {
+      state.editingFromReview = false;
+      showScreen('review');
+      renderReview();
+    } else if (state.currentIndex < QUESTIONS.length - 1) {
+      goToQuestion(state.currentIndex + 1);
     } else {
-      track('assessment_complete', { workflow: state.workflow });
-      showScreen('lead');
+      track('assessment_complete', { workflow: state.workflow, questionnaire_version: QUESTIONNAIRE_VERSION });
+      showScreen('review');
+      renderReview();
     }
+  });
+
+  document.getElementById('review-continue').addEventListener('click', () => {
+    showScreen('result');
+    renderResult();
   });
 
   const leadForm = document.getElementById('lead-form');
@@ -331,23 +747,24 @@ document.addEventListener('DOMContentLoaded', () => {
       email: leadForm.email.value.trim(),
       company: leadForm.company.value.trim(),
       role: leadForm.role.value.trim(),
+      marketingOptIn: leadForm.marketing.checked,
     };
 
     const submitBtn = document.getElementById('lead-submit');
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Calculating your result…';
+    submitBtn.textContent = 'Sending…';
 
     try {
       await submitLead();
-      showScreen('result');
-      renderResult();
+      submitBtn.textContent = 'Request Sent';
+      document.getElementById('lead-success').hidden = false;
+      Array.from(leadForm.elements).forEach((el) => { el.disabled = true; });
     } catch (err) {
-      console.error(err);
+      console.error('[lead submission] failed');
       document.getElementById('lead-error').textContent = 'Something went wrong submitting your info. Please try again.';
       document.getElementById('lead-error').style.display = 'block';
-    } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Show My Result';
+      submitBtn.textContent = 'Email My Summary';
     }
   });
 
@@ -361,4 +778,24 @@ document.addEventListener('DOMContentLoaded', () => {
     /* TODO: point at the hosted Operational Friction Diagnostic PDF URL */
     showToast('PDF not hosted yet — this will download the diagnostic once it’s ready.');
   });
+  document.getElementById('assess-another').addEventListener('click', () => {
+    track('assess_another_click', {});
+    resetAssessment();
+  });
+
+  /* Resume mid-assessment after a refresh (non-personal state only) */
+  if (restoredScreen && restoredScreen !== 'hero') {
+    renderWorkflowGrid();
+    if (restoredScreen === 'question') {
+      goToQuestion(Math.min(state.currentIndex, QUESTIONS.length - 1));
+    } else if (restoredScreen === 'review') {
+      showScreen('review');
+      renderReview();
+    } else if (restoredScreen === 'result') {
+      showScreen('result');
+      renderResult();
+    } else {
+      showScreen('workflow');
+    }
+  }
 });
