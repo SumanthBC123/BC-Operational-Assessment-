@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Workflow Review — BChanel</title>
-<meta name="description" content="Review one recurring workflow, find out what to clarify or improve first, and see what to check before considering automation." />
+<title>Workflow Automation Assessment | BChanel</title>
+<meta name="description" content="Answer a short set of questions about one recurring process and see what to clarify, improve, or verify before considering automation." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -26,10 +26,10 @@
   <section id="screen-hero" class="screen active">
     <div class="hero">
       <div class="wrap">
-        <span class="eyebrow">Workflow Review</span>
-        <h1>Find Out What to Review First — One Workflow at a Time</h1>
-        <p class="sub">Answer a short set of questions about one recurring process and see what to check before deciding on redesign, integration, or automation.</p>
-        <button id="start-assessment" class="btn btn-primary">Start the Review</button>
+        <span class="eyebrow">Workflow Automation Assessment</span>
+        <h1>Find the Right Next Step for Your Workflow</h1>
+        <p class="sub">Answer a short set of questions about one recurring process and see what to clarify, improve, or verify before considering automation.</p>
+        <button id="start-assessment" class="btn btn-primary">Start the Assessment</button>
         <div class="indicators">
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>10 questions</span>
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>One workflow at a time</span>
@@ -165,13 +165,18 @@
           </div>
 
           <div id="other-areas-block" class="result-block" hidden>
-            <h3 class="result-h">Other Areas to Review</h3>
+            <h3 class="result-h">Areas to Review</h3>
             <div id="other-areas-list" class="findings-list"></div>
           </div>
 
           <div id="confirm-details-block" class="result-block confirm-block" hidden>
             <h3 class="result-h">Details to Confirm</h3>
             <div id="confirm-details-list" class="findings-list"></div>
+          </div>
+
+          <div id="risk-block" class="result-block risk-block" hidden>
+            <h3 class="result-h">Risk Consideration</h3>
+            <p>You reported that problems in this workflow may create financial, compliance, or other serious business consequences. Review the relevant controls, requirements, and failure points with the responsible team before introducing changes.</p>
           </div>
 
           <div class="result-block">
@@ -181,10 +186,15 @@
 
           <p class="disclaimer">This is an initial review based on your answers. It is not a complete operational assessment, confirmation of automation readiness, or calculation of automation ROI.</p>
 
+          <div class="cta-block cta-block-primary">
+            <button id="final-cta" class="btn btn-primary btn-block">Discuss This Workflow With BChanel</button>
+            <p class="cta-support">Bring one process and the issues you identified. We'll discuss what needs clarification before deciding whether redesign, integration, or automation makes sense.</p>
+          </div>
+
           <!-- LEAD CAPTURE (embedded, appears after the free result) -->
           <div class="lead-card">
-            <h3 class="result-h">Get Your Workflow Summary</h3>
-            <p class="helper-text">Receive your answers, suggested first steps, and the printable diagnostic.</p>
+            <h3 class="result-h">Get Your Results and Action Checklist</h3>
+            <p class="helper-text">Receive a copy of your answers, your recommended starting point, and a short checklist for reviewing this workflow with your team.</p>
             <form id="lead-form" novalidate>
               <div class="field">
                 <label for="firstName">First name</label>
@@ -204,21 +214,19 @@
               </div>
               <label class="consent">
                 <input type="checkbox" name="consent" required />
-                <span>I agree to receive my workflow summary. See our <a href="#" target="_blank" rel="noopener">Privacy Policy</a>. <!-- TODO: confirm privacy policy URL + final consent wording --></span>
+                <span>I agree to receive my results. See our <a href="#" target="_blank" rel="noopener">Privacy Policy</a>. <!-- TODO: confirm privacy policy URL + final consent wording --></span>
               </label>
               <label class="consent">
                 <input type="checkbox" name="marketing" />
                 <span>Also send me occasional updates from BChanel.</span>
               </label>
               <div id="lead-error" class="form-error">Please fill in every required field, use a valid email, and check the first consent box.</div>
-              <button id="lead-submit" type="submit" class="btn btn-primary btn-block">Email My Summary</button>
+              <button id="lead-submit" type="submit" class="btn btn-primary btn-block">Email My Results</button>
               <p id="lead-success" class="lead-success" hidden>Thanks — your request has been recorded. <!-- TODO: replace once email delivery is connected --> Email delivery isn't connected in this preview yet, so nothing will arrive in your inbox right now.</p>
             </form>
           </div>
 
           <div class="cta-block">
-            <button id="final-cta" class="btn btn-primary btn-block">Discuss This Workflow With BChanel</button>
-            <p class="cta-support">Bring one process and the issues you identified. We'll discuss what needs clarification before deciding whether redesign, integration, or automation makes sense.</p>
             <button id="pdf-download" class="btn btn-secondary btn-block">Download the Printable Diagnostic</button>
             <button id="assess-another" class="btn btn-ghost btn-block">Assess Another Workflow</button>
           </div>

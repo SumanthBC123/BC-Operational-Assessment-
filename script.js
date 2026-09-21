@@ -213,11 +213,15 @@ const FREQ_LABELS = {
   monthly: 'monthly or less often',
 };
 const EFFORT_LABELS = {
-  lt1: 'less than 1 hour a week',
-  '1to3': '1–3 hours a week',
-  '4to8': '4–8 hours a week',
-  gt8: 'more than 8 hours a week',
+  lt1: 'requires less than 1 hour of manual work per week',
+  '1to3': 'requires approximately 1–3 hours of manual work per week',
+  '4to8': 'requires approximately 4–8 hours of manual work per week',
+  gt8: 'requires more than 8 hours of manual work per week',
 };
+
+const CLARIFY_SUMMARY = 'Your answers suggest that some responsibilities, operating rules, exception paths, or continuity arrangements need clarification before introducing automation.';
+const COORDINATION_SUMMARY = 'Your answers suggest that information flow, status visibility, or approvals are creating avoidable coordination work.';
+const RISK_WARNING_TEXT = 'You reported that problems in this workflow may create financial, compliance, or other serious business consequences. Review the relevant controls, requirements, and failure points with the responsible team before introducing changes.';
 const IMPACT_LABELS = {
   minor: 'a minor inconvenience',
   extra_work: 'extra work or internal delays',
@@ -536,37 +540,47 @@ function computeResult() {
   const tier2Findings = TIER2_IDS.map(findingFor).filter(Boolean);
   const unsureIds = ALL_QUESTION_IDS.filter((qid) => state.answers[qid] === 'unsure');
 
+  const impactSerious = impact === 'serious';
+
   let outcome;
   if (tier1Findings.length) outcome = 'clarify';
   else if (tier2Findings.length) outcome = 'coordination';
+  else if (impactSerious) outcome = 'review_risks';
   else if (unsureIds.length) outcome = 'confirm_details';
   else {
     const effortHigh = effort === '4to8' || effort === 'gt8';
-    if (effortHigh) outcome = impact === 'serious' ? 'review_risks' : 'automation';
-    else outcome = 'baseline';
+    outcome = effortHigh ? 'automation' : 'baseline';
   }
 
-  const primaryFindings = outcome === 'clarify' ? tier1Findings : outcome === 'coordination' ? tier2Findings : [];
-  const otherFindings = outcome === 'clarify' ? tier2Findings : [];
+  // Serious consequences always warrant a warning, even when clarify/coordination
+  // already covers the underlying process problem (never applies to automation/
+  // baseline, since impactSerious routes to review_risks before either is reached).
+  const riskWarning = impactSerious && (outcome === 'clarify' || outcome === 'coordination');
+
+  // All supported findings, shown as a flat list rather than forced into prose.
+  const areasToReview = (outcome === 'clarify' || outcome === 'coordination')
+    ? tier1Findings.concat(tier2Findings)
+    : [];
 
   let contextSentence = '';
-  const parts = [];
-  if (freq && freq !== 'unsure') parts.push(`runs ${FREQ_LABELS[freq]}`);
-  if (effort && effort !== 'unsure') parts.push(`involves about ${EFFORT_LABELS[effort]} of manual work`);
-  if (parts.length) contextSentence = `This workflow ${parts.join(' and ')}.`;
+  const freqPart = freq && freq !== 'unsure' ? `runs ${FREQ_LABELS[freq]}` : null;
+  const effortPart = effort && effort !== 'unsure' ? EFFORT_LABELS[effort] : null;
+  if (freqPart && effortPart) contextSentence = `This workflow ${freqPart} and ${effortPart}.`;
+  else if (freqPart) contextSentence = `This workflow ${freqPart}.`;
+  else if (effortPart) contextSentence = `This workflow ${effortPart}.`;
   if (impact && impact !== 'unsure' && impact !== 'none') {
     contextSentence += `${contextSentence ? ' ' : ''}When it doesn’t go as planned, the main reported consequence is ${IMPACT_LABELS[impact]}.`;
   }
 
   let explanation;
-  if (outcome === 'clarify' || outcome === 'coordination') {
-    explanation = `${primaryFindings.map((f) => f.text).join(' ')} ${contextSentence}`.trim();
+  if (outcome === 'clarify') {
+    explanation = CLARIFY_SUMMARY;
+  } else if (outcome === 'coordination') {
+    explanation = COORDINATION_SUMMARY;
   } else if (outcome === 'confirm_details') {
-    const labels = unsureIds.map((qid) => QUESTIONS_BY_ID[qid].confirmLabel);
-    const labelList = labels.length > 1
-      ? `${labels.slice(0, -1).join(', ')}, and ${labels[labels.length - 1]}`
-      : labels[0];
-    explanation = `You marked ${labelList} as “I’m not sure.” Before recommending a direction, these details should be confirmed with someone who operates this workflow day to day.`;
+    explanation = unsureIds.length <= 2
+      ? 'A few details still need to be confirmed. Review the items below before making a final decision.'
+      : 'Several important details about this workflow are still unclear. Confirm the items below with someone who operates the process day to day before deciding what to change.';
   } else if (outcome === 'automation') {
     explanation = `Your answers did not highlight a clear coordination or process-definition problem. ${contextSentence} This does not establish whether automation would be worthwhile.`.trim();
   } else if (outcome === 'baseline') {
@@ -581,8 +595,9 @@ function computeResult() {
     outcome,
     recommendation: RECOMMENDATIONS[outcome],
     explanation,
-    otherFindings,
+    areasToReview,
     unsureIds,
+    riskWarning,
     beforeAutomate,
   };
 }
@@ -602,8 +617,8 @@ function renderResult() {
 
   const otherBlock = document.getElementById('other-areas-block');
   const otherList = document.getElementById('other-areas-list');
-  if (result.otherFindings.length) {
-    otherList.innerHTML = result.otherFindings.map((f) => `<div class="finding-row">${f.text}</div>`).join('');
+  if (result.areasToReview.length) {
+    otherList.innerHTML = result.areasToReview.map((f) => `<div class="finding-row">${f.text}</div>`).join('');
     otherBlock.hidden = false;
   } else {
     otherBlock.hidden = true;
@@ -620,9 +635,12 @@ function renderResult() {
     confirmBlock.hidden = true;
   }
 
+  document.getElementById('risk-block').hidden = !result.riskWarning;
+
   track('assessment_result_shown', {
     workflow: state.workflow,
     recommendation: result.outcome,
+    risk_warning: result.riskWarning,
     questionnaire_version: QUESTIONNAIRE_VERSION,
   });
 }
@@ -642,11 +660,18 @@ function validateLeadForm() {
 
 /* ---------- Submission stub ---------- */
 async function submitLead() {
+  const result = computeResult();
   const payload = {
     workflow: state.workflow,
     workflowName: state.workflowName,
     answers: state.answers,
-    recommendation: state.lastOutcome,
+    recommendation: result.outcome,
+    recommendationTitle: result.recommendation.title,
+    firstStep: result.recommendation.firstStep,
+    areasToReview: result.areasToReview.map((f) => f.text),
+    detailsToConfirm: result.unsureIds.map((qid) => QUESTIONS_BY_ID[qid].confirmLabel),
+    riskWarning: result.riskWarning ? RISK_WARNING_TEXT : null,
+    beforeAutomate: result.beforeAutomate,
     questionnaireVersion: QUESTIONNAIRE_VERSION,
     lead: state.lead,
     marketingOptIn: state.lead.marketingOptIn,
@@ -658,7 +683,12 @@ async function submitLead() {
      TODO: replace with the real CRM/database + email-trigger endpoint once confirmed.
      Expected shape: POST JSON `payload` to a webhook (e.g. Make.com scenario) that
      (a) writes the row to the agreed CRM/sheet, and
-     (b) triggers the result + PDF-link email to lead.email.
+     (b) sends `lead.email` a results email containing: selected workflow + custom
+         name, all submitted answers, the suggested starting point, supported
+         findings (areasToReview), the first recommended action, details requiring
+         confirmation, the risk warning when present, a link to the printable
+         diagnostic, and the BChanel consultation CTA. Do not mark the request as
+         delivered in the UI until this webhook/email service reports success.
   const res = await fetch('REPLACE_WITH_WEBHOOK_URL', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -672,7 +702,7 @@ async function submitLead() {
     questionnaireVersion: payload.questionnaireVersion,
   });
 
-  track('lead_submitted', { workflow: state.workflow, recommendation: state.lastOutcome });
+  track('lead_submitted', { workflow: state.workflow, recommendation: result.outcome });
   return true;
 }
 

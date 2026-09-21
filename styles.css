@@ -489,6 +489,16 @@ img, svg { max-width: 100%; }
 }
 .confirm-block .finding-row { background: rgba(255, 213, 90, 0.14); border-color: #eddca0; }
 
+.risk-block {
+  background: rgba(192, 57, 43, 0.07);
+  border: 1px solid rgba(192, 57, 43, 0.3);
+  border-left: 4px solid #c0392b;
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+.risk-block h3 { color: #a83226; }
+.risk-block p { margin: 0; color: var(--ink); font-size: 0.96rem; line-height: 1.55; }
+
 .action-block {
   background: rgba(45, 74, 110, 0.04);
   border: 1px solid var(--border);
@@ -523,6 +533,7 @@ img, svg { max-width: 100%; }
 .cta-block { text-align: center; margin-top: 4px; }
 .cta-block .btn-primary { margin-bottom: 12px; }
 .cta-block .btn-secondary { margin-bottom: 10px; }
+.cta-block-primary { margin-bottom: 28px; }
 .cta-support { color: var(--ink-soft); font-size: 0.87rem; max-width: 460px; margin: 0 auto 16px; line-height: 1.55; }
 
 .mock-banner {
