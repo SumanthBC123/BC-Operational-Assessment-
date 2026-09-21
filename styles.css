@@ -48,14 +48,8 @@ img, svg { max-width: 100%; }
   align-items: center;
   justify-content: space-between;
 }
-.logo {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 1.15rem;
-  color: var(--navy);
-  letter-spacing: 0.02em;
-}
-.logo span { color: var(--teal); }
+.logo-link { display: inline-flex; align-items: center; }
+.logo-img { display: block; height: 34px; width: auto; }
 
 /* Hero */
 .hero {
