@@ -657,13 +657,23 @@ function validateLeadForm() {
   return ok;
 }
 
-/* ---------- Submission stub ---------- */
+/* ---------- Lead submission (live: Make.com webhook -> Google Sheet) ---------- */
+const LEAD_WEBHOOK_URL = 'https://hook.us2.make.com/do6wv6vrdpa2kr4plxgtgcn79l8sni9k';
+
 async function submitLead() {
   const result = computeResult();
+  const answerLabels = {};
+  ALL_QUESTION_IDS.forEach((qid) => {
+    const q = QUESTIONS_BY_ID[qid];
+    const opt = q.options.find((o) => o.value === state.answers[qid]);
+    answerLabels[qid] = opt ? opt.label : '';
+  });
   const payload = {
     workflow: state.workflow,
+    workflowLabel: workflowLabelFor(state.workflow),
     workflowName: state.workflowName,
     answers: state.answers,
+    answerLabels,
     recommendation: result.outcome,
     recommendationTitle: result.recommendation.title,
     firstStep: result.recommendation.firstStep,
@@ -679,23 +689,18 @@ async function submitLead() {
   };
 
   /* Personal details are intentionally kept out of the console and analytics.
-     TODO: replace with the real CRM/database + email-trigger endpoint once confirmed.
-     Expected shape: POST JSON `payload` to a webhook (e.g. Make.com scenario) that
-     (a) writes the row to the agreed CRM/sheet, and
-     (b) sends `lead.email` a results email containing: selected workflow + custom
-         name, all submitted answers, the suggested starting point, supported
-         findings (areasToReview), the first recommended action, details requiring
-         confirmation, the risk warning when present, a link to the printable
-         diagnostic, and the BChanel consultation CTA. Do not mark the request as
-         delivered in the UI until this webhook/email service reports success.
-  const res = await fetch('REPLACE_WITH_WEBHOOK_URL', {
+     Sent as text/plain (not application/json) so the browser treats this as a
+     "simple request" and skips the CORS preflight — Make.com parses the body
+     as JSON regardless of the declared content type. Make's webhook responds
+     with Access-Control-Allow-Origin: *, confirmed via a live test request. */
+  const res = await fetch(LEAD_WEBHOOK_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error('Lead submission failed');
-  */
-  console.log('[lead submission] prepared (redacted)', {
+  if (!res.ok) throw new Error('Lead submission failed: ' + res.status);
+
+  console.log('[lead submission] sent (redacted)', {
     workflow: payload.workflow,
     recommendation: payload.recommendation,
     questionnaireVersion: payload.questionnaireVersion,

@@ -1307,10 +1307,20 @@ function validateLeadForm() {
   return ok;
 }
 
+var LEAD_WEBHOOK_URL = 'https://hook.us2.make.com/do6wv6vrdpa2kr4plxgtgcn79l8sni9k';
+
 function submitLead() {
   var result = computeResult();
+  var answerLabels = {};
+  ALL_QUESTION_IDS.forEach(function (qid) {
+    var q = QUESTIONS_BY_ID[qid];
+    var opt = null;
+    for (var i = 0; i < q.options.length; i++) { if (q.options[i].value === state.answers[qid]) { opt = q.options[i]; break; } }
+    answerLabels[qid] = opt ? opt.label : '';
+  });
   var payload = {
-    workflow: state.workflow, workflowName: state.workflowName, answers: state.answers,
+    workflow: state.workflow, workflowLabel: workflowLabelFor(state.workflow), workflowName: state.workflowName,
+    answers: state.answers, answerLabels: answerLabels,
     recommendation: result.outcome, recommendationTitle: result.recommendation.title,
     firstStep: result.recommendation.firstStep, areasToReview: result.areasToReview.map(function (f) { return f.text; }),
     detailsToConfirm: result.unsureIds.map(function (qid) { return QUESTIONS_BY_ID[qid].confirmLabel; }),
@@ -1320,26 +1330,22 @@ function submitLead() {
   };
 
   /* Personal details are intentionally kept out of the console and analytics.
-     TODO: replace with the real CRM/database + email-trigger endpoint once confirmed.
-     Expected shape: POST JSON `payload` to a webhook (e.g. an Apps Script Web
-     App bound to the "BChanel – Workflow Automation Assessment Leads" Sheet)
-     that (a) writes the row, and (b) sends `lead.email` a results email
-     containing: selected workflow + custom name, all submitted answers, the
-     suggested starting point, supported findings, the first recommended
-     action, details requiring confirmation, the risk warning when present, a
-     link to the printable diagnostic, and the BChanel consultation CTA. Do
-     not mark the request as delivered in the UI until that service reports
-     success.
-  fetch('REPLACE_WITH_WEBHOOK_URL', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
-  }).then(function (res) { if (!res.ok) throw new Error('Lead submission failed'); });
-  */
-  console.log('[wf-assessment lead submission] prepared (redacted)', {
-    workflow: payload.workflow, recommendation: payload.recommendation, questionnaireVersion: payload.questionnaireVersion,
+     Sent as text/plain (not application/json) so the browser treats this as a
+     "simple request" and skips the CORS preflight — Make.com parses the body
+     as JSON regardless of the declared content type. Make's webhook responds
+     with Access-Control-Allow-Origin: *, confirmed via a live test request. */
+  return fetch(LEAD_WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload),
+  }).then(function (res) {
+    if (!res.ok) throw new Error('Lead submission failed: ' + res.status);
+    console.log('[wf-assessment lead submission] sent (redacted)', {
+      workflow: payload.workflow, recommendation: payload.recommendation, questionnaireVersion: payload.questionnaireVersion,
+    });
+    track('lead_submitted', { workflow: state.workflow, recommendation: result.outcome });
+    return true;
   });
-
-  track('lead_submitted', { workflow: state.workflow, recommendation: result.outcome });
-  return Promise.resolve(true);
 }
 
 function resetAssessment() {
