@@ -658,7 +658,7 @@ function validateLeadForm() {
 }
 
 /* ---------- Lead submission (live: Make.com webhook -> Google Sheet) ---------- */
-const LEAD_WEBHOOK_URL = 'https://hook.us2.make.com/do6wv6vrdpa2kr4plxgtgcn79l8sni9k';
+const LEAD_WEBHOOK_URL = 'https://hook.us2.make.com/rgnr1m57h2ipfopr7x9bibksc7puf15h';
 
 async function submitLead() {
   const result = computeResult();
