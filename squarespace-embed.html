@@ -1,0 +1,1468 @@
+<!--
+  BChanel Workflow Automation Assessment — Squarespace Code Block embed
+  =====================================================================
+  Paste this ENTIRE block into a single Code Block on its own page.
+
+  Before pasting:
+  - Create the page, set its URL slug (e.g. /workflow-assessment).
+  - Set Page Settings → SEO: Title "Workflow Automation Assessment | BChanel",
+    Description "Answer a short set of questions about one recurring process
+    and see what to clarify, improve, or verify before considering automation."
+  - This relies on GA4 already being installed site-wide (it is — confirmed
+    Measurement ID G-DZBMHQG1QL). It does NOT load its own gtag.js. If you
+    ever move this to a page/site without that tag already present, events
+    will just no-op (console-logged only, nothing breaks).
+  - Fonts (Space Grotesk / Raleway) are loaded via the <link> tags below.
+    If the main site already loads them, browsers dedupe the request —
+    safe to leave in either way.
+  - All CSS/JS is scoped under #wf-assessment and .wfa-* classes to avoid
+    colliding with the rest of the site's styles. Do not rename the
+    #wf-assessment wrapper without updating the <style> block to match.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+#wf-assessment, #wf-assessment * { box-sizing: border-box; }
+
+#wf-assessment {
+  --navy: #2d4a6e;
+  --navy-dark: #1f3552;
+  --teal: #37aea4;
+  --teal-dark: #2c8c84;
+  --gold: #ffd55a;
+  --bg: #f4f7f9;
+  --bg-card: #ffffff;
+  --ink: #1f2b3a;
+  --ink-soft: #5b6b7c;
+  --border: #dfe6ec;
+  --radius: 10px;
+  --shadow: 0 2px 10px rgba(45, 74, 110, 0.06);
+  --max-w: 780px;
+
+  margin: 0;
+  font-family: 'Raleway', sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+#wf-assessment h1, #wf-assessment h2, #wf-assessment h3,
+#wf-assessment .eyebrow, #wf-assessment .btn, #wf-assessment .step-label {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+#wf-assessment img, #wf-assessment svg { max-width: 100%; }
+
+#wf-assessment .wrap {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Hero */
+#wf-assessment .hero {
+  background: var(--bg);
+  padding: 48px 20px 36px;
+  text-align: center;
+}
+#wf-assessment .eyebrow {
+  display: inline-block;
+  color: var(--teal-dark);
+  background: rgba(55, 174, 164, 0.12);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+#wf-assessment .hero h1 {
+  color: var(--navy);
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  line-height: 1.2;
+  margin: 0 0 14px;
+  font-weight: 700;
+  text-wrap: balance;
+}
+#wf-assessment .hero p.sub {
+  color: var(--ink-soft);
+  font-size: 1.02rem;
+  line-height: 1.6;
+  max-width: 560px;
+  margin: 0 auto 24px;
+}
+#wf-assessment .indicators {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 20px;
+  margin-top: 22px;
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+}
+#wf-assessment .indicators span { display: inline-flex; align-items: center; gap: 6px; }
+#wf-assessment .indicators svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--teal); }
+
+/* Buttons */
+#wf-assessment .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+#wf-assessment .btn:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 2px; }
+#wf-assessment .btn-primary { background: var(--teal); color: #fff; }
+#wf-assessment .btn-primary:hover { background: var(--teal-dark); }
+#wf-assessment .btn-primary:disabled { background: #b9c6cf; cursor: not-allowed; }
+#wf-assessment .btn-secondary { background: transparent; color: var(--navy); border: 1.5px solid var(--border); }
+#wf-assessment .btn-secondary:hover { border-color: var(--navy); }
+#wf-assessment .btn-ghost { background: transparent; color: var(--ink-soft); padding: 14px 12px; }
+#wf-assessment .btn-ghost:hover { color: var(--navy); }
+#wf-assessment .btn-small { padding: 8px 10px; font-size: 0.86rem; }
+#wf-assessment .btn-block { width: 100%; }
+
+/* How it works */
+#wf-assessment .how {
+  padding: 44px 20px 52px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+}
+#wf-assessment .how h2 { text-align: center; color: var(--navy); font-size: 1.4rem; margin: 0 0 30px; }
+#wf-assessment .how-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+  max-width: 940px;
+  margin: 0 auto;
+}
+#wf-assessment .how-step { text-align: center; padding: 0 8px; }
+#wf-assessment .how-num {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: rgba(55, 174, 164, 0.1);
+  color: var(--teal-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#wf-assessment .how-num svg { width: 22px; height: 22px; }
+#wf-assessment .how-step h3 { font-size: 1rem; color: var(--navy); margin: 0 0 6px; }
+#wf-assessment .how-step p { font-size: 0.9rem; color: var(--ink-soft); margin: 0; line-height: 1.5; }
+
+#wf-assessment .positioning-statement {
+  max-width: 620px;
+  margin: 40px auto 0;
+  text-align: center;
+  color: var(--navy);
+  font-weight: 600;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+/* Example result card */
+#wf-assessment .example-card {
+  max-width: 480px;
+  margin: 24px auto 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+#wf-assessment .example-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--teal-dark);
+  background: rgba(55, 174, 164, 0.12);
+  border-radius: 999px;
+  padding: 4px 12px;
+  margin-bottom: 12px;
+}
+#wf-assessment .example-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.92rem;
+  text-align: left;
+}
+#wf-assessment .example-row:last-child { border-bottom: none; }
+#wf-assessment .example-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+#wf-assessment .example-disclaimer {
+  margin: 12px 0 0;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  font-style: italic;
+  text-align: left;
+}
+
+/* Assessment shell */
+#wf-assessment .assessment { padding: 40px 20px 64px; }
+#wf-assessment .assessment .wrap { max-width: 680px; }
+
+#wf-assessment .progress-track {
+  height: 6px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+#wf-assessment .progress-fill {
+  height: 100%;
+  background: var(--teal);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+  width: 0%;
+}
+#wf-assessment .meta-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+#wf-assessment .assessing-label { font-size: 0.82rem; color: var(--navy); font-weight: 600; }
+#wf-assessment .step-label { font-size: 0.82rem; color: var(--ink-soft); font-weight: 600; white-space: nowrap; }
+#wf-assessment .section-label {
+  font-size: 0.74rem;
+  color: var(--teal-dark);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 20px;
+}
+
+#wf-assessment .screen { display: none; }
+#wf-assessment .screen.active { display: block; animation: wfaFadein 0.15s ease; }
+@keyframes wfaFadein { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  #wf-assessment .screen.active { animation: none; }
+}
+
+#wf-assessment .card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px 26px;
+}
+
+#wf-assessment .q-title { color: var(--navy); font-size: 1.22rem; line-height: 1.4; margin: 0 0 8px; font-weight: 600; }
+#wf-assessment .helper-text { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.55; margin: 0 0 20px; }
+
+#wf-assessment .option-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 6px; }
+#wf-assessment .option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 13px 16px;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  text-align: left;
+}
+#wf-assessment .option:hover { border-color: var(--teal); }
+#wf-assessment .option:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 1px; }
+#wf-assessment .option.selected { border-color: var(--teal); background: rgba(55, 174, 164, 0.07); }
+#wf-assessment .option .dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  position: relative;
+}
+#wf-assessment .option.selected .dot { border-color: var(--teal); }
+#wf-assessment .option.selected .dot::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+#wf-assessment .option .label { font-weight: 500; color: var(--ink); font-size: 0.96rem; }
+
+/* workflow select */
+#wf-assessment .workflow-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+#wf-assessment .workflow-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  cursor: pointer;
+  background: #fff;
+  text-align: left;
+  font-family: 'Raleway', sans-serif;
+}
+#wf-assessment .workflow-card:hover { border-color: var(--teal); }
+#wf-assessment .workflow-card:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 1px; }
+#wf-assessment .workflow-card.selected { border-color: var(--teal); background: rgba(55, 174, 164, 0.07); }
+#wf-assessment .workflow-card .label { font-weight: 700; color: var(--navy); font-size: 0.94rem; }
+#wf-assessment .workflow-card .wf-desc { font-size: 0.82rem; color: var(--ink-soft); line-height: 1.4; }
+
+#wf-assessment .workflow-name-field { margin-top: 18px; }
+
+#wf-assessment .nav-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 22px; }
+#wf-assessment .nav-row .spacer { flex: 1; }
+
+/* Review screen */
+#wf-assessment .review-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
+#wf-assessment .review-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+#wf-assessment .review-row:last-child { border-bottom: none; }
+#wf-assessment .review-text { display: flex; flex-direction: column; gap: 2px; }
+#wf-assessment .review-q { font-size: 0.78rem; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.03em; }
+#wf-assessment .review-a { font-size: 0.94rem; color: var(--ink); }
+
+/* Fields */
+#wf-assessment .field { margin-bottom: 16px; }
+#wf-assessment .field label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+#wf-assessment .optional-tag { font-weight: 400; color: var(--ink-soft); }
+#wf-assessment .field input, #wf-assessment .field select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 0.96rem;
+  background: #fff;
+}
+#wf-assessment .field input:focus, #wf-assessment .field select:focus { outline: none; border-color: var(--teal); }
+#wf-assessment .field input:disabled { background: var(--bg); color: var(--ink-soft); }
+#wf-assessment .consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin: 14px 0 0;
+}
+#wf-assessment .consent input { margin-top: 3px; }
+#wf-assessment .consent a { color: var(--teal-dark); }
+#wf-assessment .form-error { color: #c0392b; font-size: 0.82rem; margin-top: 12px; display: none; }
+#wf-assessment .lead-success { color: var(--teal-dark); font-size: 0.88rem; line-height: 1.5; margin-top: 14px; }
+
+/* Result */
+#wf-assessment .result-block { margin: 0 0 26px; }
+#wf-assessment .result-block:last-of-type { margin-bottom: 0; }
+#wf-assessment .result-h { font-size: 0.82rem; color: var(--teal-dark); text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 8px; }
+#wf-assessment .result-workflow { font-size: 1.05rem; font-weight: 600; color: var(--navy); margin: 0; }
+#wf-assessment .result-block-main .result-h { color: var(--navy); }
+#wf-assessment .result-recommendation {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--navy);
+  font-family: 'Space Grotesk', sans-serif;
+  margin: 0;
+}
+#wf-assessment .result-body { color: var(--ink); font-size: 0.98rem; line-height: 1.6; margin: 0; }
+
+#wf-assessment .findings-list { display: flex; flex-direction: column; gap: 8px; }
+#wf-assessment .finding-row {
+  font-size: 0.94rem;
+  color: var(--ink);
+  line-height: 1.5;
+  padding: 10px 14px;
+  background: var(--bg);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+#wf-assessment .confirm-block .finding-row { background: rgba(255, 213, 90, 0.14); border-color: #eddca0; }
+
+#wf-assessment .risk-block {
+  background: rgba(192, 57, 43, 0.07);
+  border: 1px solid rgba(192, 57, 43, 0.3);
+  border-left: 4px solid #c0392b;
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+#wf-assessment .risk-block h3 { color: #a83226; }
+#wf-assessment .risk-block p { margin: 0; color: var(--ink); font-size: 0.96rem; line-height: 1.55; }
+
+#wf-assessment .action-block {
+  background: rgba(45, 74, 110, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+#wf-assessment .action-block h3 { font-size: 0.82rem; color: var(--teal-dark); text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 8px; }
+#wf-assessment .action-block p { margin: 0; color: var(--ink); font-size: 0.96rem; line-height: 1.55; }
+
+#wf-assessment .disclaimer { font-size: 0.8rem; color: var(--ink-soft); font-style: italic; text-align: center; margin: 8px 0 30px; }
+
+#wf-assessment .lead-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 22px 20px;
+  margin-bottom: 28px;
+}
+
+#wf-assessment .cta-block { text-align: center; margin-top: 4px; }
+#wf-assessment .cta-block .btn-primary { margin-bottom: 12px; }
+#wf-assessment .cta-block .btn-secondary { margin-bottom: 10px; }
+#wf-assessment .cta-block-primary { margin-bottom: 28px; }
+#wf-assessment .cta-support { color: var(--ink-soft); font-size: 0.87rem; max-width: 460px; margin: 0 auto 16px; line-height: 1.55; }
+
+#wf-assessment .mock-banner {
+  background: #fff8e1;
+  border: 1px solid #f0d98a;
+  color: #6b5411;
+  font-size: 0.78rem;
+  text-align: center;
+  padding: 8px 14px;
+}
+
+#wf-assessment .wfa-footnote {
+  text-align: center;
+  padding: 24px 20px 36px;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  #wf-assessment .how-grid { grid-template-columns: 1fr; gap: 26px; }
+  #wf-assessment .workflow-grid { grid-template-columns: 1fr; }
+  #wf-assessment .card { padding: 22px 18px; }
+  #wf-assessment .hero { padding: 40px 16px 32px; }
+  #wf-assessment .meta-row { flex-direction: column; align-items: flex-start; gap: 2px; }
+}
+
+/* Overlays — deliberately outside #wf-assessment scoping since they're
+   viewport-fixed; kept as globally-unique wfa- prefixed classes instead. */
+.wfa-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translate(-50%, 12px);
+  max-width: calc(100% - 40px);
+  background: #2d4a6e;
+  color: #fff;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  padding: 13px 20px;
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(31, 43, 58, 0.28);
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 9999;
+  pointer-events: none;
+  font-family: 'Raleway', sans-serif;
+}
+.wfa-toast.visible { opacity: 1; transform: translate(-50%, 0); }
+
+.wfa-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(31, 43, 58, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 9998;
+}
+.wfa-confirm-overlay[hidden] { display: none; }
+.wfa-confirm-modal {
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 12px 32px rgba(31, 43, 58, 0.22);
+  font-family: 'Raleway', sans-serif;
+}
+.wfa-confirm-modal p { margin: 0 0 18px; color: #1f2b3a; font-size: 0.96rem; line-height: 1.5; }
+.wfa-confirm-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.wfa-confirm-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 0.94rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Space Grotesk', sans-serif;
+}
+.wfa-confirm-actions .btn-primary { background: #37aea4; color: #fff; }
+.wfa-confirm-actions .btn-primary:hover { background: #2c8c84; }
+.wfa-confirm-actions .btn-secondary { background: transparent; color: #2d4a6e; border: 1.5px solid #dfe6ec; }
+</style>
+
+<div id="wf-assessment">
+
+  <div class="mock-banner">PROTOTYPE — GA4 and the Calendly link are live. Lead storage, result email, the printable diagnostic, and the Privacy Policy link are still pending.</div>
+
+  <!-- HERO + HOW IT WORKS -->
+  <section id="screen-hero" class="screen active">
+    <div class="hero">
+      <div class="wrap">
+        <span class="eyebrow">Workflow Automation Assessment</span>
+        <h1>Find the Right Next Step for Your Workflow</h1>
+        <p class="sub">Answer a short set of questions about one recurring process and see what to clarify, improve, or verify before considering automation.</p>
+        <button id="start-assessment" class="btn btn-primary">Start the Assessment</button>
+        <div class="indicators">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>10 questions</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>One workflow at a time</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Personalized result</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="how">
+      <div class="wrap">
+        <h2>How It Works</h2>
+        <div class="how-grid">
+          <div class="how-step">
+            <div class="how-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h10M7 17h6"/></svg></div>
+            <h3>1. Choose a Workflow</h3>
+            <p>Select one recurring process in your business.</p>
+          </div>
+          <div class="how-step">
+            <div class="how-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+            <h3>2. Describe How It Operates</h3>
+            <p>Answer questions about effort, impact, ownership, and information flow.</p>
+          </div>
+          <div class="how-step">
+            <div class="how-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19h16"/><path d="M6 15l4-5 4 3 5-7"/></svg></div>
+            <h3>3. Get Your Next Step</h3>
+            <p>See what to address first and what to check before introducing automation.</p>
+          </div>
+        </div>
+
+        <p class="positioning-statement">BChanel helps growing teams improve how work operates before introducing automation.</p>
+
+        <div class="example-card">
+          <span class="example-tag">Example result</span>
+          <div class="example-body">
+            <div class="example-row"><span class="example-label">Workflow</span><span>Reporting</span></div>
+            <div class="example-row"><span class="example-label">Suggested Starting Point</span><span>Clarify the Workflow First</span></div>
+            <div class="example-row"><span class="example-label">First Step</span><span>List the report's data sources and assign an owner to each input, the final report, and any missing-data follow-up.</span></div>
+          </div>
+          <p class="example-disclaimer">Illustrative sample only — not an actual client result.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKFLOW SELECT -->
+  <section id="screen-workflow" class="screen">
+    <div class="assessment">
+      <div class="wrap">
+        <div class="card">
+          <h2 class="q-title">Which workflow would you like to review?</h2>
+          <p class="helper-text">Choose one specific recurring process, not an entire department.</p>
+          <div id="workflow-grid" class="workflow-grid"></div>
+          <div id="workflow-name-wrap" class="field workflow-name-field" hidden>
+            <label id="workflow-name-label" for="workflowName">What do you call this workflow?</label>
+            <input type="text" id="workflowName" name="workflowName" placeholder="For example: Weekly sales reporting" />
+          </div>
+          <div class="nav-row">
+            <span class="spacer"></span>
+            <button id="workflow-continue" class="btn btn-primary" disabled>Continue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUESTIONS -->
+  <section id="screen-question" class="screen">
+    <div class="assessment">
+      <div class="wrap">
+        <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+        <div class="meta-row">
+          <span id="assessing-label" class="assessing-label"></span>
+          <span id="step-label" class="step-label"></span>
+        </div>
+        <div id="section-label" class="section-label"></div>
+        <div class="card">
+          <h2 id="q-title" class="q-title"></h2>
+          <p id="q-helper" class="helper-text"></p>
+          <div id="option-list" class="option-list"></div>
+          <div class="nav-row">
+            <button id="q-back" class="btn btn-ghost">← Back</button>
+            <span class="spacer"></span>
+            <button id="change-workflow-link" class="btn btn-ghost btn-small">Change workflow</button>
+            <button id="q-continue" class="btn btn-primary" disabled>Continue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEW ANSWERS -->
+  <section id="screen-review" class="screen">
+    <div class="assessment">
+      <div class="wrap">
+        <div class="card">
+          <h2 class="q-title">Review your answers</h2>
+          <p class="helper-text">Check your answers before getting your result. Select Edit to change one.</p>
+          <div id="review-list" class="review-list"></div>
+          <div class="nav-row">
+            <button id="review-change-workflow" class="btn btn-ghost btn-small">Change workflow</button>
+            <span class="spacer"></span>
+            <button id="review-continue" class="btn btn-primary">See My Result</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="screen-result" class="screen">
+    <div class="assessment">
+      <div class="wrap">
+        <div class="card">
+
+          <div class="result-block">
+            <h3 class="result-h">Your Workflow Review</h3>
+            <p id="result-workflow" class="result-workflow"></p>
+          </div>
+
+          <div class="result-block result-block-main">
+            <h3 class="result-h">Suggested Starting Point</h3>
+            <p id="result-recommendation" class="result-recommendation"></p>
+          </div>
+
+          <div class="result-block">
+            <h3 class="result-h">What Your Answers Suggest</h3>
+            <p id="result-explanation" class="result-body"></p>
+          </div>
+
+          <div class="result-block action-block">
+            <h3>Your First Step</h3>
+            <p id="result-first-step"></p>
+          </div>
+
+          <div id="other-areas-block" class="result-block" hidden>
+            <h3 class="result-h">Areas to Review</h3>
+            <div id="other-areas-list" class="findings-list"></div>
+          </div>
+
+          <div id="confirm-details-block" class="result-block confirm-block" hidden>
+            <h3 class="result-h">Details to Confirm</h3>
+            <div id="confirm-details-list" class="findings-list"></div>
+          </div>
+
+          <div id="risk-block" class="result-block risk-block" hidden>
+            <h3 class="result-h">Risk Consideration</h3>
+            <p>You reported that problems in this workflow may create financial, compliance, or other serious business consequences. Review the relevant controls, requirements, and failure points with the responsible team before introducing changes.</p>
+          </div>
+
+          <div class="result-block">
+            <h3 class="result-h">Before You Automate</h3>
+            <p id="result-before-automate" class="result-body"></p>
+          </div>
+
+          <p class="disclaimer">This is an initial review based on your answers. It is not a complete operational assessment, confirmation of automation readiness, or calculation of automation ROI.</p>
+
+          <div class="cta-block cta-block-primary">
+            <a id="final-cta" class="btn btn-primary btn-block" href="https://calendly.com/lsmiriglia-bchanel" target="_blank" rel="noopener">Discuss This Workflow With BChanel</a>
+            <p class="cta-support">Bring one process and the issues you identified. We'll discuss what needs clarification before deciding whether redesign, integration, or automation makes sense.</p>
+          </div>
+
+          <!-- LEAD CAPTURE (embedded, appears after the free result) -->
+          <div class="lead-card">
+            <h3 class="result-h">Get Your Results and Action Checklist</h3>
+            <p class="helper-text">Receive a copy of your answers, your recommended starting point, and a short checklist for reviewing this workflow with your team.</p>
+            <form id="lead-form" novalidate>
+              <div class="field">
+                <label for="firstName">First name</label>
+                <input type="text" id="firstName" name="firstName" required />
+              </div>
+              <div class="field">
+                <label for="email">Work email</label>
+                <input type="email" id="email" name="email" required />
+              </div>
+              <div class="field">
+                <label for="company">Company</label>
+                <input type="text" id="company" name="company" required />
+              </div>
+              <div class="field">
+                <label for="role">Role <span class="optional-tag">(optional)</span></label>
+                <input type="text" id="role" name="role" />
+              </div>
+              <label class="consent">
+                <input type="checkbox" name="consent" required />
+                <span>By submitting this form, I agree that BChanel may use my information to send my workflow assessment results in accordance with the <a href="#" target="_blank" rel="noopener">Privacy Policy</a>. <!-- TODO: swap in the live Privacy Policy URL once published --></span>
+              </label>
+              <label class="consent">
+                <input type="checkbox" name="marketing" />
+                <span>I'd also like to receive occasional insights and updates from BChanel. I can unsubscribe at any time.</span>
+              </label>
+              <div id="lead-error" class="form-error">Please fill in every required field, use a valid email, and check the first consent box.</div>
+              <button id="lead-submit" type="submit" class="btn btn-primary btn-block">Email My Results</button>
+              <p id="lead-success" class="lead-success" hidden>Thanks — your request has been recorded. Email delivery isn't connected yet, so nothing will arrive in your inbox right now. <!-- TODO: replace once email delivery is connected --></p>
+            </form>
+          </div>
+
+          <div class="cta-block">
+            <button id="pdf-download" class="btn btn-secondary btn-block">Download the Printable Diagnostic</button>
+            <button id="assess-another" class="btn btn-ghost btn-block">Assess Another Workflow</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="wfa-footnote">This review is provided for informational purposes only.</p>
+
+</div>
+
+<div id="confirm-overlay" class="wfa-confirm-overlay" hidden>
+  <div class="wfa-confirm-modal">
+    <p id="confirm-message"></p>
+    <div class="wfa-confirm-actions">
+      <button id="confirm-cancel" class="btn btn-secondary">Cancel</button>
+      <button id="confirm-ok" class="btn btn-primary">Continue</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+/* Workflow Automation Assessment — Squarespace embed
+   Rule-based recommendation engine runs entirely client-side, no score shown.
+   Relies on the site's existing GA4 tag (window.gtag) — loads none of its own.
+   CRM/email calls are stubbed — see TODO markers. */
+
+var QUESTIONNAIRE_VERSION = 'v2.0';
+
+var WORKFLOWS = [
+  { id: 'reporting', label: 'Reporting', description: 'Preparing recurring reports and performance updates' },
+  { id: 'onboarding', label: 'Onboarding', description: 'Getting customers, employees, or vendors ready to start' },
+  { id: 'approvals', label: 'Approvals', description: 'Reviewing requests and authorizing the next step' },
+  { id: 'fulfillment', label: 'Fulfillment / Inventory', description: 'Managing orders, stock, and fulfillment activities' },
+  { id: 'service', label: 'Service Delivery', description: 'Coordinating the work required to deliver a service' },
+  { id: 'finance', label: 'Finance / Billing', description: 'Preparing invoices, reconciling information, or managing payments' },
+  { id: 'other', label: 'Other', description: 'Another recurring process in your business' },
+];
+
+var SECTION_LABELS = {
+  1: 'Workload & Impact',
+  2: 'How Work Moves',
+  3: 'Consistency & Continuity',
+};
+
+var QUESTIONS = [
+  {
+    id: 'frequency', section: 1, shortLabel: 'Workflow frequency',
+    text: 'How often does this workflow run?',
+    helper: 'Think about the specific process you selected, rather than the department as a whole.',
+    confirmLabel: 'How often this workflow actually runs',
+    options: [
+      { value: 'several_daily', label: 'Several times a day' },
+      { value: 'daily', label: 'Daily' },
+      { value: 'weekly', label: 'Weekly' },
+      { value: 'monthly', label: 'Monthly or less often' },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
+  },
+  {
+    id: 'effort', section: 1, shortLabel: 'Manual effort',
+    text: 'In a typical week, how much team time goes into manual work within this workflow?',
+    helper: 'Include copying information, preparing updates, coordinating handoffs, and following up. Estimate the combined time across the team, averaged over the past four weeks.',
+    confirmLabel: 'How much manual effort this workflow takes each week',
+    options: [
+      { value: 'lt1', label: 'Less than 1 hour per week' },
+      { value: '1to3', label: '1–3 hours per week' },
+      { value: '4to8', label: '4–8 hours per week' },
+      { value: 'gt8', label: 'More than 8 hours per week' },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
+  },
+  {
+    id: 'impact', section: 1, shortLabel: 'Business impact',
+    text: 'When this workflow does not go as planned, what is the main consequence?',
+    helper: 'Choose the most significant consequence your business actually experiences, not a hypothetical worst case.',
+    confirmLabel: 'What happens when this workflow does not go as planned',
+    options: [
+      { value: 'minor', label: 'Minor inconvenience, with little effect on delivery' },
+      { value: 'extra_work', label: 'Extra work or internal delays' },
+      { value: 'customer_facing', label: 'Customer-facing delays or service problems' },
+      { value: 'serious', label: 'Financial, compliance, or other serious business consequences' },
+      { value: 'none', label: 'We have not experienced a meaningful problem' },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
+  },
+  {
+    id: 'ownership', section: 2, shortLabel: 'Ownership',
+    text: 'How clear is ownership when the next step needs attention?',
+    helper: 'Think about who is responsible for moving the work forward or resolving a problem.',
+    confirmLabel: 'Who owns the next step in this workflow',
+    options: [
+      { value: 'clear', label: 'The responsible person is clear' },
+      { value: 'b', label: 'Ownership is usually clear, but some situations need discussion', finding: 'moderate' },
+      { value: 'c', label: 'The team often needs to decide who should act', finding: 'strong' },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
+  },
+  {
+    id: 'info_transfer', section: 2, shortLabel: 'Information transfer',
+    text: 'How does information move between the tools used in this workflow?',
+    helper: 'Consider spreadsheets, email, business software, and any other places where the same information is recorded.',
+    confirmLabel: 'How information moves between the tools used',
+    options: [
+      { value: 'clean', label: 'Information transfers without manual re-entry' },
+      { value: 'b', label: 'Some information is copied or entered again', finding: 'moderate' },
+      { value: 'c', label: 'The same information is repeatedly entered in several places', finding: 'strong' },
+      { value: 'single_tool', label: 'This workflow uses only one tool or information source', na: true },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
+  },
+  {
+    id: 'status_visibility', section: 2, shortLabel: 'Status visibility',
+    text: 'How do people find the current status and next step?',
+    helper: 'Think about how someone involved in the workflow checks progress without interrupting another person.',
+    confirmLabel: 'Where to find the current status and next step',
+    options: [
+      { value: 'reliable', label: 'They can check a reliable shared source' },
+      { value: 'b', label: 'They check several places to put the picture together', finding: 'moderate' },
+      { value: 'c', label: 'They usually need to ask someone or chase an update', finding: 'strong' },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
+  },
+  {
+    id: 'approvals', section: 2, shortLabel: 'Approvals',
+    text: 'What usually happens when this workflow needs approval?',
+    helper: 'Consider whether people know who should approve, what information is needed, and when a response is expected.',
+    confirmLabel: 'What happens when this workflow needs approval',
+    options: [
+      { value: 'clear', label: 'The approval is clear and arrives within the expected time' },
+      { value: 'b', label: 'Some approvals require reminders or cause delays', finding: 'moderate' },
+      { value: 'c', label: 'Work regularly waits because the approval path or timing is unclear', finding: 'strong' },
+      { value: 'not_required', label: 'This workflow does not require approval', na: true },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
+  },
+  {
+    id: 'exceptions', section: 3, shortLabel: 'Exception handling',
+    text: 'What happens when a case falls outside the normal process?',
+    helper: 'An exception might involve missing information, an unusual request, a mismatch, or a case that needs escalation.',
+    confirmLabel: 'How exceptions are handled in this workflow',
+    options: [
+      { value: 'clear', label: 'There is a clear way to handle or escalate it' },
+      { value: 'b', label: 'The team can resolve it, but the approach varies', finding: 'moderate' },
+      { value: 'c', label: 'People improvise or wait because there is no clear approach', finding: 'strong' },
+      { value: 'not_relevant', label: 'Exceptions are not relevant to this workflow', na: true },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
+  },
+  {
+    id: 'consistency', section: 3, shortLabel: 'Process consistency',
+    text: 'How consistent are the steps and decision rules?',
+    helper: 'Think about whether different people can follow the same approach and understand how decisions should be made.',
+    confirmLabel: 'How consistent the steps and decision rules are',
+    options: [
+      { value: 'clear', label: 'The steps and rules are clear and repeatable' },
+      { value: 'b', label: 'There is a usual approach, but some decisions are informal', finding: 'moderate' },
+      { value: 'c', label: 'The approach depends heavily on who is doing the work', finding: 'strong' },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
+  },
+  {
+    id: 'continuity', section: 3, shortLabel: 'Workflow continuity',
+    text: 'What happens if the person who knows this workflow best is unavailable?',
+    helper: 'Consider whether another person can continue the important work using the instructions and information already available.',
+    confirmLabel: 'What happens if the person who knows this workflow best is unavailable',
+    options: [
+      { value: 'clear', label: 'Someone else can continue using the available instructions' },
+      { value: 'b', label: 'Work continues, but needs extra help or takes longer', finding: 'moderate' },
+      { value: 'c', label: 'Important work stops or decisions wait for that person', finding: 'strong' },
+      { value: 'unsure', label: 'I’m not sure', unsure: true },
+    ],
+  },
+];
+
+var QUESTIONS_BY_ID = {};
+QUESTIONS.forEach(function (q) { QUESTIONS_BY_ID[q.id] = q; });
+var ALL_QUESTION_IDS = QUESTIONS.map(function (q) { return q.id; });
+var TIER1_IDS = ['ownership', 'exceptions', 'consistency', 'continuity'];
+var TIER2_IDS = ['info_transfer', 'status_visibility', 'approvals'];
+
+var FINDING_TEXT = {
+  ownership: { moderate: 'Some responsibilities need clarification.', strong: 'Work regularly waits while the team decides who should act.' },
+  info_transfer: { moderate: 'Information is manually copied or entered again.', strong: 'The same information is repeatedly entered in several places, creating rework and mismatch risk.' },
+  status_visibility: { moderate: 'The current status is difficult to find in one reliable place.', strong: 'People usually have to chase someone just to find the current status.' },
+  approvals: { moderate: 'Approvals sometimes delay the workflow.', strong: 'Work regularly waits because the approval path or timing is unclear.' },
+  exceptions: { moderate: 'Exception handling is not fully consistent.', strong: 'People improvise or wait because there is no clear way to handle exceptions.' },
+  consistency: { moderate: 'Some steps or decision rules are informal.', strong: 'The approach depends heavily on who is doing the work.' },
+  continuity: { moderate: 'The workflow needs stronger backup coverage.', strong: 'Important work stops or decisions wait on one specific person.' },
+};
+
+var FREQ_LABELS = { several_daily: 'several times a day', daily: 'daily', weekly: 'weekly', monthly: 'monthly or less often' };
+var EFFORT_LABELS = {
+  lt1: 'requires less than 1 hour of manual work per week',
+  '1to3': 'requires approximately 1–3 hours of manual work per week',
+  '4to8': 'requires approximately 4–8 hours of manual work per week',
+  gt8: 'requires more than 8 hours of manual work per week',
+};
+var CLARIFY_SUMMARY = 'Your answers suggest that some responsibilities, operating rules, exception paths, or continuity arrangements need clarification before introducing automation.';
+var COORDINATION_SUMMARY = 'Your answers suggest that information flow, status visibility, or approvals are creating avoidable coordination work.';
+var RISK_WARNING_TEXT = 'You reported that problems in this workflow may create financial, compliance, or other serious business consequences. Review the relevant controls, requirements, and failure points with the responsible team before introducing changes.';
+var IMPACT_LABELS = {
+  minor: 'a minor inconvenience',
+  extra_work: 'extra work or internal delays',
+  customer_facing: 'customer-facing delays or service problems',
+  serious: 'financial, compliance, or other serious business consequences',
+  none: 'no meaningful problem so far',
+};
+
+var RECOMMENDATIONS = {
+  clarify: { title: 'Clarify the Workflow First', firstStep: 'Write down the main steps, responsible people, and decision rules. Address the unclear responsibilities, exceptions, or backup arrangements highlighted in your answers.' },
+  coordination: { title: 'Improve Workflow Coordination', firstStep: 'Review where information is copied, how status is tracked, and where approvals wait. Start with the issues highlighted in your answers.' },
+  confirm_details: { title: 'Confirm the Missing Details', firstStep: 'Review the unanswered details with someone who operates this workflow before deciding what to change.' },
+  automation: { title: 'Explore a Targeted Automation Opportunity', firstStep: 'Identify one repeatable manual step. Confirm its inputs, rules, exceptions, and expected benefit before selecting a tool.' },
+  baseline: { title: 'Establish a Baseline Before Making Changes', firstStep: 'Track the workflow’s manual effort, delays, and errors before deciding whether a change is needed.' },
+  review_risks: { title: 'Review the Risks Before Making Changes', firstStep: 'Review the workflow’s controls, failure points, and business requirements with the responsible team before introducing changes.' },
+};
+
+var STORAGE_KEY = 'wfAssessmentV2';
+
+var state = { workflow: null, workflowName: '', answers: {}, currentIndex: 0, editingFromReview: false, lead: {}, utm: {} };
+
+var screens = {
+  hero: document.getElementById('screen-hero'),
+  workflow: document.getElementById('screen-workflow'),
+  question: document.getElementById('screen-question'),
+  review: document.getElementById('screen-review'),
+  result: document.getElementById('screen-result'),
+};
+
+var currentScreenName = 'hero';
+
+function showScreen(name) {
+  Object.keys(screens).forEach(function (k) { screens[k].classList.remove('active'); });
+  screens[name].classList.add('active');
+  currentScreenName = name;
+  persistState();
+  window.scrollTo({ top: document.getElementById('wf-assessment').offsetTop - 20, behavior: 'smooth' });
+}
+
+function track(eventName, params) {
+  if (typeof window.gtag === 'function') window.gtag('event', eventName, params || {});
+  console.log('[wf-assessment track]', eventName, params || {});
+}
+
+function showToast(message) {
+  var toast = document.createElement('div');
+  toast.className = 'wfa-toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  requestAnimationFrame(function () { toast.classList.add('visible'); });
+  setTimeout(function () {
+    toast.classList.remove('visible');
+    setTimeout(function () { toast.remove(); }, 250);
+  }, 3200);
+}
+
+function showConfirm(message, onConfirm) {
+  var overlay = document.getElementById('confirm-overlay');
+  document.getElementById('confirm-message').textContent = message;
+  overlay.hidden = false;
+  var okBtn = document.getElementById('confirm-ok');
+  var cancelBtn = document.getElementById('confirm-cancel');
+  function cleanup() {
+    overlay.hidden = true;
+    okBtn.removeEventListener('click', onOk);
+    cancelBtn.removeEventListener('click', onCancel);
+  }
+  function onOk() { cleanup(); onConfirm(); }
+  function onCancel() { cleanup(); }
+  okBtn.addEventListener('click', onOk);
+  cancelBtn.addEventListener('click', onCancel);
+}
+
+function captureUTMs() {
+  var params = new URLSearchParams(window.location.search);
+  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].forEach(function (key) {
+    if (params.get(key)) state.utm[key] = params.get(key);
+  });
+}
+
+function persistState() {
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+      workflow: state.workflow, workflowName: state.workflowName, answers: state.answers,
+      currentIndex: state.currentIndex, screen: currentScreenName,
+    }));
+  } catch (err) { /* storage unavailable — assessment still works, just won't survive a refresh */ }
+}
+
+function restoreState() {
+  try {
+    var raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    var saved = JSON.parse(raw);
+    if (!saved || !saved.workflow) return false;
+    state.workflow = saved.workflow;
+    state.workflowName = saved.workflowName || '';
+    state.answers = saved.answers || {};
+    state.currentIndex = saved.currentIndex || 0;
+    return saved.screen || 'workflow';
+  } catch (err) { return false; }
+}
+
+function workflowLabelFor(id) {
+  var wf = WORKFLOWS.filter(function (w) { return w.id === id; })[0];
+  return wf ? wf.label : '';
+}
+
+function workflowDisplayName() {
+  return (state.workflowName && state.workflowName.trim()) || workflowLabelFor(state.workflow);
+}
+
+function updateWorkflowContinueState() {
+  var btn = document.getElementById('workflow-continue');
+  var input = document.getElementById('workflowName');
+  if (!state.workflow) { btn.disabled = true; return; }
+  btn.disabled = state.workflow === 'other' && input.value.trim().length === 0;
+}
+
+function renderWorkflowGrid() {
+  var grid = document.getElementById('workflow-grid');
+  grid.innerHTML = '';
+  WORKFLOWS.forEach(function (wf) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'workflow-card';
+    if (state.workflow === wf.id) btn.classList.add('selected');
+    btn.innerHTML = '<span class="label">' + wf.label + '</span><span class="wf-desc">' + wf.description + '</span>';
+    btn.addEventListener('click', function () { selectWorkflow(wf, btn); });
+    grid.appendChild(btn);
+  });
+
+  var wrap = document.getElementById('workflow-name-wrap');
+  var nameInput = document.getElementById('workflowName');
+  if (state.workflow) {
+    wrap.hidden = false;
+    nameInput.value = state.workflowName || '';
+    updateWorkflowNameLabel();
+  } else {
+    wrap.hidden = true;
+  }
+  updateWorkflowContinueState();
+}
+
+function updateWorkflowNameLabel() {
+  var label = document.getElementById('workflow-name-label');
+  var input = document.getElementById('workflowName');
+  if (state.workflow === 'other') {
+    label.textContent = 'Briefly describe this workflow';
+    input.placeholder = 'For example: Vendor compliance checks';
+  } else {
+    label.textContent = 'What do you call this workflow?';
+    input.placeholder = 'For example: Weekly sales reporting';
+  }
+}
+
+function selectWorkflow(wf, btn) {
+  state.workflow = wf.id;
+  var cards = document.querySelectorAll('#wf-assessment .workflow-card');
+  for (var i = 0; i < cards.length; i++) cards[i].classList.remove('selected');
+  btn.classList.add('selected');
+  document.getElementById('workflow-name-wrap').hidden = false;
+  updateWorkflowNameLabel();
+  updateWorkflowContinueState();
+  persistState();
+}
+
+function requestChangeWorkflow() {
+  var hasAnswers = Object.keys(state.answers).length > 0;
+  var doChange = function () {
+    state.workflow = null;
+    state.workflowName = '';
+    state.answers = {};
+    state.currentIndex = 0;
+    state.editingFromReview = false;
+    document.getElementById('workflowName').value = '';
+    showScreen('workflow');
+    renderWorkflowGrid();
+  };
+  if (hasAnswers) {
+    showConfirm('Changing your workflow will clear your current answers. Continue?', doChange);
+  } else {
+    doChange();
+  }
+}
+
+function renderQuestion() {
+  var q = QUESTIONS[state.currentIndex];
+  var total = QUESTIONS.length;
+  var step = state.currentIndex + 1;
+  var answeredCount = Object.keys(state.answers).length;
+
+  document.getElementById('progress-fill').style.width = (answeredCount / total) * 100 + '%';
+  document.getElementById('assessing-label').textContent = 'Assessing: ' + workflowDisplayName();
+  document.getElementById('step-label').textContent = 'Question ' + step + ' of ' + total;
+  document.getElementById('section-label').textContent = SECTION_LABELS[q.section];
+  document.getElementById('q-title').textContent = q.text;
+  document.getElementById('q-helper').textContent = q.helper;
+
+  var list = document.getElementById('option-list');
+  list.innerHTML = '';
+  q.options.forEach(function (opt) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'option';
+    if (state.answers[q.id] === opt.value) btn.classList.add('selected');
+    btn.innerHTML = '<span class="dot"></span><span class="label">' + opt.label + '</span>';
+    btn.addEventListener('click', function () {
+      state.answers[q.id] = opt.value;
+      persistState();
+      renderQuestion();
+    });
+    list.appendChild(btn);
+  });
+
+  document.getElementById('q-back').style.visibility = step === 1 ? 'hidden' : 'visible';
+  var continueBtn = document.getElementById('q-continue');
+  continueBtn.disabled = state.answers[q.id] === undefined;
+  if (state.editingFromReview) {
+    continueBtn.textContent = 'Save & Return to Review';
+  } else if (step === total) {
+    continueBtn.textContent = 'Review Your Answers';
+  } else {
+    continueBtn.textContent = 'Continue';
+  }
+}
+
+function goToQuestion(index) {
+  state.currentIndex = index;
+  showScreen('question');
+  renderQuestion();
+}
+
+function renderReview() {
+  var list = document.getElementById('review-list');
+  list.innerHTML = '';
+  QUESTIONS.forEach(function (q, i) {
+    var val = state.answers[q.id];
+    var opt = null;
+    for (var j = 0; j < q.options.length; j++) { if (q.options[j].value === val) { opt = q.options[j]; break; } }
+    var row = document.createElement('div');
+    row.className = 'review-row';
+    row.innerHTML = '<div class="review-text"><span class="review-q">' + q.shortLabel + '</span>' +
+      '<span class="review-a">' + (opt ? opt.label : 'Not answered') + '</span></div>' +
+      '<button type="button" class="btn btn-ghost btn-small review-edit">Edit</button>';
+    row.querySelector('.review-edit').addEventListener('click', function () {
+      state.editingFromReview = true;
+      goToQuestion(i);
+    });
+    list.appendChild(row);
+  });
+}
+
+function findingFor(qid) {
+  var q = QUESTIONS_BY_ID[qid];
+  var opt = null;
+  for (var i = 0; i < q.options.length; i++) { if (q.options[i].value === state.answers[qid]) { opt = q.options[i]; break; } }
+  if (opt && opt.finding) {
+    return { qid: qid, shortLabel: q.shortLabel, tier: opt.finding, text: FINDING_TEXT[qid][opt.finding] };
+  }
+  return null;
+}
+
+function computeResult() {
+  var freq = state.answers.frequency;
+  var effort = state.answers.effort;
+  var impact = state.answers.impact;
+
+  var tier1Findings = TIER1_IDS.map(findingFor).filter(Boolean);
+  var tier2Findings = TIER2_IDS.map(findingFor).filter(Boolean);
+  var unsureIds = ALL_QUESTION_IDS.filter(function (qid) { return state.answers[qid] === 'unsure'; });
+
+  var impactSerious = impact === 'serious';
+
+  var outcome;
+  if (tier1Findings.length) outcome = 'clarify';
+  else if (tier2Findings.length) outcome = 'coordination';
+  else if (impactSerious) outcome = 'review_risks';
+  else if (unsureIds.length) outcome = 'confirm_details';
+  else {
+    var effortHigh = effort === '4to8' || effort === 'gt8';
+    outcome = effortHigh ? 'automation' : 'baseline';
+  }
+
+  var riskWarning = impactSerious && (outcome === 'clarify' || outcome === 'coordination');
+  var areasToReview = (outcome === 'clarify' || outcome === 'coordination') ? tier1Findings.concat(tier2Findings) : [];
+
+  var contextSentence = '';
+  var freqPart = freq && freq !== 'unsure' ? 'runs ' + FREQ_LABELS[freq] : null;
+  var effortPart = effort && effort !== 'unsure' ? EFFORT_LABELS[effort] : null;
+  if (freqPart && effortPart) contextSentence = 'This workflow ' + freqPart + ' and ' + effortPart + '.';
+  else if (freqPart) contextSentence = 'This workflow ' + freqPart + '.';
+  else if (effortPart) contextSentence = 'This workflow ' + effortPart + '.';
+  if (impact && impact !== 'unsure' && impact !== 'none') {
+    contextSentence += (contextSentence ? ' ' : '') + 'When it doesn’t go as planned, the main reported consequence is ' + IMPACT_LABELS[impact] + '.';
+  }
+
+  var explanation;
+  if (outcome === 'clarify') {
+    explanation = CLARIFY_SUMMARY;
+  } else if (outcome === 'coordination') {
+    explanation = COORDINATION_SUMMARY;
+  } else if (outcome === 'confirm_details') {
+    explanation = unsureIds.length <= 2
+      ? 'A few details still need to be confirmed. Review the items below before making a final decision.'
+      : 'Several important details about this workflow are still unclear. Confirm the items below with someone who operates the process day to day before deciding what to change.';
+  } else if (outcome === 'automation') {
+    explanation = ('Your answers did not highlight a clear coordination or process-definition problem. ' + contextSentence + ' This does not establish whether automation would be worthwhile.').trim();
+  } else if (outcome === 'baseline') {
+    explanation = ('Your answers did not highlight a clear coordination or process-definition problem, and reported manual effort is relatively low. ' + contextSentence + ' Track this workflow’s effort, delays, and errors before deciding whether a change is needed.').trim();
+  } else {
+    explanation = ('Your answers did not highlight a coordination or process-definition problem, but this workflow’s consequences when things go wrong are serious. ' + contextSentence + ' Review the controls and requirements before considering any change.').trim();
+  }
+
+  var beforeAutomate = 'Confirm the process rules, exceptions, and trusted data sources for ' + workflowDisplayName() + ' before automating any part of it.';
+
+  return {
+    outcome: outcome, recommendation: RECOMMENDATIONS[outcome], explanation: explanation,
+    areasToReview: areasToReview, unsureIds: unsureIds, riskWarning: riskWarning, beforeAutomate: beforeAutomate,
+  };
+}
+
+function renderResult() {
+  var result = computeResult();
+  state.lastOutcome = result.outcome;
+
+  document.getElementById('result-workflow').textContent = state.workflowName
+    ? workflowLabelFor(state.workflow) + ' — ' + state.workflowName
+    : workflowLabelFor(state.workflow);
+
+  document.getElementById('result-recommendation').textContent = result.recommendation.title;
+  document.getElementById('result-explanation').textContent = result.explanation;
+  document.getElementById('result-first-step').textContent = result.recommendation.firstStep;
+  document.getElementById('result-before-automate').textContent = result.beforeAutomate;
+
+  var otherBlock = document.getElementById('other-areas-block');
+  var otherList = document.getElementById('other-areas-list');
+  if (result.areasToReview.length) {
+    otherList.innerHTML = result.areasToReview.map(function (f) { return '<div class="finding-row">' + f.text + '</div>'; }).join('');
+    otherBlock.hidden = false;
+  } else {
+    otherBlock.hidden = true;
+  }
+
+  var confirmBlock = document.getElementById('confirm-details-block');
+  var confirmList = document.getElementById('confirm-details-list');
+  if (result.unsureIds.length) {
+    confirmList.innerHTML = result.unsureIds.map(function (qid) { return '<div class="finding-row">' + QUESTIONS_BY_ID[qid].confirmLabel + '</div>'; }).join('');
+    confirmBlock.hidden = false;
+  } else {
+    confirmBlock.hidden = true;
+  }
+
+  document.getElementById('risk-block').hidden = !result.riskWarning;
+
+  track('assessment_result_shown', {
+    workflow: state.workflow, recommendation: result.outcome,
+    risk_warning: result.riskWarning, questionnaire_version: QUESTIONNAIRE_VERSION,
+  });
+}
+
+function validateLeadForm() {
+  var form = document.getElementById('lead-form');
+  var email = form.email.value.trim();
+  var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  var ok = form.firstName.value.trim().length > 0 && emailOk && form.company.value.trim().length > 0 && form.consent.checked;
+  document.getElementById('lead-error').style.display = ok ? 'none' : 'block';
+  return ok;
+}
+
+function submitLead() {
+  var result = computeResult();
+  var payload = {
+    workflow: state.workflow, workflowName: state.workflowName, answers: state.answers,
+    recommendation: result.outcome, recommendationTitle: result.recommendation.title,
+    firstStep: result.recommendation.firstStep, areasToReview: result.areasToReview.map(function (f) { return f.text; }),
+    detailsToConfirm: result.unsureIds.map(function (qid) { return QUESTIONS_BY_ID[qid].confirmLabel; }),
+    riskWarning: result.riskWarning ? RISK_WARNING_TEXT : null, beforeAutomate: result.beforeAutomate,
+    questionnaireVersion: QUESTIONNAIRE_VERSION, lead: state.lead, marketingOptIn: state.lead.marketingOptIn,
+    utm: state.utm, submitted_at: new Date().toISOString(),
+  };
+
+  /* Personal details are intentionally kept out of the console and analytics.
+     TODO: replace with the real CRM/database + email-trigger endpoint once confirmed.
+     Expected shape: POST JSON `payload` to a webhook (e.g. an Apps Script Web
+     App bound to the "BChanel – Workflow Automation Assessment Leads" Sheet)
+     that (a) writes the row, and (b) sends `lead.email` a results email
+     containing: selected workflow + custom name, all submitted answers, the
+     suggested starting point, supported findings, the first recommended
+     action, details requiring confirmation, the risk warning when present, a
+     link to the printable diagnostic, and the BChanel consultation CTA. Do
+     not mark the request as delivered in the UI until that service reports
+     success.
+  fetch('REPLACE_WITH_WEBHOOK_URL', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+  }).then(function (res) { if (!res.ok) throw new Error('Lead submission failed'); });
+  */
+  console.log('[wf-assessment lead submission] prepared (redacted)', {
+    workflow: payload.workflow, recommendation: payload.recommendation, questionnaireVersion: payload.questionnaireVersion,
+  });
+
+  track('lead_submitted', { workflow: state.workflow, recommendation: result.outcome });
+  return Promise.resolve(true);
+}
+
+function resetAssessment() {
+  state.workflow = null;
+  state.workflowName = '';
+  state.answers = {};
+  state.currentIndex = 0;
+  state.editingFromReview = false;
+  state.lead = {};
+  try { sessionStorage.removeItem(STORAGE_KEY); } catch (err) { /* ignore */ }
+  showScreen('hero');
+}
+
+function initWorkflowAssessment() {
+  captureUTMs();
+  renderWorkflowGrid();
+
+  var restoredScreen = restoreState();
+
+  document.getElementById('start-assessment').addEventListener('click', function () {
+    track('assessment_start', { utm: state.utm });
+    showScreen('workflow');
+  });
+
+  document.getElementById('workflowName').addEventListener('input', function (e) {
+    state.workflowName = e.target.value;
+    updateWorkflowContinueState();
+    persistState();
+  });
+
+  document.getElementById('workflow-continue').addEventListener('click', function () {
+    track('workflow_selected', { workflow: state.workflow });
+    goToQuestion(0);
+  });
+
+  document.getElementById('change-workflow-link').addEventListener('click', requestChangeWorkflow);
+  document.getElementById('review-change-workflow').addEventListener('click', requestChangeWorkflow);
+
+  document.getElementById('q-back').addEventListener('click', function () {
+    if (state.currentIndex === 0) return;
+    goToQuestion(state.currentIndex - 1);
+  });
+  document.getElementById('q-continue').addEventListener('click', function () {
+    if (state.editingFromReview) {
+      state.editingFromReview = false;
+      showScreen('review');
+      renderReview();
+    } else if (state.currentIndex < QUESTIONS.length - 1) {
+      goToQuestion(state.currentIndex + 1);
+    } else {
+      track('assessment_complete', { workflow: state.workflow, questionnaire_version: QUESTIONNAIRE_VERSION });
+      showScreen('review');
+      renderReview();
+    }
+  });
+
+  document.getElementById('review-continue').addEventListener('click', function () {
+    showScreen('result');
+    renderResult();
+  });
+
+  var leadForm = document.getElementById('lead-form');
+  leadForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!validateLeadForm()) return;
+
+    state.lead = {
+      firstName: leadForm.firstName.value.trim(), email: leadForm.email.value.trim(),
+      company: leadForm.company.value.trim(), role: leadForm.role.value.trim(),
+      marketingOptIn: leadForm.marketing.checked,
+    };
+
+    var submitBtn = document.getElementById('lead-submit');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+
+    submitLead().then(function () {
+      submitBtn.textContent = 'Request Sent';
+      document.getElementById('lead-success').hidden = false;
+      var els = leadForm.elements;
+      for (var i = 0; i < els.length; i++) els[i].disabled = true;
+    }).catch(function () {
+      console.error('[wf-assessment lead submission] failed');
+      document.getElementById('lead-error').textContent = 'Something went wrong submitting your info. Please try again.';
+      document.getElementById('lead-error').style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Email My Results';
+    });
+  });
+
+  document.getElementById('final-cta').addEventListener('click', function () {
+    track('final_cta_click', { workflow: state.workflow });
+  });
+  document.getElementById('pdf-download').addEventListener('click', function () {
+    track('pdf_download_click', { workflow: state.workflow });
+    /* TODO: point at the hosted Operational Friction Diagnostic PDF URL */
+    showToast('PDF not hosted yet — this will download the diagnostic once it’s ready.');
+  });
+  document.getElementById('assess-another').addEventListener('click', function () {
+    track('assess_another_click', {});
+    resetAssessment();
+  });
+
+  if (restoredScreen && restoredScreen !== 'hero') {
+    renderWorkflowGrid();
+    if (restoredScreen === 'question') {
+      goToQuestion(Math.min(state.currentIndex, QUESTIONS.length - 1));
+    } else if (restoredScreen === 'review') {
+      showScreen('review');
+      renderReview();
+    } else if (restoredScreen === 'result') {
+      showScreen('result');
+      renderResult();
+    } else {
+      showScreen('workflow');
+    }
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initWorkflowAssessment);
+} else {
+  initWorkflowAssessment();
+}
+})();
+</script>

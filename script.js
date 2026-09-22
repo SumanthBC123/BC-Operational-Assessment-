@@ -793,7 +793,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('lead-error').textContent = 'Something went wrong submitting your info. Please try again.';
       document.getElementById('lead-error').style.display = 'block';
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Email My Summary';
+      submitBtn.textContent = 'Email My Results';
     }
   });
 
