@@ -9,10 +9,18 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css" />
+<!-- GA4: confirmed BChanel property, Measurement ID G-DZBMHQG1QL (note the Q, not the O used by mistake elsewhere on the main site) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DZBMHQG1QL"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DZBMHQG1QL');
+</script>
 </head>
 <body>
 
-<div class="mock-banner">PROTOTYPE — lead capture, email, and analytics are stubbed (see console log), not yet connected to a live backend.</div>
+<div class="mock-banner">PROTOTYPE — GA4 and the Calendly link are live. Lead storage, result email, the printable diagnostic, and the Privacy Policy link are still pending (see console log for the lead-submission stub).</div>
 
 <header class="topbar">
   <div class="wrap">
@@ -189,7 +197,7 @@
           <p class="disclaimer">This is an initial review based on your answers. It is not a complete operational assessment, confirmation of automation readiness, or calculation of automation ROI.</p>
 
           <div class="cta-block cta-block-primary">
-            <button id="final-cta" class="btn btn-primary btn-block">Discuss This Workflow With BChanel</button>
+            <a id="final-cta" class="btn btn-primary btn-block" href="https://calendly.com/lsmiriglia-bchanel" target="_blank" rel="noopener">Discuss This Workflow With BChanel</a>
             <p class="cta-support">Bring one process and the issues you identified. We'll discuss what needs clarification before deciding whether redesign, integration, or automation makes sense.</p>
           </div>
 
@@ -216,11 +224,11 @@
               </div>
               <label class="consent">
                 <input type="checkbox" name="consent" required />
-                <span>I agree to receive my results. See our <a href="#" target="_blank" rel="noopener">Privacy Policy</a>. <!-- TODO: confirm privacy policy URL + final consent wording --></span>
+                <span>By submitting this form, I agree that BChanel may use my information to send my workflow assessment results in accordance with the <a href="#" target="_blank" rel="noopener">Privacy Policy</a>. <!-- TODO: swap in the live Privacy Policy URL once published; wording gets one final approval alongside it --></span>
               </label>
               <label class="consent">
                 <input type="checkbox" name="marketing" />
-                <span>Also send me occasional updates from BChanel.</span>
+                <span>I'd also like to receive occasional insights and updates from BChanel. I can unsubscribe at any time.</span>
               </label>
               <div id="lead-error" class="form-error">Please fill in every required field, use a valid email, and check the first consent box.</div>
               <button id="lead-submit" type="submit" class="btn btn-primary btn-block">Email My Results</button>

@@ -292,8 +292,7 @@ function showScreen(name) {
    dataLayer.push calls with the agreed event schema.
    Personal details (name/email/company) must never be passed here. */
 function track(eventName, params) {
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({ event: eventName, ...params });
+  if (typeof window.gtag === 'function') window.gtag('event', eventName, params || {});
   console.log('[track]', eventName, params || {});
 }
 
@@ -800,8 +799,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('final-cta').addEventListener('click', () => {
     track('final_cta_click', { workflow: state.workflow });
-    /* TODO: point at the confirmed booking/Calendly URL */
-    showToast('Booking link pending — this will go straight to scheduling a workflow review.');
   });
   document.getElementById('pdf-download').addEventListener('click', () => {
     track('pdf_download_click', { workflow: state.workflow });
