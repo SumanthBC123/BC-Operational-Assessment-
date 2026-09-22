@@ -1330,13 +1330,14 @@ function submitLead() {
   };
 
   /* Personal details are intentionally kept out of the console and analytics.
-     Sent as text/plain (not application/json) so the browser treats this as a
-     "simple request" and skips the CORS preflight — Make.com parses the body
-     as JSON regardless of the declared content type. Make's webhook responds
-     with Access-Control-Allow-Origin: *, confirmed via a live test request. */
+     Make.com's webhook only explodes the body into structured fields when the
+     Content-Type is exactly application/json (text/plain gets dumped into one
+     opaque "value" string instead) — confirmed the hard way. Make's webhook
+     handles the resulting CORS preflight correctly (verified directly), so
+     this is safe cross-origin. */
   return fetch(LEAD_WEBHOOK_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   }).then(function (res) {
     if (!res.ok) throw new Error('Lead submission failed: ' + res.status);
