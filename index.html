@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Workflow Automation Assessment | BChanel</title>
-<meta name="description" content="Answer a short set of questions about one recurring process and see what to clarify, improve, or verify before considering automation." />
+<meta name="description" content="Answer a few questions about one recurring workflow in your business and see what to review first, before considering automation." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,7 +20,7 @@
 </head>
 <body>
 
-<div class="mock-banner">PROTOTYPE — GA4, the Calendly link, lead storage, and result email are live. The printable diagnostic and the Privacy Policy link are still pending.</div>
+<div class="mock-banner">PROTOTYPE V3 — GA4, the Calendly link, and lead storage are live. No result email in this phase (by design). The printable diagnostic and the Privacy Policy link are still pending.</div>
 
 <header class="topbar">
   <div class="wrap">
@@ -32,73 +32,33 @@
 
 <main>
 
-  <!-- HERO + HOW IT WORKS -->
+  <!-- HERO -->
   <section id="screen-hero" class="screen active">
     <div class="hero">
       <div class="wrap">
         <span class="eyebrow">Workflow Automation Assessment</span>
         <h1>Find the Right Next Step for Your Workflow</h1>
-        <p class="sub">Answer a short set of questions about one recurring process and see what to clarify, improve, or verify before considering automation.</p>
+        <p class="sub">Answer a few questions about one recurring workflow in your business and see what to review first, before considering automation.</p>
         <button id="start-assessment" class="btn btn-primary">Start the Assessment</button>
         <div class="indicators">
-          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>10 questions</span>
-          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>One workflow at a time</span>
-          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Personalized result</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="how">
-      <div class="wrap">
-        <h2>How It Works</h2>
-        <div class="how-grid">
-          <div class="how-step">
-            <div class="how-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h10M7 17h6"/></svg></div>
-            <h3>1. Choose a Workflow</h3>
-            <p>Select one recurring process in your business.</p>
-          </div>
-          <div class="how-step">
-            <div class="how-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
-            <h3>2. Describe How It Operates</h3>
-            <p>Answer questions about effort, impact, ownership, and information flow.</p>
-          </div>
-          <div class="how-step">
-            <div class="how-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19h16"/><path d="M6 15l4-5 4 3 5-7"/></svg></div>
-            <h3>3. Get Your Next Step</h3>
-            <p>See what to address first and what to check before introducing automation.</p>
-          </div>
-        </div>
-
-        <p class="positioning-statement">BChanel helps growing teams improve how work operates before introducing automation.</p>
-
-        <div class="example-card">
-          <span class="example-tag">Example result</span>
-          <div class="example-body">
-            <div class="example-row"><span class="example-label">Workflow</span><span>Reporting</span></div>
-            <div class="example-row"><span class="example-label">Suggested Starting Point</span><span>Clarify the Workflow First</span></div>
-            <div class="example-row"><span class="example-label">First Step</span><span>List the report's data sources and assign an owner to each input, the final report, and any missing-data follow-up.</span></div>
-          </div>
-          <p class="example-disclaimer">Illustrative sample only — not an actual client result.</p>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>5 quick questions</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>Built for your industry</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Result on this page</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- WORKFLOW SELECT -->
-  <section id="screen-workflow" class="screen">
+  <!-- INDUSTRY SELECT (not counted as a question) -->
+  <section id="screen-industry" class="screen">
     <div class="assessment">
       <div class="wrap">
         <div class="card">
-          <h2 class="q-title">Which workflow would you like to review?</h2>
-          <p class="helper-text">Choose one specific recurring process, not an entire department.</p>
-          <div id="workflow-grid" class="workflow-grid"></div>
-          <div id="workflow-name-wrap" class="field workflow-name-field" hidden>
-            <label id="workflow-name-label" for="workflowName">What do you call this workflow?</label>
-            <input type="text" id="workflowName" name="workflowName" placeholder="For example: Weekly sales reporting" />
-          </div>
+          <h2 class="q-title">Which best describes your business?</h2>
+          <div id="industry-grid" class="industry-grid"></div>
           <div class="nav-row">
             <span class="spacer"></span>
-            <button id="workflow-continue" class="btn btn-primary" disabled>Continue</button>
+            <button id="industry-continue" class="btn btn-primary" disabled>Continue</button>
           </div>
         </div>
       </div>
@@ -114,7 +74,6 @@
           <span id="assessing-label" class="assessing-label"></span>
           <span id="step-label" class="step-label"></span>
         </div>
-        <div id="section-label" class="section-label"></div>
         <div class="card">
           <h2 id="q-title" class="q-title"></h2>
           <p id="q-helper" class="helper-text"></p>
@@ -122,7 +81,6 @@
           <div class="nav-row">
             <button id="q-back" class="btn btn-ghost">← Back</button>
             <span class="spacer"></span>
-            <button id="change-workflow-link" class="btn btn-ghost btn-small">Change workflow</button>
             <button id="q-continue" class="btn btn-primary" disabled>Continue</button>
           </div>
         </div>
@@ -136,108 +94,91 @@
       <div class="wrap">
         <div class="card">
           <h2 class="q-title">Review your answers</h2>
-          <p class="helper-text">Check your answers before getting your result. Select Edit to change one.</p>
+          <p class="helper-text">Check your answers before continuing. Select Edit to change one.</p>
           <div id="review-list" class="review-list"></div>
           <div class="nav-row">
-            <button id="review-change-workflow" class="btn btn-ghost btn-small">Change workflow</button>
             <span class="spacer"></span>
-            <button id="review-continue" class="btn btn-primary">See My Result</button>
+            <button id="review-continue" class="btn btn-primary">Continue</button>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- RESULT -->
+  <!-- LEAD CAPTURE (gates the result) -->
+  <section id="screen-lead" class="screen">
+    <div class="assessment">
+      <div class="wrap">
+        <div class="card">
+          <h2 class="q-title">Almost there</h2>
+          <p class="helper-text">Tell us where to show your results.</p>
+          <form id="lead-form" novalidate>
+            <div class="field">
+              <label for="firstName">First name</label>
+              <input type="text" id="firstName" name="firstName" required />
+            </div>
+            <div class="field">
+              <label for="lastName">Last name</label>
+              <input type="text" id="lastName" name="lastName" required />
+            </div>
+            <div class="field">
+              <label for="email">Work email</label>
+              <input type="email" id="email" name="email" required />
+            </div>
+            <div class="field">
+              <label for="company">Company</label>
+              <input type="text" id="company" name="company" required />
+            </div>
+            <label class="consent">
+              <input type="checkbox" name="consent" required />
+              <span>I agree that BChanel may use this information in accordance with the <a href="#" target="_blank" rel="noopener">Privacy Policy</a>. <!-- TODO: swap in the live Privacy Policy URL once published --></span>
+            </label>
+            <div id="lead-error" class="form-error">Please fill in every field with a valid work email and check the consent box.</div>
+            <button id="lead-submit" type="submit" class="btn btn-primary btn-block">See My Results</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT (on-page, no gating beyond the lead form) -->
   <section id="screen-result" class="screen">
     <div class="assessment">
       <div class="wrap">
         <div class="card">
 
           <div class="result-block">
-            <h3 class="result-h">Your Workflow Review</h3>
-            <p id="result-workflow" class="result-workflow"></p>
+            <h3 class="result-h">Your Workflow</h3>
+            <p id="result-industry-workflow" class="result-workflow"></p>
           </div>
 
           <div class="result-block result-block-main">
             <h3 class="result-h">Suggested Starting Point</h3>
-            <p id="result-recommendation" class="result-recommendation"></p>
+            <p id="result-title" class="result-recommendation"></p>
           </div>
 
           <div class="result-block">
             <h3 class="result-h">What Your Answers Suggest</h3>
-            <p id="result-explanation" class="result-body"></p>
+            <p id="result-conclusion" class="result-body"></p>
+            <p id="result-effort" class="result-context"></p>
+            <p id="result-tools" class="result-context"></p>
           </div>
 
           <div class="result-block action-block">
-            <h3>Your First Step</h3>
-            <p id="result-first-step"></p>
-          </div>
-
-          <div id="other-areas-block" class="result-block" hidden>
-            <h3 class="result-h">Areas to Review</h3>
-            <div id="other-areas-list" class="findings-list"></div>
-          </div>
-
-          <div id="confirm-details-block" class="result-block confirm-block" hidden>
-            <h3 class="result-h">Details to Confirm</h3>
-            <div id="confirm-details-list" class="findings-list"></div>
-          </div>
-
-          <div id="risk-block" class="result-block risk-block" hidden>
-            <h3 class="result-h">Risk Consideration</h3>
-            <p>You reported that problems in this workflow may create financial, compliance, or other serious business consequences. Review the relevant controls, requirements, and failure points with the responsible team before introducing changes.</p>
+            <h3>Recommended First Actions</h3>
+            <ul id="result-actions-list" class="actions-list"></ul>
           </div>
 
           <div class="result-block">
-            <h3 class="result-h">Before You Automate</h3>
-            <p id="result-before-automate" class="result-body"></p>
+            <h3 class="result-h">Related Example</h3>
+            <p id="result-proof" class="result-body"></p>
           </div>
 
           <p class="disclaimer">This is an initial review based on your answers. It is not a complete operational assessment, confirmation of automation readiness, or calculation of automation ROI.</p>
 
-          <div class="cta-block cta-block-primary">
-            <a id="final-cta" class="btn btn-primary btn-block" href="https://calendly.com/lsmiriglia-bchanel" target="_blank" rel="noopener">Discuss This Workflow With BChanel</a>
-            <p class="cta-support">Bring one process and the issues you identified. We'll discuss what needs clarification before deciding whether redesign, integration, or automation makes sense.</p>
-          </div>
-
-          <!-- LEAD CAPTURE (embedded, appears after the free result) -->
-          <div class="lead-card">
-            <h3 class="result-h">Get Your Results and Action Checklist</h3>
-            <p class="helper-text">Receive a copy of your answers, your recommended starting point, and a short checklist for reviewing this workflow with your team.</p>
-            <form id="lead-form" novalidate>
-              <div class="field">
-                <label for="firstName">First name</label>
-                <input type="text" id="firstName" name="firstName" required />
-              </div>
-              <div class="field">
-                <label for="email">Work email</label>
-                <input type="email" id="email" name="email" required />
-              </div>
-              <div class="field">
-                <label for="company">Company</label>
-                <input type="text" id="company" name="company" required />
-              </div>
-              <div class="field">
-                <label for="role">Role <span class="optional-tag">(optional)</span></label>
-                <input type="text" id="role" name="role" />
-              </div>
-              <label class="consent">
-                <input type="checkbox" name="consent" required />
-                <span>By submitting this form, I agree that BChanel may use my information to send my workflow assessment results in accordance with the <a href="#" target="_blank" rel="noopener">Privacy Policy</a>. <!-- TODO: swap in the live Privacy Policy URL once published; wording gets one final approval alongside it --></span>
-              </label>
-              <label class="consent">
-                <input type="checkbox" name="marketing" />
-                <span>I'd also like to receive occasional insights and updates from BChanel. I can unsubscribe at any time.</span>
-              </label>
-              <div id="lead-error" class="form-error">Please fill in every required field, use a valid email, and check the first consent box.</div>
-              <button id="lead-submit" type="submit" class="btn btn-primary btn-block">Email My Results</button>
-              <p id="lead-success" class="lead-success" hidden>Thanks — your results and action checklist are on their way to your inbox.</p>
-            </form>
-          </div>
-
           <div class="cta-block">
-            <button id="pdf-download" class="btn btn-secondary btn-block">Download the Printable Diagnostic</button>
+            <a id="final-cta" class="btn btn-primary btn-block" href="https://calendly.com/lsmiriglia-bchanel" target="_blank" rel="noopener">Discuss This Workflow With BChanel</a>
+            <p class="cta-support">Bring this workflow and the answers you gave. We'll discuss what needs clarification before deciding whether redesign, integration, or automation makes sense.</p>
             <button id="assess-another" class="btn btn-ghost btn-block">Assess Another Workflow</button>
           </div>
         </div>
@@ -247,7 +188,7 @@
 
 </main>
 
-<footer>&copy; 2026 BChanel. This review is provided for informational purposes only.</footer>
+<p class="wfa-footnote">This review is provided for informational purposes only.</p>
 
 <div id="confirm-overlay" class="confirm-overlay" hidden>
   <div class="confirm-modal">
