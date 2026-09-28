@@ -1,10 +1,21 @@
 /* Workflow Automation Assessment — V3 (industry-branching, deterministic)
    No score, no live AI, no ROI estimates. Voting logic: Q1 sets the baseline
    vote, Q2 and Q5 each add one vote to a result family; highest tally wins,
-   with the tie-break rules spelled out in computeResultFamily(). */
+   with the tie-break rules spelled out in computeResultFamily(). Q3/Q4 never
+   change which result family wins — they only add descriptive "Operational
+   Context" and one extra recommended action (see q3Context()/q4Context()). */
 
-const QUESTIONNAIRE_VERSION = 'v3.0';
+const QUESTIONNAIRE_VERSION = 'v3.1';
 const LEAD_WEBHOOK_URL = 'https://hook.us2.make.com/rgnr1m57h2ipfopr7x9bibksc7puf15h';
+
+const CASE_URLS = {
+  amazonAds: 'https://www.bchanel.com/workflow-cases/amazon-ads-reporting-automation',
+  guestyFinance: 'https://www.bchanel.com/workflow-cases/guesty-finance-automation',
+  fbaShipment: 'https://www.bchanel.com/workflow-cases/fba-shipment-tracking-automation',
+  clientOnboarding: 'https://www.bchanel.com/workflow-cases/client-onboarding-automation',
+  overview: 'https://www.bchanel.com/workflow-cases',
+};
+function proof(label, url) { return { label, url }; }
 
 const INDUSTRIES = [
   { id: 'ecommerce', label: 'E-commerce' },
@@ -17,7 +28,8 @@ const INDUSTRIES = [
    with that industry's 5 result families (index 4 is always the
    "foundations" fallback family). Q1 alone also has an F option
    ("Other / I am not sure") that also maps to index 4 and flags the
-   tie-break rule in computeResultFamily(). */
+   tie-break rule in computeResultFamily(). Q4's last option is flagged
+   `unsure: true` and is mutually exclusive with every other Q4 choice. */
 const INDUSTRY_DATA = {
   ecommerce: {
     q3Label: 'Reported effort',
@@ -69,7 +81,7 @@ const INDUSTRY_DATA = {
           { value: 'D', label: 'ERP, WMS, or inventory software' },
           { value: 'E', label: 'BI or reporting platform' },
           { value: 'F', label: 'Project/task-management tool' },
-          { value: 'G', label: 'Other / I am not sure' },
+          { value: 'G', label: 'Other / I am not sure', unsure: true },
         ],
       },
       {
@@ -89,31 +101,31 @@ const INDUSTRY_DATA = {
         title: 'PPC Reporting & Ads Operations',
         conclusion: 'Your answers suggest that campaign reporting and analysis require repeated manual consolidation. The first opportunity is to standardize the reporting workflow and trusted inputs.',
         actions: ['Document report inputs', 'Define metric ownership', 'Test one repeatable reporting step before expanding automation'],
-        proof: 'Home Pick — Amazon Ads Reporting Workflow Case',
+        proof: proof('Amazon Ads Reporting', CASE_URLS.amazonAds),
       },
       inventory_visibility: {
         title: 'Inventory & Shipment Visibility',
         conclusion: 'Your answers suggest that inventory or shipment status is difficult to monitor consistently. A shared source of truth should be established before adding alerts or automation.',
         actions: ['Map status sources', 'Define delay/exception rules', 'Create one reliable operating view'],
-        proof: 'FBA Shipment Tracking Workflow Case',
+        proof: proof('FBA Shipment Tracking', CASE_URLS.fbaShipment),
       },
       sales_reporting: {
         title: 'Sales & Performance Reporting',
         conclusion: 'Your answers suggest that performance information is fragmented across channels or spreadsheets. Reporting definitions and data ownership should be clarified first.',
         actions: ['List data sources', 'Align KPI definitions', 'Establish one reporting cadence and owner'],
-        proof: 'Home Pick reporting case as a related example',
+        proof: proof('Workflow Cases Overview', CASE_URLS.overview),
       },
       catalog_ops: {
         title: 'Catalog & Product Operations',
         conclusion: 'Your answers suggest that product information is maintained through repeated manual updates. The priority is to define the source record and update rules.',
         actions: ['Identify duplicate updates', 'Assign the source of truth', 'Standardize validation and exception handling'],
-        proof: 'Workflow Cases overview',
+        proof: proof('Workflow Cases Overview', CASE_URLS.overview),
       },
       foundations: {
         title: 'E-commerce Operations Foundations',
         conclusion: 'Your answers suggest that ownership, handoffs, or status visibility need clarification before selecting an automation opportunity.',
         actions: ['Map the workflow', 'Assign owners and escalation points', 'Identify one bottleneck to measure'],
-        proof: 'Workflow Cases overview (Client Onboarding as a related cross-system example)',
+        proof: proof('Client Onboarding', CASE_URLS.clientOnboarding),
       },
     },
   },
@@ -167,7 +179,7 @@ const INDUSTRY_DATA = {
           { value: 'C', label: 'Email, SMS, or guest-messaging tools' },
           { value: 'D', label: 'Cleaning, maintenance, or task-management tools' },
           { value: 'E', label: 'Accounting, spreadsheets, or BI tools' },
-          { value: 'F', label: 'Other / I am not sure' },
+          { value: 'F', label: 'Other / I am not sure', unsure: true },
         ],
       },
       {
@@ -187,31 +199,31 @@ const INDUSTRY_DATA = {
         title: 'Reservation Coordination',
         conclusion: 'Your answers suggest that reservation and availability information requires repeated checking or coordination. The first step is to clarify system ownership and exception rules.',
         actions: ['Map reservation sources', 'Define the trusted availability record', 'Document conflict and exception handling'],
-        proof: 'TAIMS is a related hospitality example, not a reservation-specific case',
+        proof: proof('Workflow Cases Overview', CASE_URLS.overview),
       },
       guest_communication: {
         title: 'Guest Communication',
         conclusion: 'Your answers suggest that guest communication depends on repeated manual follow-up. Standardize triggers, message ownership, and escalation before automating communications.',
         actions: ['Map guest-message moments', 'Approve templates and owners', 'Define when a person must intervene'],
-        proof: 'Workflow Cases overview; no dedicated guest-communication case currently',
+        proof: proof('Workflow Cases Overview', CASE_URLS.overview),
       },
       turnover_coordination: {
         title: 'Turnover & Task Coordination',
         conclusion: 'Your answers suggest that turnover work is coordinated across people or tools without one reliable operational view.',
         actions: ['Define turnover stages', 'Assign owners and deadlines', 'Create an exception/escalation path'],
-        proof: 'TAIMS as a related hospitality workflow example',
+        proof: proof('Guesty Finance Automation', CASE_URLS.guestyFinance),
       },
       finance_reconciliation: {
         title: 'Finance & Reconciliation',
         conclusion: 'Your answers suggest that property financial information requires manual extraction or reconciliation. Data definitions and validation controls should be clarified first.',
         actions: ['List financial sources', 'Define reconciliation rules', 'Test a controlled automated update'],
-        proof: 'TAIMS — Guesty Finance Workflow Case',
+        proof: proof('Guesty Finance Automation', CASE_URLS.guestyFinance),
       },
       multi_property_visibility: {
         title: 'Multi-property Visibility',
         conclusion: 'Your answers suggest that managers lack a consistent view across properties. The priority is to define common statuses, owners, and reporting rules.',
         actions: ['Agree common status definitions', 'Identify source systems', 'Build one management view'],
-        proof: 'TAIMS — Guesty Finance Workflow Case as a related visibility example',
+        proof: proof('Guesty Finance Automation', CASE_URLS.guestyFinance),
       },
     },
   },
@@ -265,7 +277,7 @@ const INDUSTRY_DATA = {
           { value: 'C', label: 'Subscription billing or accounting platform' },
           { value: 'D', label: 'Project, product, or engineering-management tool' },
           { value: 'E', label: 'Data warehouse, BI, spreadsheets, or reporting tools' },
-          { value: 'F', label: 'Other / I am not sure' },
+          { value: 'F', label: 'Other / I am not sure', unsure: true },
         ],
       },
       {
@@ -285,31 +297,31 @@ const INDUSTRY_DATA = {
         title: 'Customer Onboarding',
         conclusion: 'Your answers suggest that customer onboarding depends on repeated handoffs or duplicate entry. Clarify ownership and required information before connecting systems.',
         actions: ['Map onboarding stages', 'Define required data and owners', 'Automate one verified handoff'],
-        proof: 'Client Onboarding & Project Delivery — related IT Services example, not a SaaS case',
+        proof: proof('Client Onboarding', CASE_URLS.clientOnboarding),
       },
       support_success: {
         title: 'Support & Customer Success',
         conclusion: 'Your answers suggest that requests and follow-ups are difficult to coordinate consistently. The first priority is shared status and clear escalation.',
         actions: ['Define request categories', 'Establish ownership/SLA rules', 'Create one status view'],
-        proof: 'Workflow Cases overview; no dedicated SaaS-support case currently',
+        proof: proof('Workflow Cases Overview', CASE_URLS.overview),
       },
       billing_renewals: {
         title: 'Billing & Renewals',
         conclusion: 'Your answers suggest that billing or renewal activity requires repeated checking or follow-up. Standardize triggers, records, and exception ownership first.',
         actions: ['Map billing events', 'Define renewal/failure rules', 'Test one notification or handoff'],
-        proof: 'Client Onboarding case is only a related invoicing example',
+        proof: proof('Client Onboarding', CASE_URLS.clientOnboarding),
       },
       revenue_ops_reporting: {
         title: 'Revenue Operations & Reporting',
         conclusion: 'Your answers suggest that revenue information is fragmented across systems. Metric definitions and trusted sources should be aligned before automating reporting.',
         actions: ['List data sources', 'Agree lifecycle/KPI definitions', 'Establish one reporting owner and cadence'],
-        proof: 'Workflow Cases overview; Home Pick as a related cross-industry reporting example',
+        proof: proof('Amazon Ads Reporting', CASE_URLS.amazonAds),
       },
       cross_functional_foundations: {
         title: 'Cross-functional Workflow Foundations',
         conclusion: 'Your answers suggest that ownership and status across teams require clarification before introducing more tools or automation.',
         actions: ['Map cross-team handoffs', 'Assign owners', 'Define completion and escalation rules'],
-        proof: 'Client Onboarding & Project Delivery as a related cross-functional example',
+        proof: proof('Client Onboarding', CASE_URLS.clientOnboarding),
       },
     },
   },
@@ -364,7 +376,7 @@ const INDUSTRY_DATA = {
           { value: 'D', label: 'Google Sheets or Excel' },
           { value: 'E', label: 'Email, chat, or shared documents' },
           { value: 'F', label: 'BI or reporting platform' },
-          { value: 'G', label: 'Other / I am not sure' },
+          { value: 'G', label: 'Other / I am not sure', unsure: true },
         ],
       },
       {
@@ -384,31 +396,31 @@ const INDUSTRY_DATA = {
         title: 'Reporting & Data Preparation',
         conclusion: 'Your answers suggest that reporting depends on repeated collection or consolidation. The first step is to clarify definitions, sources, and ownership.',
         actions: ['List report inputs', 'Agree metric definitions', 'Establish one owner and reporting cadence'],
-        proof: 'Home Pick as a related cross-industry reporting example',
+        proof: proof('Amazon Ads Reporting', CASE_URLS.amazonAds),
       },
       onboarding_coordination: {
         title: 'Onboarding Coordination',
         conclusion: 'Your answers suggest that onboarding depends on repeated information requests or handoffs. Standardize required inputs and responsibility before automation.',
         actions: ['Map onboarding stages', 'Define required information', 'Automate one validated handoff'],
-        proof: 'Client Onboarding & Project Delivery Workflow Case',
+        proof: proof('Client Onboarding', CASE_URLS.clientOnboarding),
       },
       approval_workflow_clarity: {
         title: 'Approval Workflow Clarity',
         conclusion: 'Your answers suggest that work waits for approvals or unclear decisions. Approval criteria, ownership, and escalation should be documented first.',
         actions: ['List approval points', 'Remove duplicates', 'Define approver, response time, and escalation'],
-        proof: 'Workflow Cases overview; no dedicated approval case currently',
+        proof: proof('Workflow Cases Overview', CASE_URLS.overview),
       },
       finance_reconciliation: {
         title: 'Finance & Reconciliation',
         conclusion: 'Your answers suggest that finance work requires repeated checking or reconciliation. Define source records and controls before automating updates.',
         actions: ['Identify source records', 'Document validation rules', 'Test one controlled automated step'],
-        proof: 'TAIMS finance case as a related cross-industry example',
+        proof: proof('Guesty Finance Automation', CASE_URLS.guestyFinance),
       },
       service_workflow_foundations: {
         title: 'Service & Workflow Foundations',
         conclusion: 'Your answers suggest that ownership, status, or cross-team handoffs need clarification before additional tools or automation.',
         actions: ['Map the service workflow', 'Assign owners', 'Define handoff, completion, and escalation rules'],
-        proof: 'Client Onboarding & Project Delivery as a related service-operations example',
+        proof: proof('Client Onboarding', CASE_URLS.clientOnboarding),
       },
     },
   },
@@ -556,6 +568,24 @@ function selectIndustry(id, btn) {
   persistState();
 }
 
+function requestBackToIndustry() {
+  const hasAnswers = Object.keys(state.answers).length > 0;
+  const doGoBack = () => {
+    state.industry = null;
+    state.answers = {};
+    state.currentIndex = 0;
+    state.editingFromReview = false;
+    persistState();
+    showScreen('industry');
+    renderIndustryGrid();
+  };
+  if (hasAnswers) {
+    showConfirm('Going back to business type will clear your current answers. Continue?', doGoBack);
+  } else {
+    doGoBack();
+  }
+}
+
 /* ---------- Question screen ---------- */
 function renderQuestion() {
   const questions = currentQuestions();
@@ -590,9 +620,22 @@ function renderQuestion() {
     btn.addEventListener('click', () => {
       if (q.multiSelect) {
         const arr = state.answers[q.id] ? state.answers[q.id].slice() : [];
-        const idx = arr.indexOf(opt.value);
-        if (idx > -1) arr.splice(idx, 1);
-        else arr.push(opt.value);
+        if (opt.unsure) {
+          // Exclusive: selecting "Other / I am not sure" clears everything else.
+          // Clicking it again while it's the only selection deselects it.
+          if (arr.length === 1 && arr[0] === opt.value) arr.length = 0;
+          else { arr.length = 0; arr.push(opt.value); }
+        } else {
+          // Selecting any real tool removes "Other / I am not sure" if present.
+          const otherIdx = arr.findIndex((v) => {
+            const o = q.options.find((oo) => oo.value === v);
+            return o && o.unsure;
+          });
+          if (otherIdx > -1) arr.splice(otherIdx, 1);
+          const idx = arr.indexOf(opt.value);
+          if (idx > -1) arr.splice(idx, 1);
+          else arr.push(opt.value);
+        }
         state.answers[q.id] = arr;
       } else {
         state.answers[q.id] = opt.value;
@@ -603,7 +646,10 @@ function renderQuestion() {
     list.appendChild(btn);
   });
 
-  document.getElementById('q-back').style.visibility = step === 1 ? 'hidden' : 'visible';
+  const isFirstStep = step === 1;
+  document.getElementById('q-back').style.display = isFirstStep ? 'none' : '';
+  document.getElementById('back-to-industry').style.display = isFirstStep ? '' : 'none';
+
   const continueBtn = document.getElementById('q-continue');
   const answered = q.multiSelect ? currentAnswer && currentAnswer.length > 0 : !!currentAnswer;
   continueBtn.disabled = !answered;
@@ -677,10 +723,54 @@ function computeResultFamily() {
   return data.families[winnerIndex];
 }
 
+/* Q3 never changes the result family — it only describes reported
+   effort/scale in qualitative terms for the "Operational Context" section. */
+function q3Context(q3Value) {
+  const words = ['limited', 'recurring', 'meaningful', 'significant'];
+  const idx = { A: 0, B: 1, C: 2, D: 3, E: 4 }[q3Value];
+  if (idx === 4) {
+    return 'This detail is still needing validation, which is worth confirming before prioritizing this workflow.';
+  }
+  return `This is considered a ${words[idx]} level of activity for this type of workflow.`;
+}
+
+/* Q4 never changes the result family — it only describes tool involvement
+   and contributes exactly one extra recommended action. */
+function q4Context(q4Question, selectedValues) {
+  if (!selectedValues || !selectedValues.length) return { sentence: '', action: null };
+
+  const isUnsure = selectedValues.length === 1
+    && (() => { const o = q4Question.options.find((oo) => oo.value === selectedValues[0]); return o && o.unsure; })();
+
+  if (isUnsure) {
+    return {
+      sentence: 'Tool involvement is not yet confirmed, so the priority is to complete a tool inventory first.',
+      action: 'Complete a full tool inventory for this workflow before deciding on next steps.',
+    };
+  }
+  const n = selectedValues.length;
+  if (n === 1) {
+    return {
+      sentence: 'With one tool involved, the priority is to review the current platform first.',
+      action: "Review the current platform's setup and limitations before adding anything new.",
+    };
+  }
+  if (n === 2) {
+    return {
+      sentence: 'With two tools involved, the priority is to clarify the source of truth and the handoff between them.',
+      action: 'Clarify which tool holds the source of truth and how handoffs between them work.',
+    };
+  }
+  return {
+    sentence: `With ${n} tools involved, the priority is to map the system and data flow before changing anything.`,
+    action: 'Map how data and tasks move across all the tools involved before making changes.',
+  };
+}
+
 function computeResult() {
   const data = INDUSTRY_DATA[state.industry];
   const family = computeResultFamily();
-  const result = data.results[family];
+  const baseResult = data.results[family];
   const q1 = data.questions[0];
   const q3 = data.questions[2];
   const q4 = data.questions[3];
@@ -689,14 +779,20 @@ function computeResult() {
   const effortAnswer = optionLabel(q3, state.answers.q3);
   const toolsSelected = (state.answers.q4 || []).map((v) => optionLabel(q4, v));
 
+  const q4Info = q4Context(q4, state.answers.q4 || []);
+  const actions = baseResult.actions.slice();
+  if (q4Info.action) actions.push(q4Info.action);
+
   return {
     family,
-    result,
+    result: { ...baseResult, actions },
     industryLabel: industryLabelFor(state.industry),
     workflowAnswer,
     q3Label: data.q3Label,
     effortAnswer,
     toolsSelected,
+    q3Sentence: q3Context(state.answers.q3),
+    q4Sentence: q4Info.sentence,
   };
 }
 
@@ -707,10 +803,11 @@ function renderResult() {
   document.getElementById('result-title').textContent = r.result.title;
   document.getElementById('result-conclusion').textContent = r.result.conclusion;
 
-  document.getElementById('result-effort').textContent = `${r.q3Label}: ${r.effortAnswer}`;
+  document.getElementById('result-effort').textContent = `${r.q3Label}: ${r.effortAnswer}. ${r.q3Sentence}`;
   const toolsEl = document.getElementById('result-tools');
   if (r.toolsSelected.length) {
-    toolsEl.textContent = `Tools involved: ${r.toolsSelected.join(', ')}`;
+    const toolLine = `Tools involved: ${r.toolsSelected.join(', ')}.`;
+    toolsEl.textContent = r.q4Sentence ? `${toolLine} ${r.q4Sentence}` : toolLine;
     toolsEl.hidden = false;
   } else {
     toolsEl.hidden = true;
@@ -719,7 +816,8 @@ function renderResult() {
   const actionsList = document.getElementById('result-actions-list');
   actionsList.innerHTML = r.result.actions.map((a) => `<li>${a}</li>`).join('');
 
-  document.getElementById('result-proof').textContent = r.result.proof;
+  const proofEl = document.getElementById('result-proof');
+  proofEl.innerHTML = `<a href="${r.result.proof.url}" target="_blank" rel="noopener">${r.result.proof.label}</a>`;
 
   track('assessment_result_shown', {
     industry: state.industry,
@@ -764,9 +862,7 @@ async function submitLead() {
     submitted_at: new Date().toISOString(),
   };
 
-  /* V3: CRM write only — no automatic result email in this phase.
-     TODO(Make.com): the Gmail step in this scenario must be disabled/removed
-     so submissions here don't trigger the old V2 email send. */
+  /* V3: CRM write only — no automatic result email in this phase. */
   const res = await fetch(LEAD_WEBHOOK_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -812,6 +908,8 @@ document.addEventListener('DOMContentLoaded', () => {
     goToQuestion(0);
   });
 
+  document.getElementById('back-to-industry').addEventListener('click', requestBackToIndustry);
+
   document.getElementById('q-back').addEventListener('click', () => {
     if (state.currentIndex === 0) return;
     goToQuestion(state.currentIndex - 1);
@@ -832,6 +930,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('review-continue').addEventListener('click', () => {
     showScreen('lead');
+  });
+
+  document.getElementById('lead-back-to-review').addEventListener('click', () => {
+    showScreen('review');
+    renderReview();
   });
 
   const leadForm = document.getElementById('lead-form');

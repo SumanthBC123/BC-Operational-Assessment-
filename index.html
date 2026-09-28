@@ -80,6 +80,7 @@
           <div id="option-list" class="option-list"></div>
           <div class="nav-row">
             <button id="q-back" class="btn btn-ghost">← Back</button>
+            <button id="back-to-industry" class="btn btn-ghost" style="display:none;">← Back to Business Type</button>
             <span class="spacer"></span>
             <button id="q-continue" class="btn btn-primary" disabled>Continue</button>
           </div>
@@ -111,7 +112,9 @@
       <div class="wrap">
         <div class="card">
           <h2 class="q-title">Almost there</h2>
-          <p class="helper-text">Tell us where to show your results.</p>
+          <p class="helper-text" style="margin-bottom:2px;">Enter your details to view your workflow recommendation.</p>
+          <p class="helper-text">Your result will appear immediately on this page.</p>
+          <button id="lead-back-to-review" type="button" class="btn btn-ghost btn-small" style="padding-left:0; margin-bottom:12px;">← Back to Review Answers</button>
           <form id="lead-form" novalidate>
             <div class="field">
               <label for="firstName">First name</label>
@@ -160,6 +163,10 @@
           <div class="result-block">
             <h3 class="result-h">What Your Answers Suggest</h3>
             <p id="result-conclusion" class="result-body"></p>
+          </div>
+
+          <div class="result-block">
+            <h3 class="result-h">Operational Context</h3>
             <p id="result-effort" class="result-context"></p>
             <p id="result-tools" class="result-context"></p>
           </div>
