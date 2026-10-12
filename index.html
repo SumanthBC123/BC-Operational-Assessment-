@@ -20,7 +20,7 @@
 </head>
 <body>
 
-<div class="mock-banner">PROTOTYPE V3 — GA4, the Calendly link, and lead storage are live. No result email in this phase (by design). The printable diagnostic and the Privacy Policy link are still pending.</div>
+<div class="mock-banner">PROTOTYPE V4 (case-led) — GA4, the Calendly link, and lead storage are live. No result email or PDF in this phase (by design). The Privacy Policy link is still pending.</div>
 
 <header class="topbar">
   <div class="wrap">
@@ -38,11 +38,11 @@
       <div class="wrap">
         <span class="eyebrow">Workflow Automation Assessment</span>
         <h1>Find the Right Next Step for Your Workflow</h1>
-        <p class="sub">Answer a few questions about one recurring workflow in your business and see what to review first, before considering automation.</p>
+        <p class="sub">Select one recurring workflow in your business, answer five short questions, and receive a relevant workflow example from a published BChanel case.</p>
         <button id="start-assessment" class="btn btn-primary">Start the Assessment</button>
         <div class="indicators">
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>5 quick questions</span>
-          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>Built for your industry</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>Backed by published cases</span>
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Result on this page</span>
         </div>
       </div>
@@ -78,6 +78,7 @@
           <h2 id="q-title" class="q-title"></h2>
           <p id="q-helper" class="helper-text"></p>
           <div id="option-list" class="option-list"></div>
+          <p id="different-workflow-wrap" class="different-workflow" style="display:none;"><a id="different-workflow" href="#">My workflow is different</a></p>
           <div class="nav-row">
             <button id="q-back" class="btn btn-ghost">← Back</button>
             <button id="back-to-industry" class="btn btn-ghost" style="display:none;">← Back to Business Type</button>
@@ -150,41 +151,33 @@
       <div class="wrap">
         <div class="card">
 
-          <div class="result-block">
-            <h3 class="result-h">Your Workflow</h3>
-            <p id="result-industry-workflow" class="result-workflow"></p>
-          </div>
-
           <div class="result-block result-block-main">
-            <h3 class="result-h">Suggested Starting Point</h3>
+            <h3 class="result-h">Your Workflow Result</h3>
             <p id="result-title" class="result-recommendation"></p>
+            <p id="result-opening" class="result-body"></p>
           </div>
 
           <div class="result-block">
-            <h3 class="result-h">What Your Answers Suggest</h3>
-            <p id="result-conclusion" class="result-body"></p>
+            <h3 class="result-h">Reported Operational Context</h3>
+            <dl id="result-context-list" class="context-list"></dl>
+            <p id="result-effort-note" class="result-context"></p>
           </div>
 
           <div class="result-block">
-            <h3 class="result-h">Operational Context</h3>
-            <p id="result-effort" class="result-context"></p>
-            <p id="result-tools" class="result-context"></p>
+            <h3 class="result-h">Comparable Workflow Direction</h3>
+            <p id="result-comparable" class="result-body"></p>
           </div>
 
           <div class="result-block action-block">
-            <h3>Recommended First Actions</h3>
-            <ul id="result-actions-list" class="actions-list"></ul>
-          </div>
-
-          <div class="result-block">
-            <h3 class="result-h">Related Example</h3>
+            <h3>Verified BChanel Example</h3>
             <p id="result-proof" class="result-body"></p>
           </div>
 
-          <p class="disclaimer">This is an initial review based on your answers. It is not a complete operational assessment, confirmation of automation readiness, or calculation of automation ROI.</p>
+          <p class="disclaimer">This is an initial directional result. It is not a complete operational assessment, confirmed architecture, or ROI estimate.</p>
 
           <div class="cta-block">
-            <a id="final-cta" class="btn btn-primary btn-block" href="https://calendly.com/lsmiriglia-bchanel" target="_blank" rel="noopener">Discuss This Workflow With BChanel</a>
+            <a id="case-cta" class="btn btn-primary btn-block" href="#" target="_blank" rel="noopener">View the Full Workflow Case</a>
+            <a id="final-cta" class="btn btn-secondary btn-block" href="https://calendly.com/lsmiriglia-bchanel" target="_blank" rel="noopener">Discuss This Workflow With BChanel</a>
             <p class="cta-support">Bring this workflow and the answers you gave. We'll discuss what needs clarification before deciding whether redesign, integration, or automation makes sense.</p>
             <button id="assess-another" class="btn btn-ghost btn-block">Assess Another Workflow</button>
           </div>

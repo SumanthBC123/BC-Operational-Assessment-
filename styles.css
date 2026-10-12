@@ -173,6 +173,7 @@ img, svg { max-width: 100%; }
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
   border: 1.5px solid var(--border);
   border-radius: 8px;
   padding: 13px 16px;
@@ -206,7 +207,7 @@ img, svg { max-width: 100%; }
 .option .label { font-weight: 500; color: var(--ink); font-size: 0.96rem; }
 
 /* Industry select */
-.industry-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.industry-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .industry-card {
   border: 1.5px solid var(--border);
   border-radius: 8px;
@@ -265,7 +266,17 @@ img, svg { max-width: 100%; }
 .consent a { color: var(--teal-dark); }
 .form-error { color: #c0392b; font-size: 0.82rem; margin-top: 12px; display: none; }
 
+/* Secondary exit link under Q1 */
+.different-workflow { text-align: center; margin: 14px 0 0; font-size: 0.9rem; }
+.different-workflow a { color: var(--teal-dark); }
+.different-workflow a:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 2px; }
+
 /* Result */
+.context-list { margin: 0; }
+.context-row { display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 0.92rem; line-height: 1.5; }
+.context-row:last-child { border-bottom: none; }
+.context-row dt { flex: 0 0 170px; font-weight: 600; color: var(--navy); }
+.context-row dd { margin: 0; color: var(--ink); }
 .result-block { margin: 0 0 26px; }
 .result-block:last-of-type { margin-bottom: 0; }
 .result-h {
@@ -313,7 +324,7 @@ img, svg { max-width: 100%; }
 }
 
 .cta-block { text-align: center; margin-top: 4px; }
-.cta-block .btn-primary { margin-bottom: 12px; }
+.cta-block .btn-primary, .cta-block .btn-secondary { margin-bottom: 12px; }
 .cta-support { color: var(--ink-soft); font-size: 0.87rem; max-width: 460px; margin: 0 auto 16px; line-height: 1.55; }
 
 .mock-banner {
@@ -358,6 +369,8 @@ img, svg { max-width: 100%; }
 
 @media (max-width: 640px) {
   .industry-grid { grid-template-columns: 1fr; }
+  .context-row { flex-direction: column; gap: 2px; }
+  .context-row dt { flex: none; }
   .card { padding: 22px 18px; }
   .hero { padding: 44px 16px 36px; }
   .meta-row { flex-direction: column; align-items: flex-start; gap: 2px; }

@@ -1,436 +1,195 @@
-/* Workflow Automation Assessment — V3 (industry-branching, deterministic)
-   No score, no live AI, no ROI estimates. Voting logic: Q1 sets the baseline
-   vote, Q2 and Q5 each add one vote to a result family; highest tally wins,
-   with the tie-break rules spelled out in computeResultFamily(). Q3/Q4 never
-   change which result family wins — they only add descriptive "Operational
-   Context" and one extra recommended action (see q3Context()/q4Context()). */
+/* Workflow Automation Assessment — V4 (case-led, deterministic)
+   Industry filters the Q1 workflow choices. Q1 alone sets the result route
+   (amazon_ads, fba_tracking, guesty_finance or revenue_signals) and the exact
+   matching case URL. Q2-Q5 are loaded from the selected route; they only
+   personalize the preview and feed an internal priority score that is stored
+   with the lead and never shown as the recommendation.
+   No live AI, no ROI or savings claims, no generic/unsupported result. */
 
-const QUESTIONNAIRE_VERSION = 'v3.1';
+const QUESTIONNAIRE_VERSION = 'v4.0';
 const LEAD_WEBHOOK_URL = 'https://hook.us2.make.com/rgnr1m57h2ipfopr7x9bibksc7puf15h';
 
-const CASE_URLS = {
-  amazonAds: 'https://www.bchanel.com/workflow-cases/amazon-ads-reporting-automation',
-  guestyFinance: 'https://www.bchanel.com/workflow-cases/guesty-finance-automation',
-  fbaShipment: 'https://www.bchanel.com/workflow-cases/fba-shipment-tracking-automation',
-  clientOnboarding: 'https://www.bchanel.com/workflow-cases/client-onboarding-automation',
-  overview: 'https://www.bchanel.com/workflow-cases',
-};
-function proof(label, url) { return { label, url }; }
+/* Booking page used by the result CTA and by the "My workflow is different"
+   exit link. Swap OPERATIONAL_ASSESSMENT_URL if a dedicated page is published. */
+const BOOKING_URL = 'https://calendly.com/lsmiriglia-bchanel';
+const OPERATIONAL_ASSESSMENT_URL = BOOKING_URL;
 
 const INDUSTRIES = [
   { id: 'ecommerce', label: 'E-commerce' },
   { id: 'hospitality', label: 'Hospitality' },
-  { id: 'saas', label: 'SaaS / Software' },
-  { id: 'other', label: 'Other / General Business' },
+  { id: 'agencies', label: 'Agencies / Service Businesses' },
 ];
 
-/* Every industry's Q1/Q2/Q5 options are ordered A-E to line up positionally
-   with that industry's 5 result families (index 4 is always the
-   "foundations" fallback family). Q1 alone also has an F option
-   ("Other / I am not sure") that also maps to index 4 and flags the
-   tie-break rule in computeResultFamily(). Q4's last option is flagged
-   `unsure: true` and is mutually exclusive with every other Q4 choice. */
-const INDUSTRY_DATA = {
-  ecommerce: {
-    q3Label: 'Reported effort',
-    families: ['ppc_ads', 'inventory_visibility', 'sales_reporting', 'catalog_ops', 'foundations'],
-    questions: [
-      {
-        id: 'q1',
-        text: 'Which e-commerce workflow would you like help reviewing first?',
-        options: [
-          { value: 'A', label: 'Amazon or retail-media advertising and PPC' },
-          { value: 'B', label: 'Inventory, FBA/inbound shipments, or stock availability' },
-          { value: 'C', label: 'Sales and performance reporting across channels' },
-          { value: 'D', label: 'Product listings, catalog, or content updates' },
-          { value: 'E', label: 'Order fulfillment or customer-service handoffs' },
-          { value: 'F', label: 'Other / I am not sure' },
-        ],
-      },
-      {
-        id: 'q2',
-        text: 'What currently creates the most avoidable work in this workflow?',
-        options: [
-          { value: 'A', label: 'Campaign data is manually downloaded or combined' },
-          { value: 'B', label: 'Stock, shipment, or receiving status must be checked manually' },
-          { value: 'C', label: 'Sales data is consolidated across reports or spreadsheets' },
-          { value: 'D', label: 'Product information is repeatedly updated in different places' },
-          { value: 'E', label: 'People chase approvals, ownership, or status updates' },
-        ],
-      },
-      {
-        id: 'q3',
-        text: 'Approximately how much team time does this workflow require each week?',
-        options: [
-          { value: 'A', label: 'Less than 2 hours' },
-          { value: 'B', label: '2–5 hours' },
-          { value: 'C', label: '6–10 hours' },
-          { value: 'D', label: 'More than 10 hours' },
-          { value: 'E', label: 'I am not sure' },
-        ],
-      },
-      {
-        id: 'q4',
-        text: 'Which tools are currently involved in this workflow?',
-        helper: 'Select all that apply.',
-        multiSelect: true,
-        options: [
-          { value: 'A', label: 'Amazon Seller Central or Amazon Ads' },
-          { value: 'B', label: 'Shopify or another marketplace/store platform' },
-          { value: 'C', label: 'Google Sheets or Excel' },
-          { value: 'D', label: 'ERP, WMS, or inventory software' },
-          { value: 'E', label: 'BI or reporting platform' },
-          { value: 'F', label: 'Project/task-management tool' },
-          { value: 'G', label: 'Other / I am not sure', unsure: true },
-        ],
-      },
-      {
-        id: 'q5',
-        text: 'Which improvement would create the most value for your team?',
-        options: [
-          { value: 'A', label: 'Reduce PPC reporting and analysis time' },
-          { value: 'B', label: 'Improve inventory and shipment visibility' },
-          { value: 'C', label: 'Create one reliable performance-reporting view' },
-          { value: 'D', label: 'Make product and catalog updates faster and more consistent' },
-          { value: 'E', label: 'Reduce handoff delays and clarify ownership' },
-        ],
-      },
-    ],
-    results: {
-      ppc_ads: {
-        title: 'PPC Reporting & Ads Operations',
-        conclusion: 'Your answers suggest that campaign reporting and analysis require repeated manual consolidation. The first opportunity is to standardize the reporting workflow and trusted inputs.',
-        actions: ['Document report inputs', 'Define metric ownership', 'Test one repeatable reporting step before expanding automation'],
-        proof: proof('Amazon Ads Reporting', CASE_URLS.amazonAds),
-      },
-      inventory_visibility: {
-        title: 'Inventory & Shipment Visibility',
-        conclusion: 'Your answers suggest that inventory or shipment status is difficult to monitor consistently. A shared source of truth should be established before adding alerts or automation.',
-        actions: ['Map status sources', 'Define delay/exception rules', 'Create one reliable operating view'],
-        proof: proof('FBA Shipment Tracking', CASE_URLS.fbaShipment),
-      },
-      sales_reporting: {
-        title: 'Sales & Performance Reporting',
-        conclusion: 'Your answers suggest that performance information is fragmented across channels or spreadsheets. Reporting definitions and data ownership should be clarified first.',
-        actions: ['List data sources', 'Align KPI definitions', 'Establish one reporting cadence and owner'],
-        proof: proof('Workflow Cases Overview', CASE_URLS.overview),
-      },
-      catalog_ops: {
-        title: 'Catalog & Product Operations',
-        conclusion: 'Your answers suggest that product information is maintained through repeated manual updates. The priority is to define the source record and update rules.',
-        actions: ['Identify duplicate updates', 'Assign the source of truth', 'Standardize validation and exception handling'],
-        proof: proof('Workflow Cases Overview', CASE_URLS.overview),
-      },
-      foundations: {
-        title: 'E-commerce Operations Foundations',
-        conclusion: 'Your answers suggest that ownership, handoffs, or status visibility need clarification before selecting an automation opportunity.',
-        actions: ['Map the workflow', 'Assign owners and escalation points', 'Identify one bottleneck to measure'],
-        proof: proof('Client Onboarding', CASE_URLS.clientOnboarding),
-      },
+/* Q1 is the only question that differs by industry. Each option carries the
+   route (result ID) it selects. */
+const Q1_BY_INDUSTRY = {
+  ecommerce: [
+    { value: 'amazon_ads', label: 'Amazon or retail-media advertising reporting' },
+    { value: 'fba_tracking', label: 'FBA inbound shipment monitoring and delay alerts' },
+    { value: 'revenue_signals', label: 'Revenue and performance monitoring across dashboards or spreadsheets' },
+  ],
+  hospitality: [
+    { value: 'guesty_finance', label: 'Reservation finance and reconciliation across properties' },
+    { value: 'revenue_signals', label: 'Revenue and performance monitoring across dashboards or spreadsheets' },
+  ],
+  agencies: [
+    { value: 'revenue_signals', label: 'Revenue and performance monitoring across dashboards or spreadsheets' },
+  ],
+};
+
+const Q1_TEXT = 'Which workflow would you like help reviewing first?';
+
+/* Q3 / Q5 answer sets are identical across routes; only the Q3 question text
+   and the first Q5 option change. */
+const Q3_OPTIONS = [
+  { value: 'A', label: 'Less than 2 hours', annual: 'Up to approximately 100 hours per year' },
+  { value: 'B', label: '2–5 hours', annual: 'Approximately 100–260 hours per year' },
+  { value: 'C', label: '6–10 hours', annual: 'Approximately 300–520 hours per year' },
+  { value: 'D', label: 'More than 10 hours', annual: 'More than 520 hours per year' },
+  { value: 'E', label: 'We do not currently measure it', annual: null },
+];
+const ANNUAL_UNMEASURED = 'Your current annual effort is not yet measured';
+
+function q5Options(firstLabel) {
+  return [
+    { value: 'A', label: firstLabel },
+    { value: 'B', label: 'Within 1–3 months' },
+    { value: 'C', label: 'Within 3–6 months' },
+    { value: 'D', label: 'We are exploring improvements for a later stage' },
+    { value: 'E', label: 'I am not sure' },
+  ];
+}
+
+const Q4_TEXT = 'Which conditions make this workflow difficult to operate?';
+const Q4_HELPER = 'Select all that apply.';
+const Q5_TEXT = 'When does your team realistically need this workflow to improve?';
+
+/* Each route: Q2-Q5 content, plus the case-backed result copy. Q2 options
+   carry `phrase` (inserted into the result) and `score`; Q4 options carry
+   `exclusive` for the final "None / not sure" choice. */
+const ROUTES = {
+  amazon_ads: {
+    title: 'Amazon Ads Reporting Workflow',
+    selected: 'Amazon advertising reporting',
+    caseUrl: 'https://www.bchanel.com/workflow-cases/amazon-ads-reporting-automation',
+    q2: {
+      text: 'How is your Amazon or retail-media reporting workflow handled today?',
+      options: [
+        { value: 'A', label: 'Reports are downloaded manually and PPC metrics are calculated in Excel or Google Sheets', phrase: 'reporting is prepared through manual downloads and spreadsheet calculations' },
+        { value: 'B', label: 'Scheduled reports arrive by email, but someone still extracts and consolidates the data', phrase: 'scheduled reports still require manual extraction and consolidation' },
+        { value: 'C', label: 'Several tools or connectors collect data, but the final report is assembled manually', phrase: 'multiple tools collect data, but the final report is still assembled manually' },
+        { value: 'D', label: 'The workflow is partly automated, but formulas, mappings or data checks frequently need correction', phrase: 'the workflow is partially automated but still requires frequent correction' },
+        { value: 'E', label: 'I am not sure how the reporting workflow is currently assembled', phrase: 'the current reporting method is not yet fully documented' },
+      ],
     },
+    q3Text: 'How much total team time is currently spent collecting, calculating, checking or distributing these reports each week?',
+    q4: [
+      { value: 'A', label: 'Multiple brands, seller accounts or advertising profiles are involved' },
+      { value: 'B', label: 'Business reports, campaign reports and other sources must be combined' },
+      { value: 'C', label: 'ACOS, TACOS, ROAS, CTR, CVR or other KPIs are calculated manually' },
+      { value: 'D', label: 'Spreadsheet formulas, mappings or filters require repeated maintenance' },
+      { value: 'E', label: 'Metric definitions or reporting ownership differ across the team' },
+      { value: 'F', label: 'The report requires human review before it can be distributed' },
+      { value: 'G', label: 'None of these / I am not sure', exclusive: true },
+    ],
+    q5First: 'Before the next reporting, client or brand-review cycle (within 30 days)',
+    comparable: 'A comparable workflow could include automated Amazon SP-API and scheduled-report collection, brand-level data structuring, consistent KPI calculations and a consolidated Google Sheets report ready for review.',
+    proof: 'For an eight-brand operation, BChanel automated weekly Amazon Ads reporting and the published case reports 4–8 hours saved each week, eight brands consolidated and zero manual PPC calculation errors. These are results from that case, not a forecast for the visitor.',
   },
 
-  hospitality: {
-    q3Label: 'Operating scale',
-    families: ['reservation_coordination', 'guest_communication', 'turnover_coordination', 'finance_reconciliation', 'multi_property_visibility'],
-    questions: [
-      {
-        id: 'q1',
-        text: 'Which hospitality workflow would you like help reviewing first?',
-        options: [
-          { value: 'A', label: 'Reservations and availability coordination' },
-          { value: 'B', label: 'Guest communication and arrival experience' },
-          { value: 'C', label: 'Housekeeping, maintenance, or turnover coordination' },
-          { value: 'D', label: 'Property finance and reconciliation' },
-          { value: 'E', label: 'Multi-property reporting and operational visibility' },
-          { value: 'F', label: 'Other / I am not sure' },
-        ],
-      },
-      {
-        id: 'q2',
-        text: 'Where does the team experience the most avoidable work?',
-        options: [
-          { value: 'A', label: 'Reservation details or availability require manual checking' },
-          { value: 'B', label: 'Guest messages and follow-ups are repetitive or inconsistent' },
-          { value: 'C', label: 'Cleaning, maintenance, or turnover tasks require repeated coordination' },
-          { value: 'D', label: 'Financial information is manually extracted or reconciled' },
-          { value: 'E', label: 'Managers cannot see a reliable status across properties' },
-        ],
-      },
-      {
-        id: 'q3',
-        text: 'How many properties or locations are included in this workflow?',
-        options: [
-          { value: 'A', label: '1 property/location' },
-          { value: 'B', label: '2–5' },
-          { value: 'C', label: '6–20' },
-          { value: 'D', label: 'More than 20' },
-          { value: 'E', label: 'The number changes / I am not sure' },
-        ],
-      },
-      {
-        id: 'q4',
-        text: 'Which tools are currently involved in this workflow?',
-        helper: 'Select all that apply.',
-        multiSelect: true,
-        options: [
-          { value: 'A', label: 'PMS such as Guesty or another property platform' },
-          { value: 'B', label: 'Airbnb, Booking.com, VRBO, or another channel' },
-          { value: 'C', label: 'Email, SMS, or guest-messaging tools' },
-          { value: 'D', label: 'Cleaning, maintenance, or task-management tools' },
-          { value: 'E', label: 'Accounting, spreadsheets, or BI tools' },
-          { value: 'F', label: 'Other / I am not sure', unsure: true },
-        ],
-      },
-      {
-        id: 'q5',
-        text: 'Which improvement would create the most value for your operation?',
-        options: [
-          { value: 'A', label: 'More reliable reservation and availability coordination' },
-          { value: 'B', label: 'Faster and more consistent guest communication' },
-          { value: 'C', label: 'Better turnover and task coordination' },
-          { value: 'D', label: 'Less manual finance and reconciliation work' },
-          { value: 'E', label: 'Real-time visibility across properties' },
-        ],
-      },
-    ],
-    results: {
-      reservation_coordination: {
-        title: 'Reservation Coordination',
-        conclusion: 'Your answers suggest that reservation and availability information requires repeated checking or coordination. The first step is to clarify system ownership and exception rules.',
-        actions: ['Map reservation sources', 'Define the trusted availability record', 'Document conflict and exception handling'],
-        proof: proof('Workflow Cases Overview', CASE_URLS.overview),
-      },
-      guest_communication: {
-        title: 'Guest Communication',
-        conclusion: 'Your answers suggest that guest communication depends on repeated manual follow-up. Standardize triggers, message ownership, and escalation before automating communications.',
-        actions: ['Map guest-message moments', 'Approve templates and owners', 'Define when a person must intervene'],
-        proof: proof('Workflow Cases Overview', CASE_URLS.overview),
-      },
-      turnover_coordination: {
-        title: 'Turnover & Task Coordination',
-        conclusion: 'Your answers suggest that turnover work is coordinated across people or tools without one reliable operational view.',
-        actions: ['Define turnover stages', 'Assign owners and deadlines', 'Create an exception/escalation path'],
-        proof: proof('Guesty Finance Automation', CASE_URLS.guestyFinance),
-      },
-      finance_reconciliation: {
-        title: 'Finance & Reconciliation',
-        conclusion: 'Your answers suggest that property financial information requires manual extraction or reconciliation. Data definitions and validation controls should be clarified first.',
-        actions: ['List financial sources', 'Define reconciliation rules', 'Test a controlled automated update'],
-        proof: proof('Guesty Finance Automation', CASE_URLS.guestyFinance),
-      },
-      multi_property_visibility: {
-        title: 'Multi-property Visibility',
-        conclusion: 'Your answers suggest that managers lack a consistent view across properties. The priority is to define common statuses, owners, and reporting rules.',
-        actions: ['Agree common status definitions', 'Identify source systems', 'Build one management view'],
-        proof: proof('Guesty Finance Automation', CASE_URLS.guestyFinance),
-      },
+  fba_tracking: {
+    title: 'FBA Shipment Tracking Workflow',
+    selected: 'FBA shipment monitoring',
+    caseUrl: 'https://www.bchanel.com/workflow-cases/fba-shipment-tracking-automation',
+    q2: {
+      text: 'How is your inbound FBA shipment status currently monitored?',
+      options: [
+        { value: 'A', label: 'Someone checks active shipments manually in Amazon Seller Central', phrase: 'active shipments are checked manually in Seller Central' },
+        { value: 'B', label: 'Shipment data is exported or copied into a spreadsheet that the team updates manually', phrase: 'shipment status is maintained through manual exports or spreadsheet updates' },
+        { value: 'C', label: 'A dashboard exists, but delay thresholds and alerts are not applied consistently', phrase: 'a dashboard exists but exception thresholds and alerts are inconsistent' },
+        { value: 'D', label: 'Part of the workflow uses an API or automation, but exceptions still require repeated manual checking', phrase: 'the workflow is partially automated but exceptions still require repeated checks' },
+        { value: 'E', label: 'I am not sure how shipment status is currently monitored', phrase: 'the current shipment-monitoring method is not yet fully documented' },
+      ],
     },
+    q3Text: 'How much total team time is currently spent checking shipment status, updating trackers or following up on delays each week?',
+    q4: [
+      { value: 'A', label: 'Multiple brands, seller accounts or warehouses are involved' },
+      { value: 'B', label: 'A high number of active inbound shipments must be checked' },
+      { value: 'C', label: 'Delay thresholds or exception rules are not documented' },
+      { value: 'D', label: 'Different team members check or classify shipment status differently' },
+      { value: 'E', label: 'The team discovers delays only after inventory risk appears' },
+      { value: 'F', label: 'Shipment information must be moved between Seller Central, spreadsheets or messaging tools' },
+      { value: 'G', label: 'None of these / I am not sure', exclusive: true },
+    ],
+    q5First: 'Before the next major inbound shipment or inventory-planning cycle (within 30 days)',
+    comparable: 'A comparable workflow could include Amazon SP-API data collection, defined delay thresholds, a live shipment dashboard and alerts that send the relevant shipment context to the responsible team when an exception appears.',
+    proof: "BChanel's published workflow tracks 40–60 inbound shipments automatically, identifies delays 7+ days earlier than the former manual process and removes manual Seller Central status checks. These are results from that case, not a forecast for the visitor.",
   },
 
-  saas: {
-    q3Label: 'Reported effort',
-    families: ['customer_onboarding', 'support_success', 'billing_renewals', 'revenue_ops_reporting', 'cross_functional_foundations'],
-    questions: [
-      {
-        id: 'q1',
-        text: 'Which SaaS workflow would you like help reviewing first?',
-        options: [
-          { value: 'A', label: 'Lead or customer onboarding' },
-          { value: 'B', label: 'Customer support and success operations' },
-          { value: 'C', label: 'Subscription billing, renewals, or collections' },
-          { value: 'D', label: 'Revenue operations and performance reporting' },
-          { value: 'E', label: 'Product, project, or internal-delivery handoffs' },
-          { value: 'F', label: 'Other / I am not sure' },
-        ],
-      },
-      {
-        id: 'q2',
-        text: 'What currently creates the most avoidable work in this workflow?',
-        options: [
-          { value: 'A', label: 'Customer information is repeatedly handed off or entered again' },
-          { value: 'B', label: 'Requests, tickets, or follow-ups are difficult to coordinate' },
-          { value: 'C', label: 'Billing or renewal steps require manual checking and follow-up' },
-          { value: 'D', label: 'Teams build reports from disconnected data sources' },
-          { value: 'E', label: 'Ownership and status are unclear across teams' },
-        ],
-      },
-      {
-        id: 'q3',
-        text: 'Approximately how much team time does this workflow require each week?',
-        options: [
-          { value: 'A', label: 'Less than 2 hours' },
-          { value: 'B', label: '2–5 hours' },
-          { value: 'C', label: '6–10 hours' },
-          { value: 'D', label: 'More than 10 hours' },
-          { value: 'E', label: 'I am not sure' },
-        ],
-      },
-      {
-        id: 'q4',
-        text: 'Which tools are currently involved in this workflow?',
-        helper: 'Select all that apply.',
-        multiSelect: true,
-        options: [
-          { value: 'A', label: 'CRM or marketing-automation platform' },
-          { value: 'B', label: 'Customer-support or success platform' },
-          { value: 'C', label: 'Subscription billing or accounting platform' },
-          { value: 'D', label: 'Project, product, or engineering-management tool' },
-          { value: 'E', label: 'Data warehouse, BI, spreadsheets, or reporting tools' },
-          { value: 'F', label: 'Other / I am not sure', unsure: true },
-        ],
-      },
-      {
-        id: 'q5',
-        text: 'Which improvement would create the most value for your team?',
-        options: [
-          { value: 'A', label: 'Faster, more consistent customer onboarding' },
-          { value: 'B', label: 'Better support visibility and response coordination' },
-          { value: 'C', label: 'Fewer billing or renewal follow-ups' },
-          { value: 'D', label: 'One reliable revenue and performance view' },
-          { value: 'E', label: 'Clearer ownership across product and delivery teams' },
-        ],
-      },
-    ],
-    results: {
-      customer_onboarding: {
-        title: 'Customer Onboarding',
-        conclusion: 'Your answers suggest that customer onboarding depends on repeated handoffs or duplicate entry. Clarify ownership and required information before connecting systems.',
-        actions: ['Map onboarding stages', 'Define required data and owners', 'Automate one verified handoff'],
-        proof: proof('Client Onboarding', CASE_URLS.clientOnboarding),
-      },
-      support_success: {
-        title: 'Support & Customer Success',
-        conclusion: 'Your answers suggest that requests and follow-ups are difficult to coordinate consistently. The first priority is shared status and clear escalation.',
-        actions: ['Define request categories', 'Establish ownership/SLA rules', 'Create one status view'],
-        proof: proof('Workflow Cases Overview', CASE_URLS.overview),
-      },
-      billing_renewals: {
-        title: 'Billing & Renewals',
-        conclusion: 'Your answers suggest that billing or renewal activity requires repeated checking or follow-up. Standardize triggers, records, and exception ownership first.',
-        actions: ['Map billing events', 'Define renewal/failure rules', 'Test one notification or handoff'],
-        proof: proof('Client Onboarding', CASE_URLS.clientOnboarding),
-      },
-      revenue_ops_reporting: {
-        title: 'Revenue Operations & Reporting',
-        conclusion: 'Your answers suggest that revenue information is fragmented across systems. Metric definitions and trusted sources should be aligned before automating reporting.',
-        actions: ['List data sources', 'Agree lifecycle/KPI definitions', 'Establish one reporting owner and cadence'],
-        proof: proof('Amazon Ads Reporting', CASE_URLS.amazonAds),
-      },
-      cross_functional_foundations: {
-        title: 'Cross-functional Workflow Foundations',
-        conclusion: 'Your answers suggest that ownership and status across teams require clarification before introducing more tools or automation.',
-        actions: ['Map cross-team handoffs', 'Assign owners', 'Define completion and escalation rules'],
-        proof: proof('Client Onboarding', CASE_URLS.clientOnboarding),
-      },
+  guesty_finance: {
+    title: 'Guesty Finance and Reconciliation Workflow',
+    selected: 'reservation finance and reconciliation',
+    caseUrl: 'https://www.bchanel.com/workflow-cases/guesty-finance-automation',
+    q2: {
+      text: 'How is reservation finance data currently prepared and reconciled?',
+      options: [
+        { value: 'A', label: 'Reservation and invoice data is extracted and reconciled manually for each property', phrase: 'reservation and invoice data is extracted and reconciled manually by property' },
+        { value: 'B', label: 'Financial details are copied from Guesty into Google Sheets or another reporting file', phrase: 'financial details are copied from Guesty into a separate reporting file' },
+        { value: 'C', label: 'Some events or exports are automated, but validation and categorization remain manual', phrase: 'data capture is partially automated but validation and categorization remain manual' },
+        { value: 'D', label: 'A dashboard exists, but it is not updated in real time or does not cover all properties', phrase: 'a dashboard exists but does not provide real-time visibility across all properties' },
+        { value: 'E', label: 'I am not sure how reservation finance data currently reaches the report', phrase: 'the current reservation-finance workflow is not yet fully documented' },
+      ],
     },
+    q3Text: 'How much total team time is currently spent extracting, validating, reconciling or reporting reservation finance data each week?',
+    q4: [
+      { value: 'A', label: 'Multiple properties, entities or locations are involved' },
+      { value: 'B', label: 'New, updated and cancelled reservations must be treated differently' },
+      { value: 'C', label: 'Invoice items or financial fields require manual validation or categorization' },
+      { value: 'D', label: 'Guesty, spreadsheets, accounting or reporting tools must stay aligned' },
+      { value: 'E', label: 'The team completes reconciliation on a nightly or repeated schedule' },
+      { value: 'F', label: 'There is no consolidated real-time view across properties' },
+      { value: 'G', label: 'None of these / I am not sure', exclusive: true },
+    ],
+    q5First: 'Before the next financial close, owner-reporting or peak operating cycle (within 30 days)',
+    comparable: 'A comparable workflow could include real-time reservation-event capture, structured financial extraction, validation and categorization, and a live reporting view across approved properties.',
+    proof: "BChanel's published Guesty workflow provides real-time financial visibility, eliminates manual nightly reconciliation and tracks all included properties from one reporting process. These are results from that case, not a forecast for the visitor.",
   },
 
-  other: {
-    q3Label: 'Reported effort',
-    families: ['reporting_data_prep', 'onboarding_coordination', 'approval_workflow_clarity', 'finance_reconciliation', 'service_workflow_foundations'],
-    questions: [
-      {
-        id: 'q1',
-        text: 'Which business workflow would you like help reviewing first?',
-        options: [
-          { value: 'A', label: 'Reporting and data preparation' },
-          { value: 'B', label: 'Client, employee, or vendor onboarding' },
-          { value: 'C', label: 'Approvals and administrative requests' },
-          { value: 'D', label: 'Finance, billing, or reconciliation' },
-          { value: 'E', label: 'Service delivery and cross-team coordination' },
-          { value: 'F', label: 'Other / I am not sure' },
-        ],
-      },
-      {
-        id: 'q2',
-        text: 'What currently creates the most avoidable work in this workflow?',
-        options: [
-          { value: 'A', label: 'Reports are manually assembled from several sources' },
-          { value: 'B', label: 'Information is repeatedly requested, handed off, or entered again' },
-          { value: 'C', label: 'Work waits for approvals or unclear decisions' },
-          { value: 'D', label: 'Financial information requires manual checking or reconciliation' },
-          { value: 'E', label: 'People chase status, ownership, or next steps' },
-        ],
-      },
-      {
-        id: 'q3',
-        text: 'Approximately how much team time does this workflow require each week?',
-        options: [
-          { value: 'A', label: 'Less than 2 hours' },
-          { value: 'B', label: '2–5 hours' },
-          { value: 'C', label: '6–10 hours' },
-          { value: 'D', label: 'More than 10 hours' },
-          { value: 'E', label: 'I am not sure' },
-        ],
-      },
-      {
-        id: 'q4',
-        text: 'Which tools are currently involved in this workflow?',
-        helper: 'Select all that apply.',
-        multiSelect: true,
-        options: [
-          { value: 'A', label: 'CRM, forms, or marketing platform' },
-          { value: 'B', label: 'Project or task-management platform' },
-          { value: 'C', label: 'Accounting, billing, or finance platform' },
-          { value: 'D', label: 'Google Sheets or Excel' },
-          { value: 'E', label: 'Email, chat, or shared documents' },
-          { value: 'F', label: 'BI or reporting platform' },
-          { value: 'G', label: 'Other / I am not sure', unsure: true },
-        ],
-      },
-      {
-        id: 'q5',
-        text: 'Which improvement would create the most value for your team?',
-        options: [
-          { value: 'A', label: 'Faster and more reliable reporting' },
-          { value: 'B', label: 'A more consistent onboarding experience' },
-          { value: 'C', label: 'Faster approvals and clearer decisions' },
-          { value: 'D', label: 'Less manual billing and reconciliation work' },
-          { value: 'E', label: 'Clearer ownership, status, and service delivery' },
-        ],
-      },
-    ],
-    results: {
-      reporting_data_prep: {
-        title: 'Reporting & Data Preparation',
-        conclusion: 'Your answers suggest that reporting depends on repeated collection or consolidation. The first step is to clarify definitions, sources, and ownership.',
-        actions: ['List report inputs', 'Agree metric definitions', 'Establish one owner and reporting cadence'],
-        proof: proof('Amazon Ads Reporting', CASE_URLS.amazonAds),
-      },
-      onboarding_coordination: {
-        title: 'Onboarding Coordination',
-        conclusion: 'Your answers suggest that onboarding depends on repeated information requests or handoffs. Standardize required inputs and responsibility before automation.',
-        actions: ['Map onboarding stages', 'Define required information', 'Automate one validated handoff'],
-        proof: proof('Client Onboarding', CASE_URLS.clientOnboarding),
-      },
-      approval_workflow_clarity: {
-        title: 'Approval Workflow Clarity',
-        conclusion: 'Your answers suggest that work waits for approvals or unclear decisions. Approval criteria, ownership, and escalation should be documented first.',
-        actions: ['List approval points', 'Remove duplicates', 'Define approver, response time, and escalation'],
-        proof: proof('Workflow Cases Overview', CASE_URLS.overview),
-      },
-      finance_reconciliation: {
-        title: 'Finance & Reconciliation',
-        conclusion: 'Your answers suggest that finance work requires repeated checking or reconciliation. Define source records and controls before automating updates.',
-        actions: ['Identify source records', 'Document validation rules', 'Test one controlled automated step'],
-        proof: proof('Guesty Finance Automation', CASE_URLS.guestyFinance),
-      },
-      service_workflow_foundations: {
-        title: 'Service & Workflow Foundations',
-        conclusion: 'Your answers suggest that ownership, status, or cross-team handoffs need clarification before additional tools or automation.',
-        actions: ['Map the service workflow', 'Assign owners', 'Define handoff, completion, and escalation rules'],
-        proof: proof('Client Onboarding', CASE_URLS.clientOnboarding),
-      },
+  revenue_signals: {
+    title: 'Revenue and Performance Signal Monitoring',
+    selected: 'revenue and performance monitoring',
+    caseUrl: 'https://www.bchanel.com/workflow-cases/revenue-performance-signal-monitoring',
+    q2: {
+      text: 'How does your team currently identify revenue or performance changes that require attention?',
+      options: [
+        { value: 'A', label: 'Team members repeatedly check multiple dashboards or spreadsheets on a fixed schedule', phrase: 'the team repeatedly checks dashboards or spreadsheets on a fixed schedule' },
+        { value: 'B', label: 'Someone collects or prepares the metrics manually before each review', phrase: 'metrics are collected or prepared manually before each review' },
+        { value: 'C', label: 'Alerts exist, but they repeat unchanged conditions or create too much noise', phrase: 'existing alerts repeat unchanged conditions or create excessive noise' },
+        { value: 'D', label: 'Monitoring is partly automated, but thresholds, ownership or escalation rules are inconsistent', phrase: 'monitoring is partially automated but thresholds, ownership or escalation rules are inconsistent' },
+        { value: 'E', label: 'There is no consistent monitoring process, or I am not sure how it works', phrase: 'the current monitoring process is not yet consistently defined' },
+      ],
     },
+    q3Text: 'How much total team time is currently spent checking dashboards, collecting metrics or deciding what deserves attention each week?',
+    q4: [
+      { value: 'A', label: 'Metrics come from several dashboards, spreadsheets or connected systems' },
+      { value: 'B', label: 'Benchmarks, thresholds or metric definitions are not consistently documented' },
+      { value: 'C', label: 'The same checks are repeated even when nothing meaningful has changed' },
+      { value: 'D', label: 'Important risks, anomalies or opportunities are discovered too late' },
+      { value: 'E', label: 'It is unclear who owns each signal or who should respond' },
+      { value: 'F', label: 'Every recommendation requires human review before action' },
+      { value: 'G', label: 'None of these / I am not sure', exclusive: true },
+    ],
+    q5First: 'Before the next planning, reporting or performance-review cycle (within 30 days)',
+    comparable: 'A comparable workflow could include scheduled collection of approved metrics, comparison against defined thresholds and owners, change-only signals, signal history, and human approval before any next action.',
+    proof: "BChanel's published workflow reports earlier visibility into meaningful changes, fewer repetitive dashboard checks and human-controlled decisions. The published case describes qualitative outcomes only, so no numerical savings are claimed here. These are results from that case, not a forecast for the visitor.",
   },
 };
 
-const STORAGE_KEY = 'wfAssessmentV3';
+const STORAGE_KEY = 'wfAssessmentV4';
 
 const state = {
   industry: null,
-  answers: {}, // { q1: 'A', q2: 'A', q3: 'A', q4: ['A','B'], q5: 'A' }
+  answers: {}, // { q1: 'amazon_ads', q2: 'A', q3: 'B', q4: ['A','C'], q5: 'A' }
   currentIndex: 0,
   editingFromReview: false,
   lead: {},
@@ -492,6 +251,7 @@ function persistState() {
       answers: state.answers,
       currentIndex: state.currentIndex,
       screen: currentScreenName,
+      utm: state.utm,
     }));
   } catch (err) { /* storage unavailable — assessment still works, just won't survive a refresh */ }
 }
@@ -501,10 +261,12 @@ function restoreState() {
     const raw = sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return false;
     const saved = JSON.parse(raw);
-    if (!saved || !saved.industry) return false;
+    if (!saved || !saved.industry || !Q1_BY_INDUSTRY[saved.industry]) return false;
     state.industry = saved.industry;
     state.answers = saved.answers || {};
     state.currentIndex = saved.currentIndex || 0;
+    // Landing-URL UTMs win; otherwise keep the ones captured earlier in this session.
+    state.utm = Object.assign({}, saved.utm || {}, state.utm);
     return saved.screen || 'industry';
   } catch (err) {
     return false;
@@ -516,9 +278,30 @@ function industryLabelFor(id) {
   return ind ? ind.label : '';
 }
 
-function currentQuestions() {
-  return INDUSTRY_DATA[state.industry].questions;
+/* ---------- Question model: Q1 from the industry, Q2-Q5 from the route ---------- */
+function currentRouteId() {
+  const v = state.answers.q1;
+  return v && ROUTES[v] ? v : null;
 }
+
+function buildQuestions(industry, routeId) {
+  const q1 = { id: 'q1', text: Q1_TEXT, options: Q1_BY_INDUSTRY[industry] || [], allowDifferentLink: true };
+  if (!routeId) return [q1];
+  const route = ROUTES[routeId];
+  return [
+    q1,
+    { id: 'q2', text: route.q2.text, options: route.q2.options },
+    { id: 'q3', text: route.q3Text, options: Q3_OPTIONS },
+    { id: 'q4', text: Q4_TEXT, helper: Q4_HELPER, multiSelect: true, options: route.q4 },
+    { id: 'q5', text: Q5_TEXT, options: q5Options(route.q5First) },
+  ];
+}
+
+function currentQuestions() {
+  return buildQuestions(state.industry, currentRouteId());
+}
+
+const TOTAL_QUESTIONS = 5;
 
 function optionLabel(question, value) {
   const opt = question.options.find((o) => o.value === value);
@@ -532,6 +315,11 @@ function answerDisplay(question) {
     return val.map((v) => optionLabel(question, v)).join(', ');
   }
   return val ? optionLabel(question, val) : 'Not answered';
+}
+
+function isAnswered(question) {
+  const a = state.answers[question.id];
+  return question.multiSelect ? !!(a && a.length) : !!a;
 }
 
 /* ---------- Industry select screen ---------- */
@@ -587,19 +375,44 @@ function requestBackToIndustry() {
 }
 
 /* ---------- Question screen ---------- */
+function setAnswer(q, opt) {
+  if (q.multiSelect) {
+    const arr = state.answers[q.id] ? state.answers[q.id].slice() : [];
+    if (opt.exclusive) {
+      // Exclusive: selecting "None of these / I am not sure" clears everything else.
+      // Clicking it again while it's the only selection deselects it.
+      if (arr.length === 1 && arr[0] === opt.value) arr.length = 0;
+      else { arr.length = 0; arr.push(opt.value); }
+    } else {
+      // Selecting any real condition removes the exclusive option if present.
+      const exclusiveIdx = arr.findIndex((v) => {
+        const o = q.options.find((oo) => oo.value === v);
+        return o && o.exclusive;
+      });
+      if (exclusiveIdx > -1) arr.splice(exclusiveIdx, 1);
+      const idx = arr.indexOf(opt.value);
+      if (idx > -1) arr.splice(idx, 1);
+      else arr.push(opt.value);
+    }
+    state.answers[q.id] = arr;
+  } else {
+    state.answers[q.id] = opt.value;
+  }
+  persistState();
+  renderQuestion();
+}
+
 function renderQuestion() {
   const questions = currentQuestions();
+  // A refresh can land on a later question with no Q1 saved; fall back to Q1.
+  if (state.currentIndex >= questions.length) state.currentIndex = 0;
   const q = questions[state.currentIndex];
-  const total = questions.length;
   const step = state.currentIndex + 1;
-  const answeredCount = questions.filter((qq) => {
-    const a = state.answers[qq.id];
-    return qq.multiSelect ? a && a.length : !!a;
-  }).length;
+  const answeredCount = questions.filter(isAnswered).length;
 
-  document.getElementById('progress-fill').style.width = `${(answeredCount / total) * 100}%`;
+  document.getElementById('progress-fill').style.width = `${(answeredCount / TOTAL_QUESTIONS) * 100}%`;
   document.getElementById('assessing-label').textContent = `Assessing: ${industryLabelFor(state.industry)}`;
-  document.getElementById('step-label').textContent = `Question ${step} of ${total}`;
+  document.getElementById('step-label').textContent = `Question ${step} of ${TOTAL_QUESTIONS}`;
   document.getElementById('q-title').textContent = q.text;
   document.getElementById('q-helper').textContent = q.helper || '';
   document.getElementById('q-helper').style.display = q.helper ? '' : 'none';
@@ -616,46 +429,36 @@ function renderQuestion() {
       ? currentAnswer && currentAnswer.includes(opt.value)
       : currentAnswer === opt.value;
     if (isSelected) btn.classList.add('selected');
+    btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
     btn.innerHTML = `<span class="dot"></span><span class="label">${opt.label}</span>`;
     btn.addEventListener('click', () => {
-      if (q.multiSelect) {
-        const arr = state.answers[q.id] ? state.answers[q.id].slice() : [];
-        if (opt.unsure) {
-          // Exclusive: selecting "Other / I am not sure" clears everything else.
-          // Clicking it again while it's the only selection deselects it.
-          if (arr.length === 1 && arr[0] === opt.value) arr.length = 0;
-          else { arr.length = 0; arr.push(opt.value); }
-        } else {
-          // Selecting any real tool removes "Other / I am not sure" if present.
-          const otherIdx = arr.findIndex((v) => {
-            const o = q.options.find((oo) => oo.value === v);
-            return o && o.unsure;
-          });
-          if (otherIdx > -1) arr.splice(otherIdx, 1);
-          const idx = arr.indexOf(opt.value);
-          if (idx > -1) arr.splice(idx, 1);
-          else arr.push(opt.value);
-        }
-        state.answers[q.id] = arr;
-      } else {
-        state.answers[q.id] = opt.value;
+      // Q1 decides the route, so changing it invalidates Q2-Q5 (different options).
+      if (q.id === 'q1' && currentAnswer && currentAnswer !== opt.value
+          && Object.keys(state.answers).some((k) => k !== 'q1')) {
+        showConfirm('Changing your workflow will clear your answers to the next questions. Continue?', () => {
+          state.answers = { q1: opt.value };
+          state.editingFromReview = false;
+          persistState();
+          renderQuestion();
+        });
+        return;
       }
-      persistState();
-      renderQuestion();
+      setAnswer(q, opt);
     });
     list.appendChild(btn);
   });
+
+  document.getElementById('different-workflow-wrap').style.display = q.allowDifferentLink ? '' : 'none';
 
   const isFirstStep = step === 1;
   document.getElementById('q-back').style.display = isFirstStep ? 'none' : '';
   document.getElementById('back-to-industry').style.display = isFirstStep ? '' : 'none';
 
   const continueBtn = document.getElementById('q-continue');
-  const answered = q.multiSelect ? currentAnswer && currentAnswer.length > 0 : !!currentAnswer;
-  continueBtn.disabled = !answered;
+  continueBtn.disabled = !isAnswered(q);
   if (state.editingFromReview) {
     continueBtn.textContent = 'Save & Return to Review';
-  } else if (step === total) {
+  } else if (step === TOTAL_QUESTIONS) {
     continueBtn.textContent = 'Review Your Answers';
   } else {
     continueBtn.textContent = 'Continue';
@@ -689,144 +492,99 @@ function renderReview() {
   });
 }
 
-/* ---------- Recommendation engine (deterministic voting, no score) ---------- */
-function computeResultFamily() {
-  const data = INDUSTRY_DATA[state.industry];
-  const letterToIndex = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 4 };
-  const q1Value = state.answers.q1;
-  const q2Value = state.answers.q2;
-  const q5Value = state.answers.q5;
-  const q1Index = letterToIndex[q1Value];
-  const q2Index = letterToIndex[q2Value];
-  const q5Index = letterToIndex[q5Value];
-  const q1IsOtherUnsure = q1Value === 'F';
-
-  const tally = [0, 0, 0, 0, 0];
-  tally[q1Index] += 1;
-  tally[q2Index] += 1;
-  tally[q5Index] += 1;
-
-  const maxVotes = Math.max(...tally);
-  const winners = [0, 1, 2, 3, 4].filter((i) => tally[i] === maxVotes);
-
-  let winnerIndex;
-  if (winners.length === 1) {
-    winnerIndex = winners[0];
-  } else if (!q1IsOtherUnsure && winners.includes(q1Index)) {
-    winnerIndex = q1Index;
-  } else if (winners.includes(q5Index)) {
-    winnerIndex = q5Index;
-  } else {
-    winnerIndex = 4; // foundations fallback
-  }
-
-  return data.families[winnerIndex];
+/* ---------- Result: route comes from Q1 only ---------- */
+function selectedConditions(q4Question, values) {
+  return (values || [])
+    .map((v) => q4Question.options.find((o) => o.value === v))
+    .filter((o) => o && !o.exclusive);
 }
 
-/* Q3 never changes the result family — it only describes reported
-   effort/scale in qualitative terms for the "Operational Context" section. */
-function q3Context(q3Value) {
-  const words = ['limited', 'recurring', 'meaningful', 'significant'];
-  const idx = { A: 0, B: 1, C: 2, D: 3, E: 4 }[q3Value];
-  if (idx === 4) {
-    return 'This detail is still needing validation, which is worth confirming before prioritizing this workflow.';
-  }
-  return `This is considered a ${words[idx]} level of activity for this type of workflow.`;
-}
-
-/* Q4 never changes the result family — it only describes tool involvement
-   and contributes exactly one extra recommended action. */
-function q4Context(q4Question, selectedValues) {
-  if (!selectedValues || !selectedValues.length) return { sentence: '', action: null };
-
-  const isUnsure = selectedValues.length === 1
-    && (() => { const o = q4Question.options.find((oo) => oo.value === selectedValues[0]); return o && o.unsure; })();
-
-  if (isUnsure) {
-    return {
-      sentence: 'Tool involvement is not yet confirmed, so the priority is to complete a tool inventory first.',
-      action: 'Complete a full tool inventory for this workflow before deciding on next steps.',
-    };
-  }
-  const n = selectedValues.length;
-  if (n === 1) {
-    return {
-      sentence: 'With one tool involved, the priority is to review the current platform first.',
-      action: "Review the current platform's setup and limitations before adding anything new.",
-    };
-  }
-  if (n === 2) {
-    return {
-      sentence: 'With two tools involved, the priority is to clarify the source of truth and the handoff between them.',
-      action: 'Clarify which tool holds the source of truth and how handoffs between them work.',
-    };
-  }
-  return {
-    sentence: `With ${n} tools involved, the priority is to map the system and data flow before changing anything.`,
-    action: 'Map how data and tasks move across all the tools involved before making changes.',
-  };
+/* Internal lead-qualification score. Stored with the lead, never displayed. */
+function computeInternalScore(q2Value, q3Value, conditionCount, q5Value) {
+  const q2Points = { A: 2, B: 2, C: 1, D: 1, E: 0 }[q2Value] || 0;
+  const q3Points = { A: 0, B: 1, C: 2, D: 3, E: 0 }[q3Value] || 0;
+  const complexityPoints = conditionCount >= 3 ? 2 : conditionCount === 2 ? 1 : 0;
+  const urgencyPoints = q5Value === 'A' ? 2 : q5Value === 'B' ? 1 : 0;
+  const score = q2Points + q3Points + complexityPoints + urgencyPoints;
+  const priority = score >= 7 ? 'High' : score >= 4 ? 'Medium' : 'Low';
+  return { score, priority };
 }
 
 function computeResult() {
-  const data = INDUSTRY_DATA[state.industry];
-  const family = computeResultFamily();
-  const baseResult = data.results[family];
-  const q1 = data.questions[0];
-  const q3 = data.questions[2];
-  const q4 = data.questions[3];
-
-  const workflowAnswer = optionLabel(q1, state.answers.q1);
-  const effortAnswer = optionLabel(q3, state.answers.q3);
-  const toolsSelected = (state.answers.q4 || []).map((v) => optionLabel(q4, v));
-
-  const q4Info = q4Context(q4, state.answers.q4 || []);
-  const actions = baseResult.actions.slice();
-  if (q4Info.action) actions.push(q4Info.action);
+  const routeId = state.answers.q1;
+  const route = ROUTES[routeId];
+  const q = currentQuestions();
+  const q2Opt = q[1].options.find((o) => o.value === state.answers.q2);
+  const q3Opt = Q3_OPTIONS.find((o) => o.value === state.answers.q3);
+  const conditions = selectedConditions(q[3], state.answers.q4);
+  const scoring = computeInternalScore(state.answers.q2, state.answers.q3, conditions.length, state.answers.q5);
 
   return {
-    family,
-    result: { ...baseResult, actions },
+    routeId,
+    route,
     industryLabel: industryLabelFor(state.industry),
-    workflowAnswer,
-    q3Label: data.q3Label,
-    effortAnswer,
-    toolsSelected,
-    q3Sentence: q3Context(state.answers.q3),
-    q4Sentence: q4Info.sentence,
+    methodPhrase: q2Opt ? q2Opt.phrase : '',
+    methodLabel: q2Opt ? q2Opt.label : '',
+    effortLabel: q3Opt ? q3Opt.label : '',
+    effortMeasured: !!(q3Opt && q3Opt.annual),
+    annualLabel: q3Opt && q3Opt.annual ? q3Opt.annual : ANNUAL_UNMEASURED,
+    conditions,
+    urgencyLabel: optionLabel(q[4], state.answers.q5),
+    score: scoring.score,
+    priority: scoring.priority,
   };
+}
+
+/* Show at most two selected conditions; add "and additional complexity" for 3+. */
+function conditionSummary(conditions) {
+  if (!conditions.length) return 'No specific conditions selected';
+  const shown = conditions.slice(0, 2).map((c) => c.label);
+  if (conditions.length >= 3) shown.push('and additional complexity');
+  return shown.join('; ');
+}
+
+function bookingUrlWithUtm() {
+  const url = new URL(BOOKING_URL);
+  Object.keys(state.utm).forEach((k) => url.searchParams.set(k, state.utm[k]));
+  return url.toString();
 }
 
 function renderResult() {
   const r = computeResult();
 
-  document.getElementById('result-industry-workflow').textContent = `${r.industryLabel} — ${r.workflowAnswer}`;
-  document.getElementById('result-title').textContent = r.result.title;
-  document.getElementById('result-conclusion').textContent = r.result.conclusion;
+  document.getElementById('result-title').textContent = r.route.title;
+  document.getElementById('result-opening').textContent =
+    `You selected ${r.route.selected}. Today, ${r.methodPhrase}.`;
 
-  document.getElementById('result-effort').textContent = `${r.q3Label}: ${r.effortAnswer}. ${r.q3Sentence}`;
-  const toolsEl = document.getElementById('result-tools');
-  if (r.toolsSelected.length) {
-    const toolLine = `Tools involved: ${r.toolsSelected.join(', ')}.`;
-    toolsEl.textContent = r.q4Sentence ? `${toolLine} ${r.q4Sentence}` : toolLine;
-    toolsEl.hidden = false;
-  } else {
-    toolsEl.hidden = true;
-  }
+  const rows = [
+    ['Current workflow method', r.methodLabel],
+    ['Reported weekly effort', r.effortMeasured ? r.effortLabel : 'Not currently measured'],
+    ['Reported annual effort', r.annualLabel],
+    ['Complexity conditions', conditionSummary(r.conditions)],
+  ];
+  document.getElementById('result-context-list').innerHTML = rows
+    .map(([k, v]) => `<div class="context-row"><dt>${k}</dt><dd>${v}</dd></div>`)
+    .join('');
+  document.getElementById('result-effort-note').textContent = r.effortMeasured
+    ? 'This represents effort reported by you, not projected time savings or automation ROI.'
+    : 'Your team does not currently measure the effort required by this workflow.';
 
-  const actionsList = document.getElementById('result-actions-list');
-  actionsList.innerHTML = r.result.actions.map((a) => `<li>${a}</li>`).join('');
+  document.getElementById('result-comparable').textContent = r.route.comparable;
+  document.getElementById('result-proof').textContent = r.route.proof;
 
-  const proofEl = document.getElementById('result-proof');
-  proofEl.innerHTML = `<a href="${r.result.proof.url}" target="_blank" rel="noopener">${r.result.proof.label}</a>`;
+  const caseCta = document.getElementById('case-cta');
+  caseCta.href = r.route.caseUrl;
+  document.getElementById('final-cta').href = bookingUrlWithUtm();
 
   track('assessment_result_shown', {
     industry: state.industry,
-    result_family: r.family,
+    workflow_result_id: r.routeId,
+    internal_priority: r.priority,
     questionnaire_version: QUESTIONNAIRE_VERSION,
   });
 }
 
-/* ---------- Lead capture (gates the result; no auto-email in V3) ---------- */
+/* ---------- Lead capture (gates the result; no auto-email) ---------- */
 function validateLeadForm() {
   const form = document.getElementById('lead-form');
   const email = form.email.value.trim();
@@ -843,7 +601,9 @@ function validateLeadForm() {
 async function submitLead() {
   const r = computeResult();
   const q = currentQuestions();
+  const q4Labels = (state.answers.q4 || []).map((v) => optionLabel(q[3], v));
   const payload = {
+    // Fields the existing Make.com / Google Sheet mapping already reads
     industry: state.industry,
     industryLabel: r.industryLabel,
     answers: state.answers,
@@ -851,18 +611,29 @@ async function submitLead() {
       q1: optionLabel(q[0], state.answers.q1),
       q2: optionLabel(q[1], state.answers.q2),
       q3: optionLabel(q[2], state.answers.q3),
-      q4: r.toolsSelected,
+      q4: q4Labels,
       q5: optionLabel(q[4], state.answers.q5),
     },
-    resultFamily: r.family,
-    resultTitle: r.result.title,
+    resultFamily: r.routeId,
+    resultTitle: r.route.title,
     questionnaireVersion: QUESTIONNAIRE_VERSION,
     lead: state.lead,
     utm: state.utm,
     submitted_at: new Date().toISOString(),
+
+    // V4 case-led fields
+    workflow_result_id: r.routeId,
+    q2_current_method: optionLabel(q[1], state.answers.q2),
+    q3_effort: optionLabel(q[2], state.answers.q3),
+    annual_effort_label: r.annualLabel,
+    q4_complexity: q4Labels,
+    q5_urgency: optionLabel(q[4], state.answers.q5),
+    internal_score: r.score,
+    internal_priority: r.priority,
+    direct_case_url: r.route.caseUrl,
   };
 
-  /* V3: CRM write only — no automatic result email in this phase. */
+  /* CRM write only — no automatic result email or PDF in this phase. */
   const res = await fetch(LEAD_WEBHOOK_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -872,11 +643,12 @@ async function submitLead() {
 
   console.log('[lead submission] sent (redacted)', {
     industry: payload.industry,
-    resultFamily: payload.resultFamily,
+    workflow_result_id: payload.workflow_result_id,
+    internal_priority: payload.internal_priority,
     questionnaireVersion: payload.questionnaireVersion,
   });
 
-  track('lead_submitted', { industry: state.industry, result_family: r.family });
+  track('lead_submitted', { industry: state.industry, workflow_result_id: r.routeId, internal_priority: r.priority });
   return true;
 }
 
@@ -888,6 +660,7 @@ function resetAssessment() {
   state.editingFromReview = false;
   state.lead = {};
   try { sessionStorage.removeItem(STORAGE_KEY); } catch (err) { /* ignore */ }
+  renderIndustryGrid();
   showScreen('hero');
 }
 
@@ -899,7 +672,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const restoredScreen = restoreState();
 
   document.getElementById('start-assessment').addEventListener('click', () => {
-    track('assessment_start', { utm: state.utm });
+    track('assessment_start', { utm_source: state.utm.utm_source || '', utm_campaign: state.utm.utm_campaign || '' });
     showScreen('industry');
   });
 
@@ -910,16 +683,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('back-to-industry').addEventListener('click', requestBackToIndustry);
 
+  const differentLink = document.getElementById('different-workflow');
+  differentLink.href = OPERATIONAL_ASSESSMENT_URL;
+  differentLink.addEventListener('click', () => {
+    track('workflow_different_click', { industry: state.industry });
+  });
+
   document.getElementById('q-back').addEventListener('click', () => {
     if (state.currentIndex === 0) return;
     goToQuestion(state.currentIndex - 1);
   });
   document.getElementById('q-continue').addEventListener('click', () => {
-    if (state.editingFromReview) {
+    const questions = currentQuestions();
+    if (state.currentIndex === 0 && !state.editingFromReview) {
+      track('workflow_selected', { industry: state.industry, workflow_result_id: state.answers.q1 });
+    }
+    if (state.editingFromReview && questions.length === TOTAL_QUESTIONS) {
       state.editingFromReview = false;
       showScreen('review');
       renderReview();
-    } else if (state.currentIndex < currentQuestions().length - 1) {
+    } else if (state.currentIndex < questions.length - 1) {
       goToQuestion(state.currentIndex + 1);
     } else {
       track('assessment_complete', { industry: state.industry, questionnaire_version: QUESTIONNAIRE_VERSION });
@@ -967,26 +750,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  document.getElementById('case-cta').addEventListener('click', () => {
+    track('case_cta_click', { industry: state.industry, workflow_result_id: state.answers.q1 });
+  });
   document.getElementById('final-cta').addEventListener('click', () => {
-    track('final_cta_click', { industry: state.industry });
+    track('final_cta_click', { industry: state.industry, workflow_result_id: state.answers.q1 });
   });
   document.getElementById('assess-another').addEventListener('click', () => {
     track('assess_another_click', {});
     resetAssessment();
   });
 
-  /* Resume mid-assessment after a refresh (non-personal state only) */
+  /* Resume mid-assessment after a refresh (non-personal state only).
+     The result screen is never restored: the lead form must be completed again. */
   if (restoredScreen && restoredScreen !== 'hero') {
     renderIndustryGrid();
+    const complete = currentQuestions().length === TOTAL_QUESTIONS
+      && currentQuestions().every(isAnswered);
     if (restoredScreen === 'question' && state.industry) {
       goToQuestion(Math.min(state.currentIndex, currentQuestions().length - 1));
-    } else if (restoredScreen === 'review' && state.industry) {
-      showScreen('review');
-      renderReview();
-    } else if (restoredScreen === 'lead' && state.industry) {
-      showScreen('lead');
+    } else if ((restoredScreen === 'review' || restoredScreen === 'lead' || restoredScreen === 'result') && state.industry && complete) {
+      if (restoredScreen === 'lead') {
+        showScreen('lead');
+      } else {
+        showScreen('review');
+        renderReview();
+      }
     } else if (state.industry) {
-      showScreen('industry');
+      goToQuestion(0);
     }
   }
 });
