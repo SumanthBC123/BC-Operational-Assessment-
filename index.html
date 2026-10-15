@@ -38,7 +38,7 @@
       <div class="wrap">
         <span class="eyebrow">Workflow Automation Assessment</span>
         <h1>Find the Right Next Step for Your Workflow</h1>
-        <p class="sub">Select one recurring workflow in your business, answer five short questions, and receive a relevant workflow example from a published BChanel case.</p>
+        <p class="sub">Select one recurring workflow, answer five short questions, and see how BChanel solved a comparable operational problem — including what was built, what changed, and what a similar workflow could include for your team.</p>
         <button id="start-assessment" class="btn btn-primary">Start the Assessment</button>
         <div class="indicators">
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>5 quick questions</span>
@@ -77,6 +77,7 @@
         <div class="card">
           <h2 id="q-title" class="q-title"></h2>
           <p id="q-helper" class="helper-text"></p>
+          <p id="q-intro" class="helper-text" style="display:none;"></p>
           <div id="option-list" class="option-list"></div>
           <p id="different-workflow-wrap" class="different-workflow" style="display:none;"><a id="different-workflow" href="#">My workflow is different</a></p>
           <div class="nav-row">
@@ -113,7 +114,7 @@
       <div class="wrap">
         <div class="card">
           <h2 class="q-title">Almost there</h2>
-          <p class="helper-text" style="margin-bottom:2px;">Enter your details to view your workflow recommendation.</p>
+          <p class="helper-text" style="margin-bottom:2px;">Enter your details to view your personalized workflow result.</p>
           <p class="helper-text">Your result will appear immediately on this page.</p>
           <button id="lead-back-to-review" type="button" class="btn btn-ghost btn-small" style="padding-left:0; margin-bottom:12px;">← Back to Review Answers</button>
           <form id="lead-form" novalidate>
@@ -154,23 +155,28 @@
           <div class="result-block result-block-main">
             <h3 class="result-h">Your Workflow Result</h3>
             <p id="result-title" class="result-recommendation"></p>
-            <p id="result-opening" class="result-body"></p>
-          </div>
-
-          <div class="result-block">
-            <h3 class="result-h">Reported Operational Context</h3>
-            <dl id="result-context-list" class="context-list"></dl>
-            <p id="result-effort-note" class="result-context"></p>
-          </div>
-
-          <div class="result-block">
-            <h3 class="result-h">Comparable Workflow Direction</h3>
-            <p id="result-comparable" class="result-body"></p>
           </div>
 
           <div class="result-block action-block">
-            <h3>Verified BChanel Example</h3>
-            <p id="result-proof" class="result-body"></p>
+            <h3>A Comparable Workflow BChanel Has Solved</h3>
+            <h4 class="result-sub">What BChanel built</h4>
+            <p id="result-built" class="result-body"></p>
+            <h4 class="result-sub">Verified results</h4>
+            <p id="result-verified" class="result-body"></p>
+          </div>
+
+          <div class="result-block">
+            <h3 class="result-h">What a Comparable Workflow Could Include for Your Team</h3>
+            <p id="result-base" class="result-body"></p>
+            <p id="result-start" class="result-body result-gap"></p>
+            <ul id="result-modules" class="actions-list result-gap"></ul>
+            <p id="result-additional" class="result-body result-gap" hidden></p>
+          </div>
+
+          <div class="result-block">
+            <h3 class="result-h">Your Reported Operational Context</h3>
+            <dl id="result-context-list" class="context-list"></dl>
+            <p id="result-effort-note" class="result-context"></p>
           </div>
 
           <p class="disclaimer">This is an initial directional result. It is not a complete operational assessment, confirmed architecture, or ROI estimate.</p>

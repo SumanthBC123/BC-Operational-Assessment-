@@ -6,7 +6,7 @@
    with the lead and never shown as the recommendation.
    No live AI, no ROI or savings claims, no generic/unsupported result. */
 
-const QUESTIONNAIRE_VERSION = 'v4.0';
+const QUESTIONNAIRE_VERSION = 'v4.1';
 const LEAD_WEBHOOK_URL = 'https://hook.us2.make.com/rgnr1m57h2ipfopr7x9bibksc7puf15h';
 
 /* Booking page used by the result CTA and by the "My workflow is different"
@@ -37,6 +37,7 @@ const Q1_BY_INDUSTRY = {
   ],
 };
 
+const AGENCIES_INTRO = 'Select the currently available workflow review, or choose “My workflow is different” to discuss another operational process.';
 const Q1_TEXT = 'Which workflow would you like help reviewing first?';
 
 /* Q3 / Q5 answer sets are identical across routes; only the Q3 question text
@@ -94,7 +95,8 @@ const ROUTES = {
     ],
     q5First: 'Before the next reporting, client or brand-review cycle (within 30 days)',
     comparable: 'A comparable workflow could include automated Amazon SP-API and scheduled-report collection, brand-level data structuring, consistent KPI calculations and a consolidated Google Sheets report ready for review.',
-    proof: 'For an eight-brand operation, BChanel automated weekly Amazon Ads reporting and the published case reports 4–8 hours saved each week, eight brands consolidated and zero manual PPC calculation errors. These are results from that case, not a forecast for the visitor.',
+    built: "BChanel connected Amazon SP-API and scheduled reports, structured brand-level performance data, automated PPC calculations, and delivered a consolidated Google Sheets report every Monday.",
+    verifiedResults: "The published case reports 4–8 hours saved each week across eight brands, with zero manual PPC calculation errors. These are results from that case, not a forecast for your business.",
   },
 
   fba_tracking: {
@@ -123,7 +125,8 @@ const ROUTES = {
     ],
     q5First: 'Before the next major inbound shipment or inventory-planning cycle (within 30 days)',
     comparable: 'A comparable workflow could include Amazon SP-API data collection, defined delay thresholds, a live shipment dashboard and alerts that send the relevant shipment context to the responsible team when an exception appears.',
-    proof: "BChanel's published workflow tracks 40–60 inbound shipments automatically, identifies delays 7+ days earlier than the former manual process and removes manual Seller Central status checks. These are results from that case, not a forecast for the visitor.",
+    built: "BChanel connected Amazon SP-API data to a live shipment dashboard, applied defined delay thresholds, and created alerts that notify the responsible team when an exception appears.",
+    verifiedResults: "The published case reports 40–60 inbound shipments monitored automatically, delays identified 7+ days earlier, and zero manual Seller Central status checks. These are results from that case, not a forecast for your business.",
   },
 
   guesty_finance: {
@@ -152,7 +155,8 @@ const ROUTES = {
     ],
     q5First: 'Before the next financial close, owner-reporting or peak operating cycle (within 30 days)',
     comparable: 'A comparable workflow could include real-time reservation-event capture, structured financial extraction, validation and categorization, and a live reporting view across approved properties.',
-    proof: "BChanel's published Guesty workflow provides real-time financial visibility, eliminates manual nightly reconciliation and tracks all included properties from one reporting process. These are results from that case, not a forecast for the visitor.",
+    built: "BChanel created a workflow that captures Guesty reservation events in real time, extracts and validates financial information, and updates a consolidated reporting view across the included properties.",
+    verifiedResults: "The published case reports real-time financial visibility across properties, elimination of manual nightly reconciliation, and automated tracking across all included properties. These are results from that case, not a forecast for your business.",
   },
 
   revenue_signals: {
@@ -181,9 +185,55 @@ const ROUTES = {
     ],
     q5First: 'Before the next planning, reporting or performance-review cycle (within 30 days)',
     comparable: 'A comparable workflow could include scheduled collection of approved metrics, comparison against defined thresholds and owners, change-only signals, signal history, and human approval before any next action.',
-    proof: "BChanel's published workflow reports earlier visibility into meaningful changes, fewer repetitive dashboard checks and human-controlled decisions. The published case describes qualitative outcomes only, so no numerical savings are claimed here. These are results from that case, not a forecast for the visitor.",
+    built: "BChanel created a workflow that reviews approved metrics on a defined schedule, compares them against agreed thresholds, and generates signals only when a new or changed condition requires attention.",
+    verifiedResults: "The published case reports earlier visibility into meaningful changes, fewer repetitive dashboard checks, and continued human control over every recommended action. The case provides qualitative outcomes, so no numerical savings should be added.",
   },
 };
+
+/* Deterministic solution module for each non-exclusive Q4 condition (route -> Q4 value).
+   Shown in the route's original option order, at most two. */
+const Q4_MODULES = {
+  "amazon_ads": {
+    "A": "The workflow would need brand- and account-level data separation while maintaining one consolidated reporting view.",
+    "B": "The design should include an approved source map and collection schedule for the business, campaign and supporting reports.",
+    "C": "A governed calculation layer could apply the agreed definitions for ACOS, TACOS, ROAS, CTR, CVR and other approved KPIs.",
+    "D": "The workflow should centralize transformation and validation rules to reduce dependency on manually maintained spreadsheet formulas.",
+    "E": "Metric definitions, report ownership and review responsibilities should be agreed before the reporting workflow is automated.",
+    "F": "The workflow should preserve a clear human review and approval checkpoint before the report is distributed."
+  },
+  "fba_tracking": {
+    "A": "The dashboard would need consistent shipment records with filters and ownership separated by brand, account or warehouse.",
+    "B": "The workflow could prioritize exception-based monitoring so the team reviews delayed shipments instead of checking every active shipment.",
+    "C": "Approved delay thresholds and exception rules should be defined before alerts are introduced.",
+    "D": "Shipment statuses, delay classifications and ownership rules should be standardized across the team.",
+    "E": "The workflow could include early-warning signals and an escalation path before shipment delays create inventory risk.",
+    "F": "Shipment information could be synchronized from Amazon into a controlled dashboard and relevant communication channel without repeated copying."
+  },
+  "guesty_finance": {
+    "A": "The reporting structure should preserve property- and entity-level separation while providing one consolidated financial view.",
+    "B": "The workflow would need clear rules for new, updated and cancelled reservation events.",
+    "C": "A validation and categorization layer should be applied before financial information reaches the reporting view.",
+    "D": "The design should define the trusted source for each field and the rules used to synchronize Guesty with the approved reporting systems.",
+    "E": "An event-driven update process could reduce dependence on a repeated nightly extraction and reconciliation cycle.",
+    "F": "The workflow could provide a live multi-property view using consistent financial fields, statuses and filters."
+  },
+  "revenue_signals": {
+    "A": "The workflow should begin with an approved source map and a defined collection schedule for each metric.",
+    "B": "KPI definitions, benchmarks and alert thresholds should be agreed before automated monitoring begins.",
+    "C": "Change-only signals could suppress unchanged conditions and reduce unnecessary dashboard reviews.",
+    "D": "The workflow could surface exceptions, anomalies or meaningful changes before the next scheduled manual review.",
+    "E": "Each signal should have a defined owner, response expectation and escalation path.",
+    "F": "Every signal should remain subject to human review before any recommendation or operational action is taken."
+  }
+};
+
+/* Q2 only changes the starting-point sentence, never the selected case. */
+const Q2_STARTING_POINT = {
+  manual: 'The starting point would be to document the current manual steps, confirm the approved inputs and systems, and define ownership before designing the future workflow.',
+  partial: 'The starting point would be to review the existing dashboard, connector, or automation, identify where manual checks and exceptions remain, and preserve the components that already work.',
+  unclear: 'The starting point would be to map how the workflow currently operates and confirm how information moves between people and systems before recommending any implementation.',
+};
+const Q4_ADDITIONAL_SENTENCE = 'Additional operating conditions should be validated during workflow design.';
 
 const STORAGE_KEY = 'wfAssessmentV4';
 
@@ -448,6 +498,11 @@ function renderQuestion() {
     list.appendChild(btn);
   });
 
+  const intro = document.getElementById('q-intro');
+  const showIntro = q.id === 'q1' && state.industry === 'agencies';
+  intro.textContent = showIntro ? AGENCIES_INTRO : '';
+  intro.style.display = showIntro ? '' : 'none';
+
   document.getElementById('different-workflow-wrap').style.display = q.allowDifferentLink ? '' : 'none';
 
   const isFirstStep = step === 1;
@@ -519,9 +574,22 @@ function computeResult() {
   const conditions = selectedConditions(q[3], state.answers.q4);
   const scoring = computeInternalScore(state.answers.q2, state.answers.q3, conditions.length, state.answers.q5);
 
+  const picked = state.answers.q4 || [];
+  const modules = route.q4
+    .filter((o) => picked.includes(o.value) && !o.exclusive)
+    .slice(0, 2)
+    .map((o) => Q4_MODULES[routeId][o.value]);
+  const q2Value = state.answers.q2;
+  const startingPoint = (q2Value === 'A' || q2Value === 'B') ? Q2_STARTING_POINT.manual
+    : (q2Value === 'C' || q2Value === 'D') ? Q2_STARTING_POINT.partial
+    : Q2_STARTING_POINT.unclear;
+
   return {
     routeId,
     route,
+    startingPoint,
+    modules,
+    hasAdditionalConditions: conditions.length >= 3,
     industryLabel: industryLabelFor(state.industry),
     methodPhrase: q2Opt ? q2Opt.phrase : '',
     methodLabel: q2Opt ? q2Opt.label : '',
@@ -551,11 +619,26 @@ function bookingUrlWithUtm() {
 
 function renderResult() {
   const r = computeResult();
+  const setText = (id, text) => { document.getElementById(id).textContent = text; };
 
-  document.getElementById('result-title').textContent = r.route.title;
-  document.getElementById('result-opening').textContent =
-    `You selected ${r.route.selected}. Today, ${r.methodPhrase}.`;
+  // 1. Workflow title (internal score / priority are never displayed)
+  setText('result-title', r.route.title);
 
+  // 2. A comparable workflow BChanel has solved (verified case evidence)
+  setText('result-built', r.route.built);
+  setText('result-verified', r.route.verifiedResults);
+
+  // 3. What a comparable workflow could include for this team
+  setText('result-base', r.route.comparable);
+  setText('result-start', r.startingPoint);
+  const modulesEl = document.getElementById('result-modules');
+  modulesEl.innerHTML = r.modules.map((m) => `<li>${m}</li>`).join('');
+  modulesEl.hidden = !r.modules.length;
+  const extra = document.getElementById('result-additional');
+  extra.textContent = Q4_ADDITIONAL_SENTENCE;
+  extra.hidden = !r.hasAdditionalConditions;
+
+  // 4. Reported operational context (reported effort only)
   const rows = [
     ['Current workflow method', r.methodLabel],
     ['Reported weekly effort', r.effortMeasured ? r.effortLabel : 'Not currently measured'],
@@ -565,15 +648,12 @@ function renderResult() {
   document.getElementById('result-context-list').innerHTML = rows
     .map(([k, v]) => `<div class="context-row"><dt>${k}</dt><dd>${v}</dd></div>`)
     .join('');
-  document.getElementById('result-effort-note').textContent = r.effortMeasured
+  setText('result-effort-note', r.effortMeasured
     ? 'This represents effort reported by you, not projected time savings or automation ROI.'
-    : 'Your team does not currently measure the effort required by this workflow.';
+    : 'Your team does not currently measure the effort required by this workflow.');
 
-  document.getElementById('result-comparable').textContent = r.route.comparable;
-  document.getElementById('result-proof').textContent = r.route.proof;
-
-  const caseCta = document.getElementById('case-cta');
-  caseCta.href = r.route.caseUrl;
+  // 6. CTAs
+  document.getElementById('case-cta').href = r.route.caseUrl;
   document.getElementById('final-cta').href = bookingUrlWithUtm();
 
   track('assessment_result_shown', {

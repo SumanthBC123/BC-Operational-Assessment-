@@ -272,6 +272,10 @@ img, svg { max-width: 100%; }
 .different-workflow a:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 2px; }
 
 /* Result */
+.result-sub { font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; color: var(--navy); margin: 14px 0 4px; }
+.action-block .result-sub:first-of-type { margin-top: 0; }
+.result-body.result-gap, .result-gap { margin-top: 12px; }
+.actions-list.result-gap { padding-left: 20px; }
 .context-list { margin: 0; }
 .context-row { display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 0.92rem; line-height: 1.5; }
 .context-row:last-child { border-bottom: none; }
@@ -296,6 +300,7 @@ img, svg { max-width: 100%; }
   margin: 0;
 }
 .result-body { color: var(--ink); font-size: 0.98rem; line-height: 1.6; margin: 0; }
+.result-body.result-gap { margin-top: 12px; }
 .result-context { color: var(--ink-soft); font-size: 0.88rem; line-height: 1.5; margin: 10px 0 0; }
 
 .action-block {
