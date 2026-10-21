@@ -104,6 +104,8 @@ SQS_RESETS = """
 #wf-assessment .option, #wf-assessment .industry-card { font-family: 'Raleway', sans-serif; }
 #wf-assessment .industry-card { font-family: 'Space Grotesk', sans-serif; }
 #wf-assessment a.btn { text-decoration: none; }
+#wf-assessment .wfa-footnote a { color: #2c8c84; text-decoration: underline; }
+#wf-assessment .wfa-footnote a:focus-visible { outline: 2px solid #2c8c84; outline-offset: 2px; }
 """
 
 
