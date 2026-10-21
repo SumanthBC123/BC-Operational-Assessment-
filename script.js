@@ -522,6 +522,22 @@ document.addEventListener('DOMContentLoaded', () => {
     goToQuestion(0);
   });
 
+  /* Logo returns to the assessment start. Mid-assessment it asks first, since
+     starting over clears the answers. (Absent in the Squarespace embed.) */
+  const logoHome = document.getElementById('logo-home');
+  if (logoHome) {
+    logoHome.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (currentScreenName === 'hero') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+      const inProgress = Object.keys(state.answers).length > 0 && currentScreenName !== 'result';
+      if (inProgress) {
+        showConfirm('Return to the start? Your current answers will be cleared.', resetAssessment);
+      } else {
+        resetAssessment();
+      }
+    });
+  }
+
   document.getElementById('back-to-industry').addEventListener('click', requestBackToIndustry);
 
   const differentLink = document.getElementById('different-workflow');
