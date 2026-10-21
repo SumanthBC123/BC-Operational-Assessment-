@@ -1,0 +1,1359 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>embed host test</title>
+<style>
+/* hostile site styles, roughly what a Squarespace theme does */
+body{font-family:Georgia,serif;background:#fff;color:#111;margin:0}
+h1,h2,h3{font-family:Georgia,serif;text-transform:uppercase;letter-spacing:.1em}
+button{background:#000;color:#fff;border-radius:0;font-family:Georgia}
+a{color:#c00;text-decoration:underline}
+ul{list-style:square}
+.site-header{height:70px;background:#ddd}
+.sqs-block{transform:translateZ(0);overflow:hidden}
+</style>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}</script>
+</head><body><div class="site-header">site header</div><div class="sqs-block">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+#wf-assessment { --navy: #2d4a6e;
+  --navy-dark: #1f3552;
+  --teal: #37aea4;
+  --teal-dark: #2c8c84;
+  --gold: #ffd55a;
+  --bg: #f4f7f9;
+  --bg-card: #ffffff;
+  --ink: #1f2b3a;
+  --ink-soft: #5b6b7c;
+  --border: #dfe6ec;
+  --radius: 10px;
+  --shadow: 0 2px 10px rgba(45, 74, 110, 0.06);
+  --max-w: 780px; }
+#wf-assessment, #wf-assessment * { box-sizing: border-box; }
+#wf-assessment h1, #wf-assessment h2, #wf-assessment h3, #wf-assessment .eyebrow, #wf-assessment .btn, #wf-assessment .step-label { font-family: 'Space Grotesk', sans-serif; }
+#wf-assessment img, #wf-assessment svg { max-width: 100%; }
+#wf-assessment .wrap { max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 20px; }
+#wf-assessment .hero { background: var(--bg);
+  padding: 56px 20px 48px;
+  text-align: center; }
+#wf-assessment .eyebrow { display: inline-block;
+  color: var(--teal-dark);
+  background: rgba(55, 174, 164, 0.12);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 18px; }
+#wf-assessment .hero h1 { color: var(--navy);
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  line-height: 1.2;
+  margin: 0 0 14px;
+  font-weight: 700;
+  text-wrap: balance; }
+#wf-assessment .hero p.sub { color: var(--ink-soft);
+  font-size: 1.02rem;
+  line-height: 1.6;
+  max-width: 560px;
+  margin: 0 auto 24px; }
+#wf-assessment .indicators { display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 20px;
+  margin-top: 22px;
+  color: var(--ink-soft);
+  font-size: 0.86rem; }
+#wf-assessment .indicators span { display: inline-flex; align-items: center; gap: 6px; }
+#wf-assessment .indicators svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--teal); }
+#wf-assessment .btn { display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.1s ease; }
+#wf-assessment .btn:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 2px; }
+#wf-assessment .btn-primary { background: var(--teal); color: #fff; }
+#wf-assessment .btn-primary:hover { background: var(--teal-dark); }
+#wf-assessment .btn-primary:disabled { background: #b9c6cf; cursor: not-allowed; }
+#wf-assessment .btn-secondary { background: transparent; color: var(--navy); border: 1.5px solid var(--border); }
+#wf-assessment .btn-secondary:hover { border-color: var(--navy); }
+#wf-assessment .btn-ghost { background: transparent; color: var(--ink-soft); padding: 14px 12px; }
+#wf-assessment .btn-ghost:hover { color: var(--navy); }
+#wf-assessment .btn-small { padding: 8px 10px; font-size: 0.86rem; }
+#wf-assessment .btn-block { width: 100%; }
+#wf-assessment .assessment { padding: 40px 20px 64px; }
+#wf-assessment .assessment .wrap { max-width: 680px; }
+#wf-assessment .progress-track { height: 6px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 12px; }
+#wf-assessment .progress-fill { height: 100%;
+  background: var(--teal);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+  width: 0%; }
+#wf-assessment .meta-row { display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px; }
+#wf-assessment .assessing-label { font-size: 0.82rem; color: var(--navy); font-weight: 600; }
+#wf-assessment .step-label { font-size: 0.82rem; color: var(--ink-soft); font-weight: 600; white-space: nowrap; }
+#wf-assessment .screen { display: none; }
+#wf-assessment .screen.active { display: block; animation: fadein 0.15s ease; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+#wf-assessment .screen.active { animation: none; }
+}
+#wf-assessment .card { background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px 26px; }
+#wf-assessment .q-title { color: var(--navy); font-size: 1.22rem; line-height: 1.4; margin: 0 0 8px; font-weight: 600; }
+#wf-assessment .helper-text { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.55; margin: 0 0 20px; }
+#wf-assessment .option-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 6px; }
+#wf-assessment .option { display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 13px 16px;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  text-align: left; }
+#wf-assessment .option:hover { border-color: var(--teal); }
+#wf-assessment .option:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 1px; }
+#wf-assessment .option.selected { border-color: var(--teal); background: rgba(55, 174, 164, 0.07); }
+#wf-assessment .option .dot { width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  position: relative; }
+#wf-assessment .option.selected .dot { border-color: var(--teal); }
+#wf-assessment .option.selected .dot::after { content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--teal); }
+#wf-assessment .option-check .dot { border-radius: 5px; }
+#wf-assessment .option-check.selected .dot::after { border-radius: 2px; inset: 4px; }
+#wf-assessment .option .label { font-weight: 500; color: var(--ink); font-size: 0.96rem; }
+#wf-assessment .industry-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+#wf-assessment .industry-card { border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 16px;
+  cursor: pointer;
+  background: #fff;
+  text-align: center;
+  font-family: 'Space Grotesk', sans-serif; }
+#wf-assessment .industry-card:hover { border-color: var(--teal); }
+#wf-assessment .industry-card:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 1px; }
+#wf-assessment .industry-card.selected { border-color: var(--teal); background: rgba(55, 174, 164, 0.07); }
+#wf-assessment .industry-card .label { font-weight: 700; color: var(--navy); font-size: 0.98rem; }
+#wf-assessment .nav-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 22px; }
+#wf-assessment .nav-row .spacer { flex: 1; }
+#wf-assessment .review-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
+#wf-assessment .review-row { display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border); }
+#wf-assessment .review-row:last-child { border-bottom: none; }
+#wf-assessment .review-text { display: flex; flex-direction: column; gap: 4px; }
+#wf-assessment .review-q { font-size: 0.82rem; font-weight: 600; color: var(--navy); line-height: 1.4; }
+#wf-assessment .review-a { font-size: 0.94rem; color: var(--ink-soft); }
+#wf-assessment .field { margin-bottom: 16px; }
+#wf-assessment .field label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+#wf-assessment .field input, #wf-assessment .field select { width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 0.96rem;
+  background: #fff; }
+#wf-assessment .field input:focus, #wf-assessment .field select:focus { outline: none; border-color: var(--teal); }
+#wf-assessment .consent { display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin: 14px 0 0; }
+#wf-assessment .consent input { margin-top: 3px; }
+#wf-assessment .consent a { color: var(--teal-dark); }
+#wf-assessment .form-error { color: #c0392b; font-size: 0.82rem; margin-top: 12px; display: none; }
+#wf-assessment .different-workflow { text-align: center; margin: 14px 0 0; font-size: 0.9rem; }
+#wf-assessment .different-workflow a { color: var(--teal-dark); }
+#wf-assessment .different-workflow a:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 2px; }
+#wf-assessment .result-sub { font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; color: var(--navy); margin: 14px 0 4px; }
+#wf-assessment .action-block .result-sub:first-of-type { margin-top: 0; }
+#wf-assessment .result-body.result-gap, #wf-assessment .result-gap { margin-top: 12px; }
+#wf-assessment .actions-list.result-gap { padding-left: 20px; }
+#wf-assessment .context-list { margin: 0; }
+#wf-assessment .context-row { display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 0.92rem; line-height: 1.5; }
+#wf-assessment .context-row:last-child { border-bottom: none; }
+#wf-assessment .context-row dt { flex: 0 0 170px; font-weight: 600; color: var(--navy); }
+#wf-assessment .context-row dd { margin: 0; color: var(--ink); }
+#wf-assessment .result-block { margin: 0 0 26px; }
+#wf-assessment .result-block:last-of-type { margin-bottom: 0; }
+#wf-assessment .result-h { font-size: 0.82rem;
+  color: var(--teal-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 8px; }
+#wf-assessment .result-workflow { font-size: 1.05rem; font-weight: 600; color: var(--navy); margin: 0; }
+#wf-assessment .result-block-main .result-h { color: var(--navy); }
+#wf-assessment .result-recommendation { font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--navy);
+  font-family: 'Space Grotesk', sans-serif;
+  margin: 0; }
+#wf-assessment .result-body { color: var(--ink); font-size: 0.98rem; line-height: 1.6; margin: 0; }
+#wf-assessment .result-body.result-gap { margin-top: 12px; }
+#wf-assessment .result-context { color: var(--ink-soft); font-size: 0.88rem; line-height: 1.5; margin: 10px 0 0; }
+#wf-assessment .action-block { background: rgba(45, 74, 110, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 20px; }
+#wf-assessment .action-block h3 { font-size: 0.82rem;
+  color: var(--teal-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 10px; }
+#wf-assessment .actions-list { margin: 0; padding-left: 20px; color: var(--ink); font-size: 0.96rem; line-height: 1.6; }
+#wf-assessment .actions-list li { margin-bottom: 4px; }
+#wf-assessment .actions-list li:last-child { margin-bottom: 0; }
+#wf-assessment .disclaimer { font-size: 0.8rem;
+  color: var(--ink-soft);
+  font-style: italic;
+  text-align: center;
+  margin: 8px 0 30px; }
+#wf-assessment .cta-block { text-align: center; margin-top: 4px; }
+#wf-assessment .cta-block .btn-primary, #wf-assessment .cta-block .btn-secondary { margin-bottom: 12px; }
+#wf-assessment .cta-support { color: var(--ink-soft); font-size: 0.87rem; max-width: 460px; margin: 0 auto 16px; line-height: 1.55; }
+#wf-assessment .wfa-footnote { text-align: center;
+  padding: 24px 20px 36px;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  margin: 0; }
+@media (max-width: 640px) {
+#wf-assessment .industry-grid { grid-template-columns: 1fr; }
+#wf-assessment .context-row { flex-direction: column; gap: 2px; }
+#wf-assessment .context-row dt { flex: none; }
+#wf-assessment .card { padding: 22px 18px; }
+#wf-assessment .hero { padding: 44px 16px 36px; }
+#wf-assessment .meta-row { flex-direction: column; align-items: flex-start; gap: 2px; }
+}
+#wf-assessment .hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+#wf-assessment .wfa-footnote p { margin: 0; }
+#wf-assessment .wfa-footer-links { margin-top: 8px !important; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; }
+#wf-assessment .wfa-footer-links a, #wf-assessment .link-button { color: var(--teal-dark); font: inherit; background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; }
+#wf-assessment .wfa-footer-links a:focus-visible, #wf-assessment .link-button:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 2px; }
+
+#wf-assessment { font-family: 'Raleway', sans-serif; color: var(--ink); background: var(--bg); line-height: 1.4; text-align: left; }
+#wf-assessment h1, #wf-assessment h2, #wf-assessment h3, #wf-assessment h4 { text-transform: none; letter-spacing: normal; }
+#wf-assessment button { font-family: inherit; }
+#wf-assessment .btn { font-family: 'Space Grotesk', sans-serif; }
+#wf-assessment .option, #wf-assessment .industry-card { font-family: 'Raleway', sans-serif; }
+#wf-assessment .industry-card { font-family: 'Space Grotesk', sans-serif; }
+#wf-assessment a.btn { text-decoration: none; }
+
+
+/* Confirm dialog: viewport-fixed, so deliberately outside the #wf-assessment scope */
+.wfa-confirm-overlay { position: fixed; inset: 0; background: rgba(31, 43, 58, 0.45); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 9998; }
+.wfa-confirm-overlay[hidden] { display: none; }
+.wfa-confirm-modal { background: #fff; border-radius: 10px; padding: 24px; max-width: 380px; width: 100%; box-shadow: 0 12px 32px rgba(31, 43, 58, 0.22); font-family: 'Raleway', sans-serif; }
+.wfa-confirm-modal p { margin: 0 0 18px; color: #1f2b3a; font-size: 0.96rem; line-height: 1.5; }
+.wfa-confirm-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.wfa-confirm-actions .btn { display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 8px; padding: 10px 20px; font-size: 0.94rem; font-weight: 600; cursor: pointer; font-family: 'Space Grotesk', sans-serif; }
+.wfa-confirm-actions .btn:focus-visible { outline: 2px solid #2c8c84; outline-offset: 2px; }
+.wfa-confirm-actions .btn-primary { background: #37aea4; color: #fff; }
+.wfa-confirm-actions .btn-primary:hover { background: #2c8c84; }
+.wfa-confirm-actions .btn-secondary { background: transparent; color: #2d4a6e; border: 1.5px solid #dfe6ec; }
+
+</style>
+
+<div id="wf-assessment">
+<!-- HERO -->
+  <section id="screen-hero" class="screen active">
+    <div class="hero">
+      <div class="wrap">
+        <span class="eyebrow">Workflow Automation Assessment</span>
+        <h1>Find the Right Next Step for Your Workflow</h1>
+        <p class="sub">Select one recurring workflow, answer five short questions, and see how BChanel solved a comparable operational problem — including what was built, what changed, and what a similar workflow could include for your team.</p>
+        <button id="start-assessment" class="btn btn-primary">Start the Assessment</button>
+        <div class="indicators">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>5 quick questions</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>Backed by published cases</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Result on this page</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INDUSTRY SELECT (not counted as a question) -->
+  <section id="screen-industry" class="screen">
+    <div class="assessment">
+      <div class="wrap">
+        <div class="card">
+          <h2 class="q-title">Which best describes your business?</h2>
+          <div id="industry-grid" class="industry-grid"></div>
+          <div class="nav-row">
+            <span class="spacer"></span>
+            <button id="industry-continue" class="btn btn-primary" disabled>Continue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUESTIONS -->
+  <section id="screen-question" class="screen">
+    <div class="assessment">
+      <div class="wrap">
+        <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+        <div class="meta-row">
+          <span id="assessing-label" class="assessing-label"></span>
+          <span id="step-label" class="step-label"></span>
+        </div>
+        <div class="card">
+          <h2 id="q-title" class="q-title"></h2>
+          <p id="q-helper" class="helper-text"></p>
+          <p id="q-intro" class="helper-text" style="display:none;"></p>
+          <div id="option-list" class="option-list"></div>
+          <p id="different-workflow-wrap" class="different-workflow" style="display:none;"><a id="different-workflow" href="#">My workflow is different</a></p>
+          <div class="nav-row">
+            <button id="q-back" class="btn btn-ghost">← Back</button>
+            <button id="back-to-industry" class="btn btn-ghost" style="display:none;">← Back to Business Type</button>
+            <span class="spacer"></span>
+            <button id="q-continue" class="btn btn-primary" disabled>Continue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEW ANSWERS -->
+  <section id="screen-review" class="screen">
+    <div class="assessment">
+      <div class="wrap">
+        <div class="card">
+          <h2 class="q-title">Review your answers</h2>
+          <p class="helper-text">Check your answers before continuing. Select Edit to change one.</p>
+          <div id="review-list" class="review-list"></div>
+          <div class="nav-row">
+            <span class="spacer"></span>
+            <button id="review-continue" class="btn btn-primary">Continue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEAD CAPTURE (gates the result) -->
+  <section id="screen-lead" class="screen">
+    <div class="assessment">
+      <div class="wrap">
+        <div class="card">
+          <h2 class="q-title">Almost there</h2>
+          <p class="helper-text" style="margin-bottom:2px;">Enter your details to view your personalized workflow result.</p>
+          <p class="helper-text">Your result will appear immediately on this page.</p>
+          <button id="lead-back-to-review" type="button" class="btn btn-ghost btn-small" style="padding-left:0; margin-bottom:12px;">← Back to Review Answers</button>
+          <form id="lead-form" novalidate>
+            <div class="field">
+              <label for="firstName">First name</label>
+              <input type="text" id="firstName" name="firstName" required />
+            </div>
+            <div class="field">
+              <label for="lastName">Last name</label>
+              <input type="text" id="lastName" name="lastName" required />
+            </div>
+            <div class="field">
+              <label for="email">Work email</label>
+              <input type="email" id="email" name="email" required />
+            </div>
+            <div class="field">
+              <label for="company">Company</label>
+              <input type="text" id="company" name="company" required />
+            </div>
+            <div class="hp-field" aria-hidden="true">
+              <label for="website">Leave this field empty</label>
+              <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+            </div>
+            <label class="consent">
+              <input type="checkbox" name="consent" required />
+              <span>I have read the <a href="https://www.bchanel.com/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a> and agree that BChanel may use my information to provide my assessment result and respond to my request.</span>
+            </label>
+            <div id="lead-error" class="form-error">Please fill in every field with a valid work email and check the consent box.</div>
+            <button id="lead-submit" type="submit" class="btn btn-primary btn-block">See My Results</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT (on-page, no gating beyond the lead form) -->
+  <section id="screen-result" class="screen">
+    <div class="assessment">
+      <div class="wrap">
+        <div class="card">
+
+          <div class="result-block result-block-main">
+            <h3 class="result-h">Your Workflow Result</h3>
+            <p id="result-title" class="result-recommendation"></p>
+          </div>
+
+          <div class="result-block action-block">
+            <h3>A Comparable Workflow BChanel Has Solved</h3>
+            <h4 class="result-sub">What BChanel built</h4>
+            <p id="result-built" class="result-body"></p>
+            <h4 class="result-sub">Verified results</h4>
+            <p id="result-verified" class="result-body"></p>
+          </div>
+
+          <div class="result-block">
+            <h3 class="result-h">What a Comparable Workflow Could Include for Your Team</h3>
+            <p id="result-base" class="result-body"></p>
+            <p id="result-start" class="result-body result-gap"></p>
+            <ul id="result-modules" class="actions-list result-gap"></ul>
+            <p id="result-additional" class="result-body result-gap" hidden></p>
+          </div>
+
+          <div class="result-block">
+            <h3 class="result-h">Your Reported Operational Context</h3>
+            <dl id="result-context-list" class="context-list"></dl>
+            <p id="result-effort-note" class="result-context"></p>
+          </div>
+
+          <p class="disclaimer">This is an initial directional result. It is not a complete operational assessment, confirmed architecture, or ROI estimate.</p>
+
+          <div class="cta-block">
+            <a id="case-cta" class="btn btn-primary btn-block" href="#" target="_blank" rel="noopener">View the Full Workflow Case</a>
+            <a id="final-cta" class="btn btn-secondary btn-block" href="https://calendly.com/lsmiriglia-bchanel" target="_blank" rel="noopener">Discuss This Workflow With BChanel</a>
+            <p class="cta-support">Bring this workflow and the answers you gave. We'll discuss what needs clarification before deciding whether redesign, integration, or automation makes sense.</p>
+            <button id="assess-another" class="btn btn-ghost btn-block">Assess Another Workflow</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+<p class="wfa-footnote">This review is provided for informational purposes only. <a href="https://www.bchanel.com/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a></p>
+</div>
+
+<div id="confirm-overlay" class="wfa-confirm-overlay" hidden>
+  <div class="wfa-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-message">
+    <p id="confirm-message"></p>
+    <div class="wfa-confirm-actions">
+      <button id="confirm-cancel" class="btn btn-secondary" type="button">Cancel</button>
+      <button id="confirm-ok" class="btn btn-primary" type="button">Continue</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+'use strict';
+window.WFA_LEAD_ENDPOINT = 'https://example-endpoint.netlify.app/api/lead';
+function boot() {
+// Theme wrappers can apply transforms that break position:fixed, so mount the dialog on <body>.
+var overlay = document.getElementById('confirm-overlay');
+if (overlay && overlay.parentNode !== document.body) document.body.appendChild(overlay);
+/* Workflow Automation Assessment: shared questionnaire data and scoring.
+   Loaded by the browser (window.WFA) and required by the serverless lead
+   endpoint, so the server can recompute labels, score, priority and case URL
+   from the raw answer codes instead of trusting the client. */
+(function (root) {
+const QUESTIONNAIRE_VERSION = 'v5.0';
+
+const INDUSTRIES = [
+  { id: 'ecommerce', label: 'E-commerce' },
+  { id: 'hospitality', label: 'Hospitality' },
+  { id: 'agencies', label: 'Agencies / Service Businesses' },
+];
+
+/* Q1 is the only question that differs by industry. Each option carries the
+   route (result ID) it selects. */
+const Q1_BY_INDUSTRY = {
+  ecommerce: [
+    { value: 'amazon_ads', label: 'Amazon or retail-media advertising reporting' },
+    { value: 'fba_tracking', label: 'FBA inbound shipment monitoring and delay alerts' },
+    { value: 'revenue_signals', label: 'Revenue and performance monitoring across dashboards or spreadsheets' },
+  ],
+  hospitality: [
+    { value: 'guesty_finance', label: 'Reservation finance and reconciliation across properties' },
+    { value: 'revenue_signals', label: 'Revenue and performance monitoring across dashboards or spreadsheets' },
+  ],
+  agencies: [
+    { value: 'revenue_signals', label: 'Revenue and performance monitoring across dashboards or spreadsheets' },
+  ],
+};
+
+const AGENCIES_INTRO = 'Select the currently available workflow review, or choose “My workflow is different” to discuss another operational process.';
+const Q1_TEXT = 'Which workflow would you like help reviewing first?';
+
+/* Q3 / Q5 answer sets are identical across routes; only the Q3 question text
+   and the first Q5 option change. */
+const Q3_OPTIONS = [
+  { value: 'A', label: 'Less than 2 hours', annual: 'Up to approximately 100 hours per year' },
+  { value: 'B', label: '2–5 hours', annual: 'Approximately 100–260 hours per year' },
+  { value: 'C', label: '6–10 hours', annual: 'Approximately 300–520 hours per year' },
+  { value: 'D', label: 'More than 10 hours', annual: 'More than 520 hours per year' },
+  { value: 'E', label: 'We do not currently measure it', annual: null },
+];
+const ANNUAL_UNMEASURED = 'Your current annual effort is not yet measured';
+
+function q5Options(firstLabel) {
+  return [
+    { value: 'A', label: firstLabel },
+    { value: 'B', label: 'Within 1–3 months' },
+    { value: 'C', label: 'Within 3–6 months' },
+    { value: 'D', label: 'We are exploring improvements for a later stage' },
+    { value: 'E', label: 'I am not sure' },
+  ];
+}
+
+const Q4_TEXT = 'Which conditions make this workflow difficult to operate?';
+const Q4_HELPER = 'Select all that apply.';
+const Q5_TEXT = 'When does your team realistically need this workflow to improve?';
+
+/* Each route: Q2-Q5 content, plus the case-backed result copy. Q2 options
+   carry `phrase` (inserted into the result) and `score`; Q4 options carry
+   `exclusive` for the final "None / not sure" choice. */
+const ROUTES = {
+  amazon_ads: {
+    title: 'Amazon Ads Reporting Workflow',
+    selected: 'Amazon advertising reporting',
+    caseUrl: 'https://www.bchanel.com/workflow-cases/amazon-ads-reporting-automation',
+    q2: {
+      text: 'How is your Amazon or retail-media reporting workflow handled today?',
+      options: [
+        { value: 'A', label: 'Reports are downloaded manually and PPC metrics are calculated in Excel or Google Sheets', phrase: 'reporting is prepared through manual downloads and spreadsheet calculations' },
+        { value: 'B', label: 'Scheduled reports arrive by email, but someone still extracts and consolidates the data', phrase: 'scheduled reports still require manual extraction and consolidation' },
+        { value: 'C', label: 'Several tools or connectors collect data, but the final report is assembled manually', phrase: 'multiple tools collect data, but the final report is still assembled manually' },
+        { value: 'D', label: 'The workflow is partly automated, but formulas, mappings or data checks frequently need correction', phrase: 'the workflow is partially automated but still requires frequent correction' },
+        { value: 'E', label: 'I am not sure how the reporting workflow is currently assembled', phrase: 'the current reporting method is not yet fully documented' },
+      ],
+    },
+    q3Text: 'How much total team time is currently spent collecting, calculating, checking or distributing these reports each week?',
+    q4: [
+      { value: 'A', label: 'Multiple brands, seller accounts or advertising profiles are involved' },
+      { value: 'B', label: 'Business reports, campaign reports and other sources must be combined' },
+      { value: 'C', label: 'ACOS, TACOS, ROAS, CTR, CVR or other KPIs are calculated manually' },
+      { value: 'D', label: 'Spreadsheet formulas, mappings or filters require repeated maintenance' },
+      { value: 'E', label: 'Metric definitions or reporting ownership differ across the team' },
+      { value: 'F', label: 'The report requires human review before it can be distributed' },
+      { value: 'G', label: 'None of these / I am not sure', exclusive: true },
+    ],
+    q5First: 'Before the next reporting, client or brand-review cycle (within 30 days)',
+    comparable: 'A comparable workflow could include automated Amazon SP-API and scheduled-report collection, brand-level data structuring, consistent KPI calculations and a consolidated Google Sheets report ready for review.',
+    built: "BChanel connected Amazon SP-API and scheduled reports, structured brand-level performance data, automated PPC calculations, and delivered a consolidated Google Sheets report every Monday.",
+    verifiedResults: "The published case reports 4–8 hours saved each week across eight brands, with zero manual PPC calculation errors. These are results from that case, not a forecast for your business.",
+  },
+
+  fba_tracking: {
+    title: 'FBA Shipment Tracking Workflow',
+    selected: 'FBA shipment monitoring',
+    caseUrl: 'https://www.bchanel.com/workflow-cases/fba-shipment-tracking-automation',
+    q2: {
+      text: 'How is your inbound FBA shipment status currently monitored?',
+      options: [
+        { value: 'A', label: 'Someone checks active shipments manually in Amazon Seller Central', phrase: 'active shipments are checked manually in Seller Central' },
+        { value: 'B', label: 'Shipment data is exported or copied into a spreadsheet that the team updates manually', phrase: 'shipment status is maintained through manual exports or spreadsheet updates' },
+        { value: 'C', label: 'A dashboard exists, but delay thresholds and alerts are not applied consistently', phrase: 'a dashboard exists but exception thresholds and alerts are inconsistent' },
+        { value: 'D', label: 'Part of the workflow uses an API or automation, but exceptions still require repeated manual checking', phrase: 'the workflow is partially automated but exceptions still require repeated checks' },
+        { value: 'E', label: 'I am not sure how shipment status is currently monitored', phrase: 'the current shipment-monitoring method is not yet fully documented' },
+      ],
+    },
+    q3Text: 'How much total team time is currently spent checking shipment status, updating trackers or following up on delays each week?',
+    q4: [
+      { value: 'A', label: 'Multiple brands, seller accounts or warehouses are involved' },
+      { value: 'B', label: 'A high number of active inbound shipments must be checked' },
+      { value: 'C', label: 'Delay thresholds or exception rules are not documented' },
+      { value: 'D', label: 'Different team members check or classify shipment status differently' },
+      { value: 'E', label: 'The team discovers delays only after inventory risk appears' },
+      { value: 'F', label: 'Shipment information must be moved between Seller Central, spreadsheets or messaging tools' },
+      { value: 'G', label: 'None of these / I am not sure', exclusive: true },
+    ],
+    q5First: 'Before the next major inbound shipment or inventory-planning cycle (within 30 days)',
+    comparable: 'A comparable workflow could include Amazon SP-API data collection, defined delay thresholds, a live shipment dashboard and alerts that send the relevant shipment context to the responsible team when an exception appears.',
+    built: "BChanel connected Amazon SP-API data to a live shipment dashboard, applied defined delay thresholds, and created alerts that notify the responsible team when an exception appears.",
+    verifiedResults: "The published case reports 40–60 inbound shipments monitored automatically, delays identified 7+ days earlier, and zero manual Seller Central status checks. These are results from that case, not a forecast for your business.",
+  },
+
+  guesty_finance: {
+    title: 'Guesty Finance and Reconciliation Workflow',
+    selected: 'reservation finance and reconciliation',
+    caseUrl: 'https://www.bchanel.com/workflow-cases/guesty-finance-automation',
+    q2: {
+      text: 'How is reservation finance data currently prepared and reconciled?',
+      options: [
+        { value: 'A', label: 'Reservation and invoice data is extracted and reconciled manually for each property', phrase: 'reservation and invoice data is extracted and reconciled manually by property' },
+        { value: 'B', label: 'Financial details are copied from Guesty into Google Sheets or another reporting file', phrase: 'financial details are copied from Guesty into a separate reporting file' },
+        { value: 'C', label: 'Some events or exports are automated, but validation and categorization remain manual', phrase: 'data capture is partially automated but validation and categorization remain manual' },
+        { value: 'D', label: 'A dashboard exists, but it is not updated in real time or does not cover all properties', phrase: 'a dashboard exists but does not provide real-time visibility across all properties' },
+        { value: 'E', label: 'I am not sure how reservation finance data currently reaches the report', phrase: 'the current reservation-finance workflow is not yet fully documented' },
+      ],
+    },
+    q3Text: 'How much total team time is currently spent extracting, validating, reconciling or reporting reservation finance data each week?',
+    q4: [
+      { value: 'A', label: 'Multiple properties, entities or locations are involved' },
+      { value: 'B', label: 'New, updated and cancelled reservations must be treated differently' },
+      { value: 'C', label: 'Invoice items or financial fields require manual validation or categorization' },
+      { value: 'D', label: 'Guesty, spreadsheets, accounting or reporting tools must stay aligned' },
+      { value: 'E', label: 'The team completes reconciliation on a nightly or repeated schedule' },
+      { value: 'F', label: 'There is no consolidated real-time view across properties' },
+      { value: 'G', label: 'None of these / I am not sure', exclusive: true },
+    ],
+    q5First: 'Before the next financial close, owner-reporting or peak operating cycle (within 30 days)',
+    comparable: 'A comparable workflow could include real-time reservation-event capture, structured financial extraction, validation and categorization, and a live reporting view across approved properties.',
+    built: "BChanel created a workflow that captures Guesty reservation events in real time, extracts and validates financial information, and updates a consolidated reporting view across the included properties.",
+    verifiedResults: "The published case reports real-time financial visibility across properties, elimination of manual nightly reconciliation, and automated tracking across all included properties. These are results from that case, not a forecast for your business.",
+  },
+
+  revenue_signals: {
+    title: 'Revenue and Performance Signal Monitoring',
+    selected: 'revenue and performance monitoring',
+    caseUrl: 'https://www.bchanel.com/workflow-cases/revenue-performance-signal-monitoring',
+    q2: {
+      text: 'How does your team currently identify revenue or performance changes that require attention?',
+      options: [
+        { value: 'A', label: 'Team members repeatedly check multiple dashboards or spreadsheets on a fixed schedule', phrase: 'the team repeatedly checks dashboards or spreadsheets on a fixed schedule' },
+        { value: 'B', label: 'Someone collects or prepares the metrics manually before each review', phrase: 'metrics are collected or prepared manually before each review' },
+        { value: 'C', label: 'Alerts exist, but they repeat unchanged conditions or create too much noise', phrase: 'existing alerts repeat unchanged conditions or create excessive noise' },
+        { value: 'D', label: 'Monitoring is partly automated, but thresholds, ownership or escalation rules are inconsistent', phrase: 'monitoring is partially automated but thresholds, ownership or escalation rules are inconsistent' },
+        { value: 'E', label: 'There is no consistent monitoring process, or I am not sure how it works', phrase: 'the current monitoring process is not yet consistently defined' },
+      ],
+    },
+    q3Text: 'How much total team time is currently spent checking dashboards, collecting metrics or deciding what deserves attention each week?',
+    q4: [
+      { value: 'A', label: 'Metrics come from several dashboards, spreadsheets or connected systems' },
+      { value: 'B', label: 'Benchmarks, thresholds or metric definitions are not consistently documented' },
+      { value: 'C', label: 'The same checks are repeated even when nothing meaningful has changed' },
+      { value: 'D', label: 'Important risks, anomalies or opportunities are discovered too late' },
+      { value: 'E', label: 'It is unclear who owns each signal or who should respond' },
+      { value: 'F', label: 'Every recommendation requires human review before action' },
+      { value: 'G', label: 'None of these / I am not sure', exclusive: true },
+    ],
+    q5First: 'Before the next planning, reporting or performance-review cycle (within 30 days)',
+    comparable: 'A comparable workflow could include scheduled collection of approved metrics, comparison against defined thresholds and owners, change-only signals, signal history, and human approval before any next action.',
+    built: "BChanel created a workflow that reviews approved metrics on a defined schedule, compares them against agreed thresholds, and generates signals only when a new or changed condition requires attention.",
+    verifiedResults: "The published case reports earlier visibility into meaningful changes, fewer repetitive dashboard checks, and continued human control over every recommended action. The published case reports qualitative outcomes; no numerical savings are claimed.",
+  },
+};
+
+/* Deterministic solution module for each non-exclusive Q4 condition (route -> Q4 value).
+   Shown in the route's original option order, at most two. */
+const Q4_MODULES = {
+  "amazon_ads": {
+    "A": "The workflow would need brand- and account-level data separation while maintaining one consolidated reporting view.",
+    "B": "The design should include an approved source map and collection schedule for the business, campaign and supporting reports.",
+    "C": "A governed calculation layer could apply the agreed definitions for ACOS, TACOS, ROAS, CTR, CVR and other approved KPIs.",
+    "D": "The workflow should centralize transformation and validation rules to reduce dependency on manually maintained spreadsheet formulas.",
+    "E": "Metric definitions, report ownership and review responsibilities should be agreed before the reporting workflow is automated.",
+    "F": "The workflow should preserve a clear human review and approval checkpoint before the report is distributed."
+  },
+  "fba_tracking": {
+    "A": "The dashboard would need consistent shipment records with filters and ownership separated by brand, account or warehouse.",
+    "B": "The workflow could prioritize exception-based monitoring so the team reviews delayed shipments instead of checking every active shipment.",
+    "C": "Approved delay thresholds and exception rules should be defined before alerts are introduced.",
+    "D": "Shipment statuses, delay classifications and ownership rules should be standardized across the team.",
+    "E": "The workflow could include early-warning signals and an escalation path before shipment delays create inventory risk.",
+    "F": "Shipment information could be synchronized from Amazon into a controlled dashboard and relevant communication channel without repeated copying."
+  },
+  "guesty_finance": {
+    "A": "The reporting structure should preserve property- and entity-level separation while providing one consolidated financial view.",
+    "B": "The workflow would need clear rules for new, updated and cancelled reservation events.",
+    "C": "A validation and categorization layer should be applied before financial information reaches the reporting view.",
+    "D": "The design should define the trusted source for each field and the rules used to synchronize Guesty with the approved reporting systems.",
+    "E": "An event-driven update process could reduce dependence on a repeated nightly extraction and reconciliation cycle.",
+    "F": "The workflow could provide a live multi-property view using consistent financial fields, statuses and filters."
+  },
+  "revenue_signals": {
+    "A": "The workflow should begin with an approved source map and a defined collection schedule for each metric.",
+    "B": "KPI definitions, benchmarks and alert thresholds should be agreed before automated monitoring begins.",
+    "C": "Change-only signals could suppress unchanged conditions and reduce unnecessary dashboard reviews.",
+    "D": "The workflow could surface exceptions, anomalies or meaningful changes before the next scheduled manual review.",
+    "E": "Each signal should have a defined owner, response expectation and escalation path.",
+    "F": "Every signal should remain subject to human review before any recommendation or operational action is taken."
+  }
+};
+
+/* Q2 only changes the starting-point sentence, never the selected case. */
+const Q2_STARTING_POINT = {
+  manual: 'The starting point would be to document the current manual steps, confirm the approved inputs and systems, and define ownership before designing the future workflow.',
+  partial: 'The starting point would be to review the existing dashboard, connector, or automation, identify where manual checks and exceptions remain, and preserve the components that already work.',
+  unclear: 'The starting point would be to map how the workflow currently operates and confirm how information moves between people and systems before recommending any implementation.',
+};
+const Q4_ADDITIONAL_SENTENCE = 'Additional operating conditions should be validated during workflow design.';
+
+/* Internal lead-qualification score. Stored with the lead, never displayed. */
+function computeInternalScore(q2Value, q3Value, conditionCount, q5Value) {
+  const q2Points = { A: 2, B: 2, C: 1, D: 1, E: 0 }[q2Value] || 0;
+  const q3Points = { A: 0, B: 1, C: 2, D: 3, E: 0 }[q3Value] || 0;
+  const complexityPoints = conditionCount >= 3 ? 2 : conditionCount === 2 ? 1 : 0;
+  const urgencyPoints = q5Value === 'A' ? 2 : q5Value === 'B' ? 1 : 0;
+  const score = q2Points + q3Points + complexityPoints + urgencyPoints;
+  const priority = score >= 7 ? 'High' : score >= 4 ? 'Medium' : 'Low';
+  return { score, priority };
+}
+
+const WFA = {
+  QUESTIONNAIRE_VERSION, INDUSTRIES, Q1_BY_INDUSTRY, AGENCIES_INTRO, Q1_TEXT, Q3_OPTIONS,
+  ANNUAL_UNMEASURED, q5Options, Q4_TEXT, Q4_HELPER, Q5_TEXT, ROUTES, Q4_MODULES,
+  Q2_STARTING_POINT, Q4_ADDITIONAL_SENTENCE, computeInternalScore,
+};
+if (typeof module !== 'undefined' && module.exports) module.exports = WFA;
+else root.WFA = WFA;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+/* Workflow Automation Assessment — production (case-led, deterministic)
+   Industry filters the Q1 workflow choices. Q1 alone sets the result route
+   (amazon_ads, fba_tracking, guesty_finance or revenue_signals) and the exact
+   matching case URL. Q2-Q5 are loaded from the selected route; they only
+   personalize the preview and feed an internal priority score that is stored
+   with the lead and never shown as the recommendation.
+   No live AI, no ROI or savings claims, no generic/unsupported result. */
+
+
+const DATA = window.WFA;
+const {
+  QUESTIONNAIRE_VERSION, INDUSTRIES, Q1_BY_INDUSTRY, AGENCIES_INTRO, Q1_TEXT, Q3_OPTIONS,
+  ANNUAL_UNMEASURED, q5Options, Q4_TEXT, Q4_HELPER, Q5_TEXT, ROUTES, Q4_MODULES,
+  Q2_STARTING_POINT, Q4_ADDITIONAL_SENTENCE, computeInternalScore,
+} = DATA;
+
+/* Submissions go to a server-side endpoint that validates them and forwards
+   them to storage; no storage URL or secret is exposed in this file. */
+const LEAD_ENDPOINT = window.WFA_LEAD_ENDPOINT || '/api/lead';
+const PRIVACY_URL = 'https://www.bchanel.com/privacy-policy';
+const CONSENT_VERSION = '2026-10-v1';
+
+/* Booking page used by the result CTA and by the "My workflow is different"
+   exit link. */
+const BOOKING_URL = 'https://calendly.com/lsmiriglia-bchanel';
+const OPERATIONAL_ASSESSMENT_URL = BOOKING_URL;
+
+const STORAGE_KEY = 'wfAssessmentV5';
+
+const state = {
+  industry: null,
+  answers: {}, // { q1: 'amazon_ads', q2: 'A', q3: 'B', q4: ['A','C'], q5: 'A' }
+  currentIndex: 0,
+  editingFromReview: false,
+  lead: {},
+  utm: {},
+};
+
+const screens = {
+  hero: document.getElementById('screen-hero'),
+  industry: document.getElementById('screen-industry'),
+  question: document.getElementById('screen-question'),
+  review: document.getElementById('screen-review'),
+  lead: document.getElementById('screen-lead'),
+  result: document.getElementById('screen-result'),
+};
+
+let currentScreenName = 'hero';
+
+function showScreen(name) {
+  Object.values(screens).forEach((el) => el.classList.remove('active'));
+  screens[name].classList.add('active');
+  currentScreenName = name;
+  persistState();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function track(eventName, params) {
+  if (typeof window.gtag === 'function') window.gtag('event', eventName, params || {});
+}
+
+function showConfirm(message, onConfirm) {
+  const overlay = document.getElementById('confirm-overlay');
+  document.getElementById('confirm-message').textContent = message;
+  overlay.hidden = false;
+  const okBtn = document.getElementById('confirm-ok');
+  const cancelBtn = document.getElementById('confirm-cancel');
+  function cleanup() {
+    overlay.hidden = true;
+    okBtn.removeEventListener('click', onOk);
+    cancelBtn.removeEventListener('click', onCancel);
+  }
+  function onOk() { cleanup(); onConfirm(); }
+  function onCancel() { cleanup(); }
+  okBtn.addEventListener('click', onOk);
+  cancelBtn.addEventListener('click', onCancel);
+}
+
+function captureUTMs() {
+  const params = new URLSearchParams(window.location.search);
+  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].forEach((key) => {
+    if (params.get(key)) state.utm[key] = params.get(key);
+  });
+}
+
+function persistState() {
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+      industry: state.industry,
+      answers: state.answers,
+      currentIndex: state.currentIndex,
+      screen: currentScreenName,
+      utm: state.utm,
+    }));
+  } catch (err) { /* storage unavailable — assessment still works, just won't survive a refresh */ }
+}
+
+function restoreState() {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const saved = JSON.parse(raw);
+    if (!saved || !saved.industry || !Q1_BY_INDUSTRY[saved.industry]) return false;
+    state.industry = saved.industry;
+    state.answers = saved.answers || {};
+    state.currentIndex = saved.currentIndex || 0;
+    // Landing-URL UTMs win; otherwise keep the ones captured earlier in this session.
+    state.utm = Object.assign({}, saved.utm || {}, state.utm);
+    return saved.screen || 'industry';
+  } catch (err) {
+    return false;
+  }
+}
+
+function industryLabelFor(id) {
+  const ind = INDUSTRIES.find((i) => i.id === id);
+  return ind ? ind.label : '';
+}
+
+/* ---------- Question model: Q1 from the industry, Q2-Q5 from the route ---------- */
+function currentRouteId() {
+  const v = state.answers.q1;
+  return v && ROUTES[v] ? v : null;
+}
+
+function buildQuestions(industry, routeId) {
+  const q1 = { id: 'q1', text: Q1_TEXT, options: Q1_BY_INDUSTRY[industry] || [], allowDifferentLink: true };
+  if (!routeId) return [q1];
+  const route = ROUTES[routeId];
+  return [
+    q1,
+    { id: 'q2', text: route.q2.text, options: route.q2.options },
+    { id: 'q3', text: route.q3Text, options: Q3_OPTIONS },
+    { id: 'q4', text: Q4_TEXT, helper: Q4_HELPER, multiSelect: true, options: route.q4 },
+    { id: 'q5', text: Q5_TEXT, options: q5Options(route.q5First) },
+  ];
+}
+
+function currentQuestions() {
+  return buildQuestions(state.industry, currentRouteId());
+}
+
+const TOTAL_QUESTIONS = 5;
+
+function optionLabel(question, value) {
+  const opt = question.options.find((o) => o.value === value);
+  return opt ? opt.label : '';
+}
+
+function answerDisplay(question) {
+  const val = state.answers[question.id];
+  if (question.multiSelect) {
+    if (!val || !val.length) return 'Not answered';
+    return val.map((v) => optionLabel(question, v)).join(', ');
+  }
+  return val ? optionLabel(question, val) : 'Not answered';
+}
+
+function isAnswered(question) {
+  const a = state.answers[question.id];
+  return question.multiSelect ? !!(a && a.length) : !!a;
+}
+
+/* ---------- Industry select screen ---------- */
+function renderIndustryGrid() {
+  const grid = document.getElementById('industry-grid');
+  grid.innerHTML = '';
+  INDUSTRIES.forEach((ind) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'industry-card';
+    if (state.industry === ind.id) btn.classList.add('selected');
+    btn.innerHTML = `<span class="label">${ind.label}</span>`;
+    btn.addEventListener('click', () => selectIndustry(ind.id, btn));
+    grid.appendChild(btn);
+  });
+  document.getElementById('industry-continue').disabled = !state.industry;
+}
+
+function selectIndustry(id, btn) {
+  if (state.industry && state.industry !== id && Object.keys(state.answers).length) {
+    showConfirm('Changing your business type will clear your current answers. Continue?', () => {
+      state.industry = id;
+      state.answers = {};
+      state.currentIndex = 0;
+      persistState();
+      renderIndustryGrid();
+    });
+    return;
+  }
+  state.industry = id;
+  document.querySelectorAll('.industry-card').forEach((c) => c.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('industry-continue').disabled = false;
+  persistState();
+}
+
+function requestBackToIndustry() {
+  const hasAnswers = Object.keys(state.answers).length > 0;
+  const doGoBack = () => {
+    state.industry = null;
+    state.answers = {};
+    state.currentIndex = 0;
+    state.editingFromReview = false;
+    persistState();
+    showScreen('industry');
+    renderIndustryGrid();
+  };
+  if (hasAnswers) {
+    showConfirm('Going back to business type will clear your current answers. Continue?', doGoBack);
+  } else {
+    doGoBack();
+  }
+}
+
+/* ---------- Question screen ---------- */
+function setAnswer(q, opt) {
+  if (q.multiSelect) {
+    const arr = state.answers[q.id] ? state.answers[q.id].slice() : [];
+    if (opt.exclusive) {
+      // Exclusive: selecting "None of these / I am not sure" clears everything else.
+      // Clicking it again while it's the only selection deselects it.
+      if (arr.length === 1 && arr[0] === opt.value) arr.length = 0;
+      else { arr.length = 0; arr.push(opt.value); }
+    } else {
+      // Selecting any real condition removes the exclusive option if present.
+      const exclusiveIdx = arr.findIndex((v) => {
+        const o = q.options.find((oo) => oo.value === v);
+        return o && o.exclusive;
+      });
+      if (exclusiveIdx > -1) arr.splice(exclusiveIdx, 1);
+      const idx = arr.indexOf(opt.value);
+      if (idx > -1) arr.splice(idx, 1);
+      else arr.push(opt.value);
+    }
+    state.answers[q.id] = arr;
+  } else {
+    state.answers[q.id] = opt.value;
+  }
+  persistState();
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const questions = currentQuestions();
+  // A refresh can land on a later question with no Q1 saved; fall back to Q1.
+  if (state.currentIndex >= questions.length) state.currentIndex = 0;
+  const q = questions[state.currentIndex];
+  const step = state.currentIndex + 1;
+  const answeredCount = questions.filter(isAnswered).length;
+
+  document.getElementById('progress-fill').style.width = `${(answeredCount / TOTAL_QUESTIONS) * 100}%`;
+  document.getElementById('assessing-label').textContent = `Assessing: ${industryLabelFor(state.industry)}`;
+  document.getElementById('step-label').textContent = `Question ${step} of ${TOTAL_QUESTIONS}`;
+  document.getElementById('q-title').textContent = q.text;
+  document.getElementById('q-helper').textContent = q.helper || '';
+  document.getElementById('q-helper').style.display = q.helper ? '' : 'none';
+
+  const list = document.getElementById('option-list');
+  list.innerHTML = '';
+  const currentAnswer = state.answers[q.id];
+
+  q.options.forEach((opt) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = q.multiSelect ? 'option option-check' : 'option';
+    const isSelected = q.multiSelect
+      ? currentAnswer && currentAnswer.includes(opt.value)
+      : currentAnswer === opt.value;
+    if (isSelected) btn.classList.add('selected');
+    btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+    btn.innerHTML = `<span class="dot"></span><span class="label">${opt.label}</span>`;
+    btn.addEventListener('click', () => {
+      // Q1 decides the route, so changing it invalidates Q2-Q5 (different options).
+      if (q.id === 'q1' && currentAnswer && currentAnswer !== opt.value
+          && Object.keys(state.answers).some((k) => k !== 'q1')) {
+        showConfirm('Changing your workflow will clear your answers to the next questions. Continue?', () => {
+          state.answers = { q1: opt.value };
+          state.editingFromReview = false;
+          persistState();
+          renderQuestion();
+        });
+        return;
+      }
+      setAnswer(q, opt);
+    });
+    list.appendChild(btn);
+  });
+
+  const intro = document.getElementById('q-intro');
+  const showIntro = q.id === 'q1' && state.industry === 'agencies';
+  intro.textContent = showIntro ? AGENCIES_INTRO : '';
+  intro.style.display = showIntro ? '' : 'none';
+
+  document.getElementById('different-workflow-wrap').style.display = q.allowDifferentLink ? '' : 'none';
+
+  const isFirstStep = step === 1;
+  document.getElementById('q-back').style.display = isFirstStep ? 'none' : '';
+  document.getElementById('back-to-industry').style.display = isFirstStep ? '' : 'none';
+
+  const continueBtn = document.getElementById('q-continue');
+  continueBtn.disabled = !isAnswered(q);
+  if (state.editingFromReview) {
+    continueBtn.textContent = 'Save & Return to Review';
+  } else if (step === TOTAL_QUESTIONS) {
+    continueBtn.textContent = 'Review Your Answers';
+  } else {
+    continueBtn.textContent = 'Continue';
+  }
+}
+
+function goToQuestion(index) {
+  state.currentIndex = index;
+  showScreen('question');
+  renderQuestion();
+}
+
+/* ---------- Review screen ---------- */
+function renderReview() {
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+  currentQuestions().forEach((q, i) => {
+    const row = document.createElement('div');
+    row.className = 'review-row';
+    row.innerHTML = `
+      <div class="review-text">
+        <span class="review-q">${q.text}</span>
+        <span class="review-a">${answerDisplay(q)}</span>
+      </div>
+      <button type="button" class="btn btn-ghost btn-small review-edit">Edit</button>`;
+    row.querySelector('.review-edit').addEventListener('click', () => {
+      state.editingFromReview = true;
+      goToQuestion(i);
+    });
+    list.appendChild(row);
+  });
+}
+
+/* ---------- Result: route comes from Q1 only ---------- */
+function selectedConditions(q4Question, values) {
+  return (values || [])
+    .map((v) => q4Question.options.find((o) => o.value === v))
+    .filter((o) => o && !o.exclusive);
+}
+
+
+function computeResult() {
+  const routeId = state.answers.q1;
+  const route = ROUTES[routeId];
+  const q = currentQuestions();
+  const q2Opt = q[1].options.find((o) => o.value === state.answers.q2);
+  const q3Opt = Q3_OPTIONS.find((o) => o.value === state.answers.q3);
+  const conditions = selectedConditions(q[3], state.answers.q4);
+  const scoring = computeInternalScore(state.answers.q2, state.answers.q3, conditions.length, state.answers.q5);
+
+  const picked = state.answers.q4 || [];
+  const modules = route.q4
+    .filter((o) => picked.includes(o.value) && !o.exclusive)
+    .slice(0, 2)
+    .map((o) => Q4_MODULES[routeId][o.value]);
+  const q2Value = state.answers.q2;
+  const startingPoint = (q2Value === 'A' || q2Value === 'B') ? Q2_STARTING_POINT.manual
+    : (q2Value === 'C' || q2Value === 'D') ? Q2_STARTING_POINT.partial
+    : Q2_STARTING_POINT.unclear;
+
+  return {
+    routeId,
+    route,
+    startingPoint,
+    modules,
+    hasAdditionalConditions: conditions.length >= 3,
+    industryLabel: industryLabelFor(state.industry),
+    methodPhrase: q2Opt ? q2Opt.phrase : '',
+    methodLabel: q2Opt ? q2Opt.label : '',
+    effortLabel: q3Opt ? q3Opt.label : '',
+    effortMeasured: !!(q3Opt && q3Opt.annual),
+    annualLabel: q3Opt && q3Opt.annual ? q3Opt.annual : ANNUAL_UNMEASURED,
+    conditions,
+    urgencyLabel: optionLabel(q[4], state.answers.q5),
+    score: scoring.score,
+    priority: scoring.priority,
+  };
+}
+
+/* Show at most two selected conditions; add "and additional complexity" for 3+. */
+function conditionSummary(conditions) {
+  if (!conditions.length) return 'No specific conditions selected';
+  const shown = conditions.slice(0, 2).map((c) => c.label);
+  if (conditions.length >= 3) shown.push('and additional complexity');
+  return shown.join('; ');
+}
+
+function bookingUrlWithUtm() {
+  const url = new URL(BOOKING_URL);
+  Object.keys(state.utm).forEach((k) => url.searchParams.set(k, state.utm[k]));
+  return url.toString();
+}
+
+function renderResult() {
+  const r = computeResult();
+  const setText = (id, text) => { document.getElementById(id).textContent = text; };
+
+  // 1. Workflow title (internal score / priority are never displayed)
+  setText('result-title', r.route.title);
+
+  // 2. A comparable workflow BChanel has solved (verified case evidence)
+  setText('result-built', r.route.built);
+  setText('result-verified', r.route.verifiedResults);
+
+  // 3. What a comparable workflow could include for this team
+  setText('result-base', r.route.comparable);
+  setText('result-start', r.startingPoint);
+  const modulesEl = document.getElementById('result-modules');
+  modulesEl.innerHTML = r.modules.map((m) => `<li>${m}</li>`).join('');
+  modulesEl.hidden = !r.modules.length;
+  const extra = document.getElementById('result-additional');
+  extra.textContent = Q4_ADDITIONAL_SENTENCE;
+  extra.hidden = !r.hasAdditionalConditions;
+
+  // 4. Reported operational context (reported effort only)
+  const rows = [
+    ['Current workflow method', r.methodLabel],
+    ['Reported weekly effort', r.effortMeasured ? r.effortLabel : 'Not currently measured'],
+    ['Reported annual effort', r.annualLabel],
+    ['Complexity conditions', conditionSummary(r.conditions)],
+  ];
+  document.getElementById('result-context-list').innerHTML = rows
+    .map(([k, v]) => `<div class="context-row"><dt>${k}</dt><dd>${v}</dd></div>`)
+    .join('');
+  setText('result-effort-note', r.effortMeasured
+    ? 'This represents effort reported by you, not projected time savings or automation ROI.'
+    : 'Your team does not currently measure the effort required by this workflow.');
+
+  // 6. CTAs
+  document.getElementById('case-cta').href = r.route.caseUrl;
+  document.getElementById('final-cta').href = bookingUrlWithUtm();
+
+  track('assessment_result_shown', {
+    industry: state.industry,
+    workflow_result_id: r.routeId,
+    internal_priority: r.priority,
+    questionnaire_version: QUESTIONNAIRE_VERSION,
+  });
+}
+
+/* ---------- Lead capture (gates the result; no auto-email) ---------- */
+function validateLeadForm() {
+  const form = document.getElementById('lead-form');
+  const email = form.email.value.trim();
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const ok = form.firstName.value.trim().length > 0
+    && form.lastName.value.trim().length > 0
+    && emailOk
+    && form.company.value.trim().length > 0
+    && form.consent.checked;
+  const errEl = document.getElementById('lead-error');
+  errEl.textContent = 'Please fill in every field with a valid work email and check the consent box.';
+  errEl.style.display = ok ? 'none' : 'block';
+  return ok;
+}
+
+let leadShownAt = 0;
+
+/* The browser sends only raw answer codes plus the lead details. The server
+   re-validates them and recomputes labels, score, priority and case URL, so
+   none of those values are trusted from the client. */
+async function submitLead(honeypotValue) {
+  const r = computeResult();
+  const payload = {
+    industry: state.industry,
+    answers: state.answers,
+    lead: state.lead,
+    utm: state.utm,
+    consent: { privacyPolicy: true, marketing: false, version: CONSENT_VERSION },
+    website: honeypotValue || '',
+    fillMs: leadShownAt ? Date.now() - leadShownAt : 0,
+    clientVersion: QUESTIONNAIRE_VERSION,
+  };
+
+  const res = await fetch(LEAD_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (res.status === 429) {
+    const err = new Error('rate_limited');
+    err.code = 429;
+    throw err;
+  }
+  if (!res.ok) throw new Error('submission_failed');
+
+  track('lead_submitted', { industry: state.industry, workflow_result_id: r.routeId, internal_priority: r.priority });
+  return true;
+}
+
+/* ---------- Full reset ---------- */
+function resetAssessment() {
+  state.industry = null;
+  state.answers = {};
+  state.currentIndex = 0;
+  state.editingFromReview = false;
+  state.lead = {};
+  try { sessionStorage.removeItem(STORAGE_KEY); } catch (err) { /* ignore */ }
+  renderIndustryGrid();
+  showScreen('hero');
+}
+
+/* ---------- Wire up events ---------- */
+(() => {
+  captureUTMs();
+  renderIndustryGrid();
+
+  const restoredScreen = restoreState();
+
+  document.getElementById('start-assessment').addEventListener('click', () => {
+    track('assessment_start', { utm_source: state.utm.utm_source || '', utm_campaign: state.utm.utm_campaign || '' });
+    showScreen('industry');
+  });
+
+  document.getElementById('industry-continue').addEventListener('click', () => {
+    track('industry_selected', { industry: state.industry });
+    goToQuestion(0);
+  });
+
+  document.getElementById('back-to-industry').addEventListener('click', requestBackToIndustry);
+
+  const differentLink = document.getElementById('different-workflow');
+  differentLink.href = OPERATIONAL_ASSESSMENT_URL;
+  differentLink.addEventListener('click', () => {
+    track('workflow_different_click', { industry: state.industry });
+  });
+
+  document.getElementById('q-back').addEventListener('click', () => {
+    if (state.currentIndex === 0) return;
+    goToQuestion(state.currentIndex - 1);
+  });
+  document.getElementById('q-continue').addEventListener('click', () => {
+    const questions = currentQuestions();
+    if (state.currentIndex === 0 && !state.editingFromReview) {
+      track('workflow_selected', { industry: state.industry, workflow_result_id: state.answers.q1 });
+    }
+    if (state.editingFromReview && questions.length === TOTAL_QUESTIONS) {
+      state.editingFromReview = false;
+      showScreen('review');
+      renderReview();
+    } else if (state.currentIndex < questions.length - 1) {
+      goToQuestion(state.currentIndex + 1);
+    } else {
+      track('assessment_complete', { industry: state.industry, questionnaire_version: QUESTIONNAIRE_VERSION });
+      showScreen('review');
+      renderReview();
+    }
+  });
+
+  document.getElementById('review-continue').addEventListener('click', () => {
+    leadShownAt = Date.now();
+    showScreen('lead');
+  });
+
+  document.getElementById('lead-back-to-review').addEventListener('click', () => {
+    showScreen('review');
+    renderReview();
+  });
+
+  const leadForm = document.getElementById('lead-form');
+  leadForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!validateLeadForm()) return;
+
+    state.lead = {
+      firstName: leadForm.firstName.value.trim(),
+      lastName: leadForm.lastName.value.trim(),
+      email: leadForm.email.value.trim(),
+      company: leadForm.company.value.trim(),
+    };
+
+    const submitBtn = document.getElementById('lead-submit');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Preparing your results…';
+
+    try {
+      await submitLead(leadForm.website ? leadForm.website.value : '');
+      showScreen('result');
+      renderResult();
+    } catch (err) {
+      document.getElementById('lead-error').textContent = err && err.code === 429
+        ? 'Too many submissions from this connection. Please wait a few minutes and try again.'
+        : 'Something went wrong submitting your info. Please try again.';
+      document.getElementById('lead-error').style.display = 'block';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'See My Results';
+    }
+  });
+
+  document.getElementById('case-cta').addEventListener('click', () => {
+    track('case_cta_click', { industry: state.industry, workflow_result_id: state.answers.q1 });
+  });
+  document.getElementById('final-cta').addEventListener('click', () => {
+    track('final_cta_click', { industry: state.industry, workflow_result_id: state.answers.q1 });
+  });
+  document.getElementById('assess-another').addEventListener('click', () => {
+    track('assess_another_click', {});
+    resetAssessment();
+  });
+
+  /* Resume mid-assessment after a refresh (non-personal state only).
+     The result screen is never restored: the lead form must be completed again. */
+  if (restoredScreen && restoredScreen !== 'hero') {
+    renderIndustryGrid();
+    const complete = currentQuestions().length === TOTAL_QUESTIONS
+      && currentQuestions().every(isAnswered);
+    if (restoredScreen === 'question' && state.industry) {
+      goToQuestion(Math.min(state.currentIndex, currentQuestions().length - 1));
+    } else if ((restoredScreen === 'review' || restoredScreen === 'lead' || restoredScreen === 'result') && state.industry && complete) {
+      if (restoredScreen === 'lead') {
+        leadShownAt = Date.now();
+        showScreen('lead');
+      } else {
+        showScreen('review');
+        renderReview();
+      }
+    } else if (state.industry) {
+      goToQuestion(0);
+    }
+  }
+})();
+
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+else boot();
+})();
+</script>
+
+</div></body></html>

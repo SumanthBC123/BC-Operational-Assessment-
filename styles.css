@@ -380,3 +380,50 @@ img, svg { max-width: 100%; }
   .hero { padding: 44px 16px 36px; }
   .meta-row { flex-direction: column; align-items: flex-start; gap: 2px; }
 }
+
+/* Honeypot: invisible to people, present for bots */
+.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* Footer links */
+.wfa-footnote p { margin: 0; }
+.wfa-footer-links { margin-top: 8px !important; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; }
+.wfa-footer-links a, .link-button { color: var(--teal-dark); font: inherit; background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; }
+.wfa-footer-links a:focus-visible, .link-button:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 2px; }
+
+/* Cookie banner */
+.cookie-banner {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  max-width: 760px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 28px rgba(31, 43, 58, 0.2);
+  padding: 16px 18px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.cookie-banner[hidden] { display: none; }
+.cookie-banner p { margin: 0; flex: 1; color: var(--ink); font-size: 0.86rem; line-height: 1.5; }
+.cookie-banner a { color: var(--teal-dark); }
+.cookie-actions { display: flex; gap: 10px; flex-shrink: 0; }
+.cookie-actions .btn { padding: 10px 16px; font-size: 0.86rem; }
+@media (max-width: 640px) {
+  .cookie-banner { flex-direction: column; align-items: stretch; }
+  .cookie-actions { flex-direction: column; }
+}
+
+/* Privacy Policy page */
+.policy-wrap { max-width: 780px !important; }
+.policy h1 { font-family: 'Space Grotesk', sans-serif; color: var(--navy); font-size: 1.9rem; margin: 0 0 6px; }
+.policy .policy-date { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 22px; }
+.policy h2 { font-family: 'Space Grotesk', sans-serif; color: var(--navy); font-size: 1.1rem; margin: 28px 0 8px; }
+.policy p, .policy li { font-size: 0.96rem; line-height: 1.65; color: var(--ink); }
+.policy p { margin: 0 0 12px; }
+.policy ul { margin: 0 0 12px; padding-left: 22px; }
+.policy a { color: var(--teal-dark); }

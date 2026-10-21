@@ -1,0 +1,12 @@
+{
+  "name": "bchanel-workflow-assessment",
+  "private": true,
+  "version": "5.0.0",
+  "description": "BChanel Workflow Automation Assessment: static front end plus a Netlify lead endpoint",
+  "scripts": {
+    "test": "node tests/lead-core.test.js"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}

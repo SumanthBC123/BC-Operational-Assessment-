@@ -1,0 +1,95 @@
+<style>
+.wfa-cookie-banner { position: fixed; left: 16px; right: 16px; bottom: 16px; max-width: 760px; margin: 0 auto; background: #fff; color: #1f2b3a; border: 1px solid #dfe6ec; border-radius: 10px; box-shadow: 0 8px 28px rgba(31, 43, 58, 0.2); padding: 16px 18px; z-index: 99999; display: flex; align-items: center; gap: 16px; font-family: 'Raleway', Arial, sans-serif; }
+.wfa-cookie-banner[hidden] { display: none; }
+.wfa-cookie-banner p { margin: 0; flex: 1; font-size: 14px; line-height: 1.5; }
+.wfa-cookie-banner a { color: #2c8c84; text-decoration: underline; }
+.wfa-cookie-actions { display: flex; gap: 10px; flex-shrink: 0; }
+.wfa-cookie-actions button { border-radius: 8px; padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Space Grotesk', Arial, sans-serif; line-height: 1.2; text-transform: none; letter-spacing: normal; }
+.wfa-cookie-actions button:focus-visible { outline: 2px solid #2c8c84; outline-offset: 2px; }
+.wfa-cookie-accept { background: #37aea4; color: #fff; border: 1.5px solid #37aea4; }
+.wfa-cookie-accept:hover { background: #2c8c84; border-color: #2c8c84; }
+.wfa-cookie-reject { background: #fff; color: #2d4a6e; border: 1.5px solid #dfe6ec; }
+.wfa-cookie-reject:hover { border-color: #2d4a6e; }
+@media (max-width: 640px) {
+  .wfa-cookie-banner { flex-direction: column; align-items: stretch; }
+  .wfa-cookie-actions { flex-direction: column; }
+}
+</style>
+<script>
+(function () {
+  var GA_ID = 'G-DZBMHQG1QL';
+  var KEY = 'wfaConsent';
+  var POLICY_URL = 'https://www.bchanel.com/privacy-policy';
+
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { window.dataLayer.push(arguments); }
+  window.gtag = gtag;
+
+  function readChoice() { try { return window.localStorage.getItem(KEY); } catch (e) { return null; } }
+  function saveChoice(v) { try { window.localStorage.setItem(KEY, v); } catch (e) {} }
+
+  var choice = readChoice();
+
+  // Defaults must be set before the first config call.
+  gtag('consent', 'default', {
+    analytics_storage: choice === 'granted' ? 'granted' : 'denied',
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    wait_for_update: 500
+  });
+  gtag('js', new Date());
+  gtag('config', GA_ID);
+
+  var tag = document.createElement('script');
+  tag.async = true;
+  tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+  document.head.appendChild(tag);
+
+  function clearAnalyticsCookies() {
+    var parts = window.location.hostname.split('.');
+    var domains = [window.location.hostname];
+    for (var i = 1; i < parts.length - 1; i++) domains.push('.' + parts.slice(i).join('.'));
+    document.cookie.split(';').forEach(function (c) {
+      var name = c.split('=')[0].trim();
+      if (name === '_ga' || name.indexOf('_ga_') === 0 || name === '_gid') {
+        domains.forEach(function (d) {
+          document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=' + d;
+        });
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+      }
+    });
+  }
+
+  function apply(value) {
+    saveChoice(value);
+    gtag('consent', 'update', { analytics_storage: value === 'granted' ? 'granted' : 'denied' });
+    if (value !== 'granted') clearAnalyticsCookies();
+  }
+
+  function init() {
+    var banner = document.createElement('div');
+    banner.className = 'wfa-cookie-banner';
+    banner.setAttribute('role', 'region');
+    banner.setAttribute('aria-label', 'Cookie consent');
+    banner.hidden = true;
+    banner.innerHTML =
+      '<p>We use Google Analytics cookies to understand how this website is used. Non-essential cookies stay off unless you accept them. See our <a href="' + POLICY_URL + '">Privacy Policy</a>.</p>' +
+      '<div class="wfa-cookie-actions">' +
+      '<button type="button" class="wfa-cookie-reject">Reject Non-Essential Cookies</button>' +
+      '<button type="button" class="wfa-cookie-accept">Accept Analytics</button>' +
+      '</div>';
+    document.body.appendChild(banner);
+
+    banner.querySelector('.wfa-cookie-accept').addEventListener('click', function () { apply('granted'); banner.hidden = true; });
+    banner.querySelector('.wfa-cookie-reject').addEventListener('click', function () { apply('denied'); banner.hidden = true; });
+
+    // Lets any page link reopen the choice, e.g. <a href="#cookie-settings">.
+    window.addEventListener('hashchange', function () { if (location.hash === '#cookie-settings') banner.hidden = false; });
+    if (location.hash === '#cookie-settings' || !choice) banner.hidden = false;
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>

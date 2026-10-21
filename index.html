@@ -4,27 +4,32 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Workflow Automation Assessment | BChanel</title>
-<meta name="description" content="Answer a few questions about one recurring workflow in your business and see what to review first, before considering automation." />
+<meta name="description" content="Select one recurring workflow, answer five short questions, and see how BChanel solved a comparable operational problem and what a similar workflow could include for your team." />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#2d4a6e" />
+<link rel="icon" href="favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<!--SEO-URLS-->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="BChanel" />
+<meta property="og:title" content="Workflow Automation Assessment | BChanel" />
+<meta property="og:description" content="Select one recurring workflow, answer five short questions, and see how BChanel solved a comparable operational problem." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Workflow Automation Assessment | BChanel" />
+<meta name="twitter:description" content="Select one recurring workflow, answer five short questions, and see how BChanel solved a comparable operational problem." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css" />
-<!-- GA4: confirmed BChanel property, Measurement ID G-DZBMHQG1QL (note the Q, not the O used by mistake elsewhere on the main site) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DZBMHQG1QL"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-DZBMHQG1QL');
-</script>
+<script src="consent.js"></script>
 </head>
 <body>
 
-<div class="mock-banner">PROTOTYPE V4 (case-led) — GA4, the Calendly link, and lead storage are live. No result email or PDF in this phase (by design). The Privacy Policy link is still pending.</div>
-
 <header class="topbar">
   <div class="wrap">
-    <a href="#" class="logo-link" aria-label="BChanel home"><!-- TODO: point at the confirmed production homepage URL -->
+    <a href="https://www.bchanel.com/" class="logo-link" aria-label="BChanel home">
       <img src="logo.png" alt="BChanel" class="logo-img" width="260" height="38" />
     </a>
   </div>
@@ -134,9 +139,13 @@
               <label for="company">Company</label>
               <input type="text" id="company" name="company" required />
             </div>
+            <div class="hp-field" aria-hidden="true">
+              <label for="website">Leave this field empty</label>
+              <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+            </div>
             <label class="consent">
               <input type="checkbox" name="consent" required />
-              <span>I agree that BChanel may use this information in accordance with the <a href="#" target="_blank" rel="noopener">Privacy Policy</a>. <!-- TODO: swap in the live Privacy Policy URL once published --></span>
+              <span>I have read the <a href="https://www.bchanel.com/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a> and agree that BChanel may use my information to provide my assessment result and respond to my request.</span>
             </label>
             <div id="lead-error" class="form-error">Please fill in every field with a valid work email and check the consent box.</div>
             <button id="lead-submit" type="submit" class="btn btn-primary btn-block">See My Results</button>
@@ -194,7 +203,22 @@
 
 </main>
 
-<p class="wfa-footnote">This review is provided for informational purposes only.</p>
+<footer class="wfa-footnote">
+  <p>This review is provided for informational purposes only.</p>
+  <p class="wfa-footer-links">
+    <a href="https://www.bchanel.com/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>
+    <span aria-hidden="true">·</span>
+    <button type="button" id="cookie-settings" class="link-button">Cookie settings</button>
+  </p>
+</footer>
+
+<div id="cookie-banner" class="cookie-banner" role="region" aria-label="Cookie consent" hidden>
+  <p>We use Google Analytics cookies to understand how this assessment is used. Non-essential cookies stay off unless you accept them. See our <a href="https://www.bchanel.com/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+  <div class="cookie-actions">
+    <button type="button" id="cookie-reject" class="btn btn-secondary">Reject Non-Essential Cookies</button>
+    <button type="button" id="cookie-accept" class="btn btn-primary">Accept Analytics</button>
+  </div>
+</div>
 
 <div id="confirm-overlay" class="confirm-overlay" hidden>
   <div class="confirm-modal">
@@ -206,6 +230,7 @@
   </div>
 </div>
 
+<script src="assessment-data.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
