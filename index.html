@@ -4,208 +4,23 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Workflow Automation Assessment | BChanel</title>
-<meta name="description" content="Answer a few questions about one recurring workflow in your business and see what to review first, before considering automation." />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css" />
-<!-- GA4: confirmed BChanel property, Measurement ID G-DZBMHQG1QL (note the Q, not the O used by mistake elsewhere on the main site) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DZBMHQG1QL"></script>
+<meta name="robots" content="noindex, follow" />
+<link rel="canonical" href="https://www.bchanel.com/workflow-assessment" />
+<meta http-equiv="refresh" content="0; url=https://www.bchanel.com/workflow-assessment" />
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-DZBMHQG1QL');
+  // Keep any UTM parameters when forwarding to the live page.
+  (function () {
+    var target = 'https://www.bchanel.com/workflow-assessment';
+    window.location.replace(target + (window.location.search || ''));
+  })();
 </script>
+<style>
+  body { font-family: Arial, sans-serif; color: #1f2b3a; text-align: center; padding: 64px 20px; }
+  a { color: #2c8c84; }
+</style>
 </head>
 <body>
-
-<div class="mock-banner">PROTOTYPE V4 (case-led) — GA4, the Calendly link, and lead storage are live. No result email or PDF in this phase (by design). The Privacy Policy link is still pending.</div>
-
-<header class="topbar">
-  <div class="wrap">
-    <a href="#" class="logo-link" aria-label="BChanel home"><!-- TODO: point at the confirmed production homepage URL -->
-      <img src="logo.png" alt="BChanel" class="logo-img" width="260" height="38" />
-    </a>
-  </div>
-</header>
-
-<main>
-
-  <!-- HERO -->
-  <section id="screen-hero" class="screen active">
-    <div class="hero">
-      <div class="wrap">
-        <span class="eyebrow">Workflow Automation Assessment</span>
-        <h1>Find the Right Next Step for Your Workflow</h1>
-        <p class="sub">Select one recurring workflow, answer five short questions, and see how BChanel solved a comparable operational problem — including what was built, what changed, and what a similar workflow could include for your team.</p>
-        <button id="start-assessment" class="btn btn-primary">Start the Assessment</button>
-        <div class="indicators">
-          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>5 quick questions</span>
-          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>Backed by published cases</span>
-          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Result on this page</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- INDUSTRY SELECT (not counted as a question) -->
-  <section id="screen-industry" class="screen">
-    <div class="assessment">
-      <div class="wrap">
-        <div class="card">
-          <h2 class="q-title">Which best describes your business?</h2>
-          <div id="industry-grid" class="industry-grid"></div>
-          <div class="nav-row">
-            <span class="spacer"></span>
-            <button id="industry-continue" class="btn btn-primary" disabled>Continue</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- QUESTIONS -->
-  <section id="screen-question" class="screen">
-    <div class="assessment">
-      <div class="wrap">
-        <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
-        <div class="meta-row">
-          <span id="assessing-label" class="assessing-label"></span>
-          <span id="step-label" class="step-label"></span>
-        </div>
-        <div class="card">
-          <h2 id="q-title" class="q-title"></h2>
-          <p id="q-helper" class="helper-text"></p>
-          <p id="q-intro" class="helper-text" style="display:none;"></p>
-          <div id="option-list" class="option-list"></div>
-          <p id="different-workflow-wrap" class="different-workflow" style="display:none;"><a id="different-workflow" href="#">My workflow is different</a></p>
-          <div class="nav-row">
-            <button id="q-back" class="btn btn-ghost">← Back</button>
-            <button id="back-to-industry" class="btn btn-ghost" style="display:none;">← Back to Business Type</button>
-            <span class="spacer"></span>
-            <button id="q-continue" class="btn btn-primary" disabled>Continue</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- REVIEW ANSWERS -->
-  <section id="screen-review" class="screen">
-    <div class="assessment">
-      <div class="wrap">
-        <div class="card">
-          <h2 class="q-title">Review your answers</h2>
-          <p class="helper-text">Check your answers before continuing. Select Edit to change one.</p>
-          <div id="review-list" class="review-list"></div>
-          <div class="nav-row">
-            <span class="spacer"></span>
-            <button id="review-continue" class="btn btn-primary">Continue</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- LEAD CAPTURE (gates the result) -->
-  <section id="screen-lead" class="screen">
-    <div class="assessment">
-      <div class="wrap">
-        <div class="card">
-          <h2 class="q-title">Almost there</h2>
-          <p class="helper-text" style="margin-bottom:2px;">Enter your details to view your personalized workflow result.</p>
-          <p class="helper-text">Your result will appear immediately on this page.</p>
-          <button id="lead-back-to-review" type="button" class="btn btn-ghost btn-small" style="padding-left:0; margin-bottom:12px;">← Back to Review Answers</button>
-          <form id="lead-form" novalidate>
-            <div class="field">
-              <label for="firstName">First name</label>
-              <input type="text" id="firstName" name="firstName" required />
-            </div>
-            <div class="field">
-              <label for="lastName">Last name</label>
-              <input type="text" id="lastName" name="lastName" required />
-            </div>
-            <div class="field">
-              <label for="email">Work email</label>
-              <input type="email" id="email" name="email" required />
-            </div>
-            <div class="field">
-              <label for="company">Company</label>
-              <input type="text" id="company" name="company" required />
-            </div>
-            <label class="consent">
-              <input type="checkbox" name="consent" required />
-              <span>I agree that BChanel may use this information in accordance with the <a href="#" target="_blank" rel="noopener">Privacy Policy</a>. <!-- TODO: swap in the live Privacy Policy URL once published --></span>
-            </label>
-            <div id="lead-error" class="form-error">Please fill in every field with a valid work email and check the consent box.</div>
-            <button id="lead-submit" type="submit" class="btn btn-primary btn-block">See My Results</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- RESULT (on-page, no gating beyond the lead form) -->
-  <section id="screen-result" class="screen">
-    <div class="assessment">
-      <div class="wrap">
-        <div class="card">
-
-          <div class="result-block result-block-main">
-            <h3 class="result-h">Your Workflow Result</h3>
-            <p id="result-title" class="result-recommendation"></p>
-          </div>
-
-          <div class="result-block action-block">
-            <h3>A Comparable Workflow BChanel Has Solved</h3>
-            <h4 class="result-sub">What BChanel built</h4>
-            <p id="result-built" class="result-body"></p>
-            <h4 class="result-sub">Verified results</h4>
-            <p id="result-verified" class="result-body"></p>
-          </div>
-
-          <div class="result-block">
-            <h3 class="result-h">What a Comparable Workflow Could Include for Your Team</h3>
-            <p id="result-base" class="result-body"></p>
-            <p id="result-start" class="result-body result-gap"></p>
-            <ul id="result-modules" class="actions-list result-gap"></ul>
-            <p id="result-additional" class="result-body result-gap" hidden></p>
-          </div>
-
-          <div class="result-block">
-            <h3 class="result-h">Your Reported Operational Context</h3>
-            <dl id="result-context-list" class="context-list"></dl>
-            <p id="result-effort-note" class="result-context"></p>
-          </div>
-
-          <p class="disclaimer">This is an initial directional result. It is not a complete operational assessment, confirmed architecture, or ROI estimate.</p>
-
-          <div class="cta-block">
-            <a id="case-cta" class="btn btn-primary btn-block" href="#" target="_blank" rel="noopener">View the Full Workflow Case</a>
-            <a id="final-cta" class="btn btn-secondary btn-block" href="https://calendly.com/lsmiriglia-bchanel" target="_blank" rel="noopener">Discuss This Workflow With BChanel</a>
-            <p class="cta-support">Bring this workflow and the answers you gave. We'll discuss what needs clarification before deciding whether redesign, integration, or automation makes sense.</p>
-            <button id="assess-another" class="btn btn-ghost btn-block">Assess Another Workflow</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<p class="wfa-footnote">This review is provided for informational purposes only.</p>
-
-<div id="confirm-overlay" class="confirm-overlay" hidden>
-  <div class="confirm-modal">
-    <p id="confirm-message"></p>
-    <div class="confirm-actions">
-      <button id="confirm-cancel" class="btn btn-secondary">Cancel</button>
-      <button id="confirm-ok" class="btn btn-primary">Continue</button>
-    </div>
-  </div>
-</div>
-
-<script src="script.js"></script>
+  <p>The Workflow Automation Assessment has moved.</p>
+  <p><a href="https://www.bchanel.com/workflow-assessment">Continue to the assessment on bchanel.com</a></p>
 </body>
 </html>
