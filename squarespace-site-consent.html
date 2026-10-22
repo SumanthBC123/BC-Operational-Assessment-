@@ -61,11 +61,35 @@
     });
   }
 
+  // Leadsy / Instantly visitor-identification tag. It is NOT in the site Header any more:
+  // it is loaded here, and only after the visitor accepts non-essential cookies.
+  var leadsyLoaded = false;
+  function loadLeadsy() {
+    if (leadsyLoaded || document.getElementById('vtag-ai-js')) return;
+    leadsyLoaded = true;
+    var s = document.createElement('script');
+    s.id = 'vtag-ai-js';
+    s.async = true;
+    s.src = 'https://r2.leadsy.ai/tag.js';
+    s.setAttribute('data-pid', '1juOadZg1pJCQw07p');
+    s.setAttribute('data-version', '062024');
+    document.head.appendChild(s);
+  }
+
   function apply(value) {
+    var wasLoaded = leadsyLoaded;
     saveChoice(value);
     gtag('consent', 'update', { analytics_storage: value === 'granted' ? 'granted' : 'denied' });
-    if (value !== 'granted') clearAnalyticsCookies();
+    if (value === 'granted') {
+      loadLeadsy();
+    } else {
+      clearAnalyticsCookies();
+      // A tag that already ran on this page cannot be unloaded, so reload without it.
+      if (wasLoaded) window.location.reload();
+    }
   }
+
+  if (choice === 'granted') loadLeadsy();
 
   function init() {
     var banner = document.createElement('div');
@@ -74,7 +98,7 @@
     banner.setAttribute('aria-label', 'Cookie consent');
     banner.hidden = true;
     banner.innerHTML =
-      '<p>We use Google Analytics cookies to understand how this website is used. Non-essential cookies stay off unless you accept them. See our <a href="' + POLICY_URL + '">Privacy Policy</a>.</p>' +
+      '<p>We use Google Analytics and a visitor-identification service (Leadsy) to understand how this website is used. Non-essential cookies and these services stay off unless you accept them. See our <a href="' + POLICY_URL + '">Privacy Policy</a>.</p>' +
       '<div class="wfa-cookie-actions">' +
       '<button type="button" class="wfa-cookie-reject">Reject Non-Essential Cookies</button>' +
       '<button type="button" class="wfa-cookie-accept">Accept Analytics</button>' +
